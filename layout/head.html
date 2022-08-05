@@ -1,28 +1,21 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-<!-- OpenGraph/Social sharing -->
 <meta name="description" content="{{ settings.metaDescription }}" />
 <meta name="og:description" content="{{ settings.metaDescription }}" />
 <meta property="og:image" content="{{ settings.avatarImage }}" />
 <meta property="og:title" content="{{ settings.metaTitle}}" />
 <meta name="twitter:card" content="summary" />
-<link rel="icon" href="https://glitch.com/favicon.ico" />
 <link rel="stylesheet" type="text/css" href="/styles/style.css" />
-<!--PWA requirements-->
-<meta name="theme-color" content="#9480FF"/>
-<link rel="apple-touch-icon" href="https://cdn.glitch.me/efc5414a-882b-4708-af81-8461abbc1a82%2Ftouch-icon.png?v=1633521972305">
 
-<!-- PWA setup - update public/sw.js if you add your own assets like a new .css file -->
+<meta name="theme-color" content="#9480FF"/>
+
 <link rel="manifest" href="manifest.json">
 <script>
-if(location.protocol == 'http:') location.protocol = 'https:';
-// if('serviceWorker' in navigator) {
-//   navigator.serviceWorker.register('sw.js')
-//     .then(reg => console.log('Service Worker registered', reg))
-//     .catch(err => console.error('Service Worker **not** registered', err));
-// }
-else {
-  console.warn('Service Worker not supported in this browser');
-}    
+
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(reg => console.log('Service Worker registered', reg))
+    .catch(err => console.error('Service Worker **not** registered', err));
+}
+    
 </script>

@@ -1,35 +1,34 @@
 {
-  "name": "asl fingerspelling model tutorial",
+  "name": "asl-fingerspelling-tutorial",
   "version": "0.0.1",
-  "description": "asl fingerspelling model tutorial",
+  "description": "asl fingerspelling client ml tutorial",
   "main": "index.html",
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "serve": "vite preview",
-    "release": "auto shipit"
+    "serve": "vite preview"
   },
   "devDependencies": {
-    "@glitchdotcom/vite-plugin-handlebars": "^1.6.2",
-    "auto": "^10.32.2",
-    "vite": "^2.5.0"
+    "handlebars": "^4.7.7",
+    "handlebars-helpers": "^0.10.0",
+    "handlebars-layouts": "^3.1.4",
+    "vite": "^3.0.4",
+    "vite-plugin-handlebars": "^1.6.0",
+    "vite-plugin-string": "^1.1.2"
   },
   "browserslist": [
     ">0.2%",
     "not dead"
   ],
   "engines": {
-    "node": "14.x"
-  },
-  "glitch": {
-    "projectType": "generated_static"
+    "node": ">=14.x"
   },
   "dependencies": {
-    "@tensorflow/tfjs": "^3.19.0",
-    "@tensorflow/tfjs-core": "^3.19.0",
-    "@tensorflow/tfjs-backend-wasm": "^3.19.0",
     "@fluentui/web-components": "^2.5.3",
-    "jszip": "^3.10.0",
-    "file-saver": "^2.0.5"
+    "@tensorflow/tfjs": "^3.19.0",
+    "@tensorflow/tfjs-backend-wasm": "^3.19.0",
+    "@tensorflow/tfjs-core": "^3.19.0",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.10.0"
   }
 }

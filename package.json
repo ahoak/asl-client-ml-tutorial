@@ -1,0 +1,35 @@
+{
+  "name": "asl fingerspelling model tutorial",
+  "version": "0.0.1",
+  "description": "asl fingerspelling model tutorial",
+  "main": "index.html",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "release": "auto shipit"
+  },
+  "devDependencies": {
+    "@glitchdotcom/vite-plugin-handlebars": "^1.6.2",
+    "auto": "^10.32.2",
+    "vite": "^2.5.0"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead"
+  ],
+  "engines": {
+    "node": "14.x"
+  },
+  "glitch": {
+    "projectType": "generated_static"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^3.19.0",
+    "@tensorflow/tfjs-core": "^3.19.0",
+    "@tensorflow/tfjs-backend-wasm": "^3.19.0",
+    "@fluentui/web-components": "^2.5.3",
+    "jszip": "^3.10.0",
+    "file-saver": "^2.0.5"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "ASL Fingerspelling Model",
+  "short_name": "ASL Fingerspelling Model",
+  "description": "Training model",
+  "icons": [
+    {
+      "sizes": "800x800",
+      "type": "image/png",
+      "src": "https://cdn.glitch.com/560ed5ed-9d00-433a-9ff9-7750d79d13da%2FGlitch_TeamAvatar.png?v=1624643105812",
+      "purpose": "any"
+    },
+    {
+      "sizes": "180x180",
+      "type": "image/png",
+      "src": "https://cdn.glitch.me/efc5414a-882b-4708-af81-8461abbc1a82%2Ftouch-icon.png?v=1633521972305",
+      "purpose": "maskable"
+    }
+  ],
+  "display": "standalone",
+  "background_color": "#D7F5EF",
+  "theme_color": "#9480FF",
+  "start_url": "/"
+}

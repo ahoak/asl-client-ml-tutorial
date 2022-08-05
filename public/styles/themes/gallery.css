@@ -1,0 +1,124 @@
+/******************************************************************************
+TIP: Gallery theme displays your links with background images from settings.json
+
+Edit / copy or create your own CSS file in public/styles/themes
+Select your chosen CSS by adding the theme name (e.g. gallery) in settings.json
+******************************************************************************/
+
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@100&display=swap");
+
+:root {
+  --avatar-max-width: 50px;
+  --color-bg: #FFFFFF;
+  --color-bg-alt: #D7F5EF;
+  --color-text-main: #000000;
+  --color-primary: #FF7698;
+  --glitch-gray-5: #4F4F4F;
+  --glitch-gray-4: #828282;
+  --glitch-gray-3: #BDBDBD;
+}
+.content {
+  max-width: 900px;
+  position: relative;
+}
+.avatar {
+  border-radius: 0;
+}
+body {
+  background: var(--color-bg);
+}
+
+h1 {
+  font-family: "Barlow Condensed", sans-serif;
+  font-size: 2.8rem;
+  position: absolute;
+  top: 6px;
+  left: 68px;
+  font-weight: normal;
+  color: var(--glitch-gray-5);
+  text-transform: uppercase;
+}
+
+ul.link-list {
+  width: 100%;
+  display: grid;
+  grid-gap: 1em;
+  margin: 8.5rem 0 4em 0;
+}
+@media (min-width: 500px) {
+  ul.link-list {
+    /*Define our columns */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+ul.link-list li {
+  position: relative;
+  aspect-ratio: 1;
+  min-height: 200px;
+  background-color: #9480FF;
+  border-radius: 0;
+  overflow: hidden;
+  margin: 0;
+  font-family: Menlo, Consolas, Monaco, "Lucida Console", monospace;
+  font-size: 0.8em;
+}
+ul.link-list li a {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+a:not(.btn--remix):link,
+a:not(.btn--remix):visited {
+  font-weight: bold;
+  color: var(--color-bg);
+}
+ul.link-list li a span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 1.5em;
+  padding-top: 1.5em;
+  width: 100%;
+  min-height: 25%;
+  display: inline-block;
+  margin-top: 40%;
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.75);
+  transition: min-height 100ms, padding-top 100ms;
+}
+ul.link-list li a:hover span, ul.link-list li a:focus span {
+  min-height: 100%;
+  padding-top: 48%;
+}
+/* Add urls for any images you want to display in settings.json for each link */
+ul.link-list li a img {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+ul.link-list li a:hover img, ul.link-list li a:focus img {
+  display: none;
+}
+ul.link-list li a:link,
+ul.link-list li a:visited {
+  border: none;
+}
+
+.social-profile-icon path {
+  fill: var(--glitch-gray-3);
+}
+
+.avatar-container {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+}
+.footer {
+  color: var(--glitch-gray-5);
+  border-top: 2px solid var(--glitch-gray-3);
+}

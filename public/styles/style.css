@@ -1,0 +1,307 @@
+/******************************************************************************
+TIP: This is the default style sheet for the site
+
+- Your selected theme will also affect how the page appears
+- Themes are in the /themes folder
+- Select a theme in settings.json as the `theme` property
+******************************************************************************/
+
+/******************************************************************************
+START Page structure and element resets
+******************************************************************************/
+
+/* A set of default style */
+:root {
+  /* Generic sizing for the page */
+  --wrapper-height: 80vh;
+  --avatar-max-width: 140px;
+
+  /* Fonts for different elements */
+  --font-family: sans-serif;
+  --font-family-header: sans-serif;
+  --font-family-list: monospace;
+
+  /* Colors you'll see cascade through the elements */
+
+  /* To set your own use custom-theme.css with `custom-theme` in settings.json `theme` property */
+  --color-bg: #bdbdbd; /* Used for the page body background */
+  --color-bg-alt: #ffffff; /* Used for social icons on hover */
+  --color-text-main: #000000; /* List text ann social icons on hover */
+  --color-primary: #ffffff; /* Headers and borders */
+
+  /* These are some Glitch colors you are welcome to use! */
+  --glitch-blue: #2800ff;
+  --glitch-blue-light: #5a78ff;
+  --glitch-pink: #ff7698;
+  --glitch-pink-light: #fec1ee;
+  --glitch-green: #05f293;
+  --glitch-green-light: #9be7d8;
+  --glitch-yellow: #ffff60;
+  --glitch-purple: #9480ff;
+  --glitch-gray-3: #BDBDBD;
+}
+
+/* Basic page style resets */
+* {
+  box-sizing: border-box;
+}
+[hidden] {
+  display: none !important;
+}
+
+/* Page structure */
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  text-align: center;
+}
+.wrapper {
+  min-height: var(--wrapper-height);
+  place-items: center;
+  margin: 3rem 2rem 0;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  max-width: 550px;
+  margin: 0 auto;
+  margin-top: 1rem;
+}
+
+/* The footer and our remix on glitch button */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem auto 0;
+  padding: 1rem 0 0.75rem 0;
+  width: 100%;
+  flex-wrap: wrap;
+  border-top: 4px solid #fff;
+}
+.footer a:hover,
+.footer a:focus {
+  background: var(--color-primary);
+}
+.footer .tagline {
+  padding: 0.25rem 1rem 1rem;
+  text-align: left;
+  white-space: nowrap;
+}
+.btn--remix {
+  /*   font-family: Menlo, Consolas, Monaco, "Lucida Console", monospace; */
+  padding: 0.8rem 1.75rem;
+  /*font sizes scaled by viewport https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/*/
+  font-size: clamp(0.9rem, 0.825rem + 0.3333vw, 1rem);
+  line-height: 1rem;
+  font-weight: 500;
+  height: 3rem;
+  align-items: center;
+  cursor: pointer;
+  background: #ffffff;
+  border: 2px solid #000000;
+  box-sizing: border-box;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #000;
+  white-space: nowrap;
+  margin-left: auto;
+  margin-right: 1rem;
+}
+.btn--remix img {
+  position: relative;
+  top: 1px;
+  margin-right: 0.25rem;
+}
+.btn--remix:hover,
+.btn--remix:focus {
+  background-color: #d0fff1;
+}
+.tagline {
+  font-size: clamp(1rem, 0.925rem + 0.3333vw, 1.1rem);
+}
+
+/* Typography */
+p {
+  margin: 0 0 1rem 0;
+  line-height: 1.5 !important;
+  font-size: clamp(1rem, 0.25rem + 3.3333vw, 2rem);
+}
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 2rem 0 0.8rem;
+  font-family: var(--font-family-header);
+  font-weight: bold;
+  line-height: 1.1;
+  color: var(--color-text-main);
+}
+h1 {
+  margin-top: 1rem;
+  margin-bottom: 1.25rem;
+  font-size: clamp(2rem, -0.875rem + 8.333vw, 4rem);
+  display: inline-flex;
+  color: var(--color-primary);
+  justify-content: center;
+}
+ul > li,
+ol > li {
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+  font-size: clamp(1rem, 0.625rem + 1.6667vw, 1.5rem);
+}
+ul {
+  padding: 0 0 0 18px;
+  margin: 0;
+}
+
+/* Link styles */
+a:not(.btn--remix):link,
+a:not(.btn--remix):visited {
+  text-decoration: none;
+  border-bottom: 6px solid var(--color-primary);
+  color: var(--color-text-main);
+  transition: background 0.2s linear;
+}
+a:hover,
+a:active,
+a:focus {
+  background: var(--color-primary);
+}
+/******************************************************************************
+END Page structure and element resets
+******************************************************************************/
+
+/******************************************************************************
+START Glitch default theme
+
+You can create your own CSS file in public/styles/themes
+Select your chosen CSS by adding the theme name (e.g. glitch) in settings.json
+******************************************************************************/
+
+/* Image specified in settings.json avatarImage property */
+.avatar-container {
+  display: flex;
+  justify-content: center;
+}
+.avatar {
+  max-width: var(--avatar-max-width);
+  max-height: var(--avatar-max-width);
+  margin: 1rem 0 1.5rem;
+  border-radius: 50%;
+}
+
+/* Link list content specified in settings.json links array */
+ul.link-list {
+  margin: 0.5em 0 2.5rem;
+  padding-left: 0px;
+}
+ul.link-list li {
+  font-family: var(--font-family-list);
+  font-weight: 100;
+  list-style: none;
+  clear: both;
+  width: 100%;
+  min-width: 100%;
+  text-align: center;
+  margin: 1rem auto;
+  font-size: clamp(0.7rem, 0.325rem + 1.6667vw, 1.2rem);
+}
+ul.link-list li a {
+  min-height: 5.5em;
+  min-width: 100%;
+  display: flex;
+  align-content: center;
+  justify-content: flex-start;
+  align-items: center;
+}
+ul.link-list li a:link,
+ul.link-list li a:visited {
+  text-align: center;
+  border: 2px solid var(--color-primary);
+  padding: 1.5rem;
+  position: relative;
+}
+ul.link-list li a img {
+  z-index: 1;
+  aspect-ratio: 1 / 1;
+  height: 3em;
+  object-fit: cover;
+  overflow: hidden;
+}
+ul.link-list li a span {
+  z-index: 2;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Social media icons */
+/* Page will display all icons that have a value in settings.json social object */
+.social-icons {
+  justify-content: center;
+}
+.social-icons a:link {
+  border-bottom: none;
+  background: transparent;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 0.5rem 1.5rem;
+}
+.social-profile-icon {
+  width: 1.75rem;
+  margin-bottom: 1rem;
+  display: inline-flex;
+}
+/* Image paths specified in layout/social.html */
+.social-profile-icon path {
+  fill: var(--color-bg-alt);
+}
+.social-profile-icon:hover path,
+.social-profile-icon:focus path {
+  fill: var(--color-text-main);
+}
+
+/* Video aspect ratio helper */
+.video-wrapper__16-9 iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+.progress-bar-container {
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+.time-remaining {
+  font-style: italic;
+  font-size: 1rem;
+  align-self: right;
+}
+.output-container {
+  display: inline-flex;
+  visibility: hidden;
+}
+.loading-element {
+  padding-left: 1rem;
+  visibility: hidden;
+}
+.custom-card {
+  padding: 10px;
+}
+
+.image-card {
+  padding: 10px;
+  margin-top: 1rem;
+  background-color: #4F4F4F;
+  color: white
+}
+.training-feedback-container {
+  visibility: hidden;
+}
+
+
+fluent-button {
+  --accent-fill-rest: var(--glitch-pink);
+}
+/******************************************************************************
+END default theme
+******************************************************************************/

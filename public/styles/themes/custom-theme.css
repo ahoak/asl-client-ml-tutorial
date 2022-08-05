@@ -1,0 +1,21 @@
+/******************************************************************************
+TIP: Get started creating your own theme here
+
+- Set values for the main site variables for properties like fonts and colors
+- You can also add any style rules you like
+
+- Make sure you have `custom-theme` in settings.json theme property
+- (Update it if you changed the CSS file name)
+******************************************************************************/
+
+:root {
+  --font-family: Arial, sans-serif;
+  --font-family-header: Arial, sans-serif;
+  --font-family-list: Arial, sans-serif;
+  --color-bg: violet;
+  --color-bg-alt: aqua;
+  --color-text-main: yellow;
+  --color-primary: blue;
+}
+
+/* Add your style rules! */

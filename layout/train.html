@@ -1,0 +1,53 @@
+<div class="training-container">
+  {{#if settings.tutorialSteps}}
+  <fluent-breadcrumb>
+    {{#each settings.tutorialSteps}}
+    <fluent-breadcrumb-item id="tutorial-step{{this.step}}">
+      {{this.description}}</fluent-breadcrumb-item
+    >
+    {{/each}}
+  </fluent-breadcrumb>
+  {{/if}}
+  <p class="solution-feedback"></p>
+  <div class="training-feedback-container">
+    <fluent-card class="custom-card">
+      <p class="training-feedback"></p>
+      <div class="progress-bar-container">
+        <fluent-progress class="training-progress-bar"></fluent-progress>
+        <p class="time-remaining"></p>
+      </div>
+    </fluent-card>
+  </div>
+  <div>
+    <fluent-button class="load-data-button" appearance="accent"
+      >Load data</fluent-button
+    >
+    <fluent-button class="train-button" appearance="accent">
+      Next
+    </fluent-button>
+  </div>
+  <div class="output-container">
+    <p id="output-element"></p>
+    <div class="loading-element">
+      <fluent-progress-ring></fluent-progress-ring>
+    </div>
+  </div>
+  <div class="helper-text"></div>
+  {{#if settings.showDataVideo}}
+  <fluent-card class="image-card">
+    <div class="video-wrapper__16-9">
+      <p>Image data</p>
+      <iframe
+        width="560"
+        height="315"
+        src="https://www.youtube.com/embed/H1HGW5JpBmg"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </fluent-card>
+  {{/if}}
+</div>
+<script type="module" src="../model/index.js"></script>

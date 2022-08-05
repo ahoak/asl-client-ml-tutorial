@@ -1,0 +1,46 @@
+/******************************************************************************
+TIP: Menu theme displays your links with images from settings.json
+
+Edit / copy or create your own CSS file in public/styles/themes
+Select your chosen CSS by adding the theme name (e.g. menu) in settings.json
+******************************************************************************/
+
+:root {
+  --color-bg: var(--glitch-blue-light);
+  --color-text-main: var(--glitch-blue-light);
+}
+body {
+  background-image: url("https://cdn.glitch.me/efc5414a-882b-4708-af81-8461abbc1a82%2Fbgmenu.png?v=1634314325046");
+}
+
+ul.link-list li a {
+  display: flex;
+}
+ul.link-list li a:link,
+ul.link-list li a:visited {
+  background-color: var(--color-primary);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 1em;
+  font-weight: bold;
+  min-height: 4.5rem;
+}
+ul.link-list li a span {
+  text-align: justify;
+  line-height: 1.2em;
+  flex-grow: 1;
+  text-align: center;
+}
+ul.link-list li a:hover, ul.link-list li a:focus {
+  background-color: var(--color-bg);
+  color: white;
+}
+ul.link-list li a img {
+  border-radius: 0.2rem;
+  width: 3rem;
+  overflow: visible;
+}
+.social-profile-icon path:hover, .social-profile-icon path:focus {
+  fill: var(--color-bg);
+}

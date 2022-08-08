@@ -1,10 +1,6 @@
 import loader from "@monaco-editor/loader";
-import tfLib from '@tensorflow/tfjs/dist/index.d.ts?raw'
-
-const initMonaco = new Promise(async (resolve) => {
-  const monaco = await loader.init()
-  // monaco.languages.typescript.javascriptDefaults.addExtraLib(tfLib, 'tensorflow/tfjs/dist/index.d.ts');
-  monaco.languages.typescript.javascriptDefaults.addExtraLib(`
+const tfLibs = [{
+  declaration: `
     interface Tensor1d {
       cleanup():
     };
@@ -13,8 +9,24 @@ const initMonaco = new Promise(async (resolve) => {
       oneHot(): any;
     };
     
-    declare function extractAllJointPositions(imageSource: CanvasImageSource, loadMirrored: boolean): Promise<number[]>;
-  `, 'tf/index.d.ts');
+  `,
+  uri: `tf/index.d.ts`
+}, {
+  declaration: `
+    declare type Point3D = { x: number; y: number; z: number };
+    declare function extractAllJointPositions(imageSource: CanvasImageSource, loadMirrored: boolean): Promise<Point3D[][]>;
+  `,
+  uri: `main.d.ts`
+}]
+
+
+const initMonaco = new Promise(async (resolve) => {
+  const monaco = await loader.init()
+  // monaco.languages.typescript.javascriptDefaults.addExtraLib(tfLib, 'tensorflow/tfjs/dist/index.d.ts');
+  for (const { declaration, uri } of tfLibs) {
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(declaration, uri);
+    monaco.languages.typescript.javascriptDefaults.addExtraLib(declaration, uri);
+  }
   resolve(monaco)
 })
 
@@ -30,7 +42,7 @@ export async function loadMonaco(element) {
       ) {
         return true;
       }
-      console.log(`Not moving: `, documentLink);
+      // console.log(`Not moving: `, documentLink);
       return true;
     });
   documentLinks.forEach((documentLink) =>

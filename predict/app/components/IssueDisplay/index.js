@@ -1,8 +1,7 @@
 import template from "./template.html";
 import BaseComponent from "../BaseComponent";
-import { ERROR_SEVERITY, WARNING_SEVERITY, INFO_SEVERITY } from '../CodeEditor/constants'
 
-export class CodeEditorIssueDisplay extends BaseComponent {
+export class CodeIssueDisplayComponent extends BaseComponent {
   /**
    * The list of observed attributes
    */
@@ -63,8 +62,8 @@ export class CodeEditorIssueDisplay extends BaseComponent {
         const errorEle = document.createElement("div");
         errorEle.className = `issue-container`
         errorEle.innerHTML = `
-          <div class="issue ${this.#getSeverityClass(error.severity)}">
-            <div class="severity-display">${this.#getSeverityText(error.severity)}${locationStr}</div>
+          <div class="issue ${error.type}">
+            <div class="issue-type">${this.#getFriendlyIssueType(error.type)}${locationStr}</div>
             <div class="detail">${error.message}</div>
           </div>
         `
@@ -74,36 +73,19 @@ export class CodeEditorIssueDisplay extends BaseComponent {
   }
 
   /**
-   * Gets a classname for the given severity
-   * @param {number} severity The severity
+   * Gets a text for the given issue type
+   * @param {number} type The type
    */
-  #getSeverityClass(severity) {
-    if (severity != null) {
-      if (severity === ERROR_SEVERITY) {
-        return 'error'
-      } else if (severity === WARNING_SEVERITY) {
-        return 'warning'
-      } else if (severity === INFO_SEVERITY) {
-        return 'info'
-      } else {
-        return 'hint'
-      }
-    }
-    return ''
-  }
-
-  /**
-   * Gets a text for the given severity
-   * @param {number} severity The severity
-   */
-  #getSeverityText(severity) {
-    if (severity != null) {
-      if (severity === ERROR_SEVERITY) {
+  #getFriendlyIssueType(type) {
+    if (type != null) {
+      if (type === 'error') {
         return 'Error'
-      } else if (severity === WARNING_SEVERITY) {
+      } else if (type === 'warning') {
         return 'Warning'
-      } else if (severity === INFO_SEVERITY) {
+      } else if (type === 'info') {
         return 'Info'
+      } else if (type === 'validation') {
+        return 'Validation'
       } else {
         return 'Hint'
       }
@@ -122,4 +104,4 @@ export class CodeEditorIssueDisplay extends BaseComponent {
   }
 }
 
-customElements.define("code-editor-issue-display", CodeEditorIssueDisplay);
+customElements.define("code-issue-display", CodeIssueDisplayComponent);

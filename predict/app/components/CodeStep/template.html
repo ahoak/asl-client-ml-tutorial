@@ -36,6 +36,32 @@
     display: none;
   }
 
+  .validate-success {
+    color: green;
+    text-align: center;
+    display: none;
+  }
+
+  .validate-container {
+    font-size: 25px;
+  }
+
+  .validate-progress {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 40px;
+  }
+
+  .validate-progress .validate-label {
+    align-self: center;
+    margin-left: 10px;
+  }
+
+  .validate-progress fluent-progress-ring {
+    align-self: center;
+  }
+
   .code-editor::part(main) {
     height: 100%;
   }
@@ -49,6 +75,15 @@
     <code-editor hide-errors class="code-editor"></code-editor>
   </div>
   <div class="issue-container">
-		<code-editor-issue-display class="issue-display"></code-editor-issue-display>
+		<code-issue-display class="issue-display"></code-issue-display>
+  </div>
+  <div class="validate-container">
+    <div class="validate-progress">
+      <fluent-progress-ring class="validate-progress"></fluent-progress-ring>
+      <span class="validate-label">...Verifying Solution</span>
+    </div>
+    <div class="validate-success">
+      👍Looks Good!
+    </div>
   </div>
 </div>

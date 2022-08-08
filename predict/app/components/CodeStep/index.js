@@ -2,7 +2,7 @@ import template from "./template.html";
 import BaseComponent from "../BaseComponent";
 import '../CodeEditor'
 import '../IssueDisplay'
-import { ERROR_SEVERITY, WARNING_SEVERITY } from "../CodeEditor/constants";
+import { fastDebounce } from "../../utils/common";
 
 export class CodeStepComponent extends BaseComponent {
   /**
@@ -22,11 +22,13 @@ export class CodeStepComponent extends BaseComponent {
   #root = null;
   #model = null;
   #nameEle = null;
+  #successContainer = null;
   #issueContainer = null;
   #issueDisplay = null;
   #codeEditorEle = null;
   #connected = false;
   #syntaxIssues = null;
+  #validateProgress = null;
 
   /**
    * Listener for when the attribute changed
@@ -49,6 +51,8 @@ export class CodeStepComponent extends BaseComponent {
   async connectedCallback() {
     this.#nameEle = this.#getRoot().querySelector(".name");
     this.#codeEditorEle = this.#getRoot().querySelector(".code-editor");
+    this.#successContainer = this.#getRoot().querySelector(".validate-success");
+    this.#validateProgress = this.#getRoot().querySelector(".validate-progress");
     this.#issueContainer = this.#getRoot().querySelector(".issue-container");
     this.#issueDisplay = this.#getRoot().querySelector(".issue-display");
     this.#nameEle.innerHTML = this.getAttribute("name");
@@ -56,12 +60,16 @@ export class CodeStepComponent extends BaseComponent {
 
     const that = this
     this.#codeEditorEle.addEventListener('change', async (event) => {
-      const issues = (event.detail.issues ?? []).filter(n => n.severity >= WARNING_SEVERITY)
+      this.#issueContainer.style.display = 'none'
+      this.#validateProgress.style.display = 'flex'
+      this.#successContainer.style.display = 'none'
+
+      const issues = (event.detail.issues ?? []).filter(n => n.type === 'error' || n.type === 'warning')
       that.dispatchEvent(
         new CustomEvent("change", {
           detail: {
             ...event.detail,
-            hasSyntaxErrors: issues.filter(n => n.severity === ERROR_SEVERITY).length > 0
+            hasSyntaxErrors: issues.filter(n => n.type === 'error').length > 0
           },
         })
       );
@@ -70,8 +78,6 @@ export class CodeStepComponent extends BaseComponent {
     })
 
     this.#connected = true;
-
-    this.#render();
   }
 
   /**
@@ -84,31 +90,34 @@ export class CodeStepComponent extends BaseComponent {
   /**
    * Renders this component
    */
-  async #render(attribute, attribValue = null) {
+  #render = fastDebounce(async (attribute, attribValue = null) => {
     if (this.#connected) {
       if (!attribute || attribute === 'name') {
         attribValue = attribute ? attribValue : this.getAttribute("name")
-        if (this.#model) {
+        if (this.#model) { 
           this.#nameEle.innerHTML = attribValue;
         }
       }
       if (!attribute || attribute === 'validation-issues') {
         const issues = (this.#syntaxIssues ?? []).slice(0)
-        const syntaxErrors = issues.filter(n => n.severity >= ERROR_SEVERITY)
+        const syntaxErrors = issues.filter(n => n.type === 'error')
         
         // If we have no code errors, then try validation
         if (syntaxErrors.length === 0) {
           const validationIssues = JSON.parse(this.getAttribute('validation-issues') ?? '[]')
           issues.push(...(validationIssues ?? []).map(n => ({
-            severity: 8,
+            type: 'validation',
             message: n.detail
           })))
         }
         this.#issueContainer.style.display = issues.length > 0 ? "block" : 'none'
         this.#issueDisplay.setAttribute("issues", JSON.stringify(issues))
+
+        this.#validateProgress.style.display = 'none'
+        this.#successContainer.style.display = issues.length === 0 ? "block" : 'none'
       }
     }
-  }
+  }, 1000)
 
   /**
    * Gets the root element for the component

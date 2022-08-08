@@ -45,7 +45,6 @@ export class AppComponent extends BaseComponent {
     const model = await loadZippedModelFromGlitch("model.zip");
     this.#model = model;
     
-    const that = this;
     for (let i = 0; i < steps.length; i++) {
       const step = this.#createStep(steps[i])
       step.definition = steps[i]
@@ -62,6 +61,7 @@ export class AppComponent extends BaseComponent {
   
   #createStep(stepDef) {
     const stepEle = document.createElement('code-step')
+    stepEle.setAttribute('name', stepDef.name)
     stepEle.addEventListener('change', async (event) => {
       if (!event.detail.hasSyntaxErrors) {
         try {

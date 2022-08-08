@@ -1,22 +1,25 @@
 <style>
-	.severity-display {
+	.issue-type {
 		display: inline-block;
 		font-weight: bold;
 		vertical-align: top;
 	}
-	.issue.error .severity-display {
+	.issue.error .issue-type {
 		color: red;
 	}
-	.issue.warning .severity-display {
+	.issue.warning .issue-type {
 		color: yellow;
 	}
-	.issue.info .severity-display {
+	.issue.validation .issue-type {
+		color: darkcyan;
+	}
+	.issue.info .issue-type {
 		color: lightblue;
 	}
-	.issue.hint .severity-display {
+	.issue.hint .issue-type {
 		color: grey;
 	}
-	.severity-display::after {
+	.issue-type::after {
 		content: ':';
 	}
 	.detail {

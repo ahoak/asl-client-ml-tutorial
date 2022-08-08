@@ -24,6 +24,33 @@ export const steps = [
   {
     name: "getFlattenedJointPositions",
     template: predict.getFlattenedJointPositions,
+//     template: `
+// /**
+//  * Returns the hand joint locations in 3d space within the given _imageSource_
+//  * ** Note ** Only returns the first hand in the image
+//  * @param {CanvasImageSource} imageSource The image to detect hand joints within
+//  * @param {boolean} loadMirrored If the image should be mirrored before extracting joint positions
+//  * @returns The joint positions
+//  */
+// export async function getFlattenedJointPositions(imageSource: CanvasImageSource, loadMirrored: boolean): Promise<{
+//   jointPositionsFlat: number[],
+//   jointPositions: Point3D[]
+// }> {
+//   // solution in solutions/getFlattenedJointPositions.js
+
+//   // Uncomment the line below to extract joint positions for each hand in the imageSource
+//   // const allJointPositions = await extractAllJointPositions(imageSource, loadMirrored);
+//   // but we only need to process the first one
+
+//   return {
+//     // This should look like [x1, y1, z1, x2, y2, z2....xN, yN, zN]
+//     jointPositionsFlat: null,
+
+//     // This will look like [{ x, y, z }, { x, y, z } ... for every joint]
+//     jointPositions: null,
+//   };
+// }
+//     `.trim(),
     async validate(impl) {
       const functionName = "getFlattenedJointPositions"
       let foundComplete = false;

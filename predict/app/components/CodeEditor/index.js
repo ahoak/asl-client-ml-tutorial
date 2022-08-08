@@ -2,7 +2,12 @@ import { loadMonaco } from '../../utils/monaco'
 import template from "./template.html";
 import BaseComponent from "../BaseComponent";
 import '../IssueDisplay'
-import { WARNING_SEVERITY } from './constants';
+
+// TODO: We can probably just import that enum
+// https://microsoft.github.io/monaco-editor/api/enums/monaco.MarkerSeverity.html
+const INFO_SEVERITY = 2;
+const WARNING_SEVERITY = 4;
+const ERROR_SEVERITY = 8;
 
 export class CodeEditorComponent extends BaseComponent {
   /**
@@ -28,7 +33,6 @@ export class CodeEditorComponent extends BaseComponent {
   #issueContainerEle = null;
   #codeEditorEle = null;
   #resizeObserver = null;
-  #connected = false;
 
   /**
    * Gets whether or not errors are hidden
@@ -94,6 +98,13 @@ export class CodeEditorComponent extends BaseComponent {
       });
 	  const newMarkerKey = markers.map(n => `${n.code}:${n.severity}`).join(",")
       const newCode = this.#model.getValue()
+	  const issues = markers
+		.map(n => ({
+			type: this.#getIssueTypeFromSeverity(n.severity),
+			startLineNumber: n.startLineNumber,
+			startColumn: n.startColumn,
+			message: n.message
+		}))
 	  if (newCode !== lastCode || newMarkerKey !== lastMarkerKey) {
 		lastCode = newCode
 		lastMarkerKey = newMarkerKey
@@ -101,12 +112,14 @@ export class CodeEditorComponent extends BaseComponent {
 			new CustomEvent("change", {
 				detail: {
 					code: lastCode,
-					issues: markers,
+					issues,
 				},
 			})
 		);
 
-		const issuesToDisplay = markers.filter(n => n.severity > WARNING_SEVERITY);
+		const issuesToDisplay = issues
+			.filter(n => n.type === 'error' || n.type === 'warning');
+
 		this.#issueDisplayEle.setAttribute('issues', JSON.stringify(issuesToDisplay))
 
 		if (!this.hideErrors) {
@@ -121,15 +134,31 @@ export class CodeEditorComponent extends BaseComponent {
 		}
       }
     });
+  }
 
-    this.#connected = true;
+  /**
+   * Gets an issue type for the given severity
+   * @param {number} severity The severity
+   */
+  #getIssueTypeFromSeverity(severity) {
+    if (severity != null) {
+      if (severity === ERROR_SEVERITY) {
+        return 'error'
+      } else if (severity === WARNING_SEVERITY) {
+        return 'warning'
+      } else if (severity === INFO_SEVERITY) {
+        return 'info'
+      } else {
+        return 'hint'
+      }
+    }
+    return ''
   }
 
   /**
    * Listener for when the element is removed from the dom
    */
   async disconnectedCallback() {
-    this.#connected = false;
 	if (this.#resizeObserver) {
 		this.#resizeObserver.disconnect();
 		this.#resizeObserver = null;

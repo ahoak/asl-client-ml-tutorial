@@ -5,6 +5,7 @@ import {
   fluentSelect,
   fluentOption,
   fluentDivider,
+  fluentProgressRing,
 } from "@fluentui/web-components";
 
 provideFluentDesignSystem().register(
@@ -12,5 +13,6 @@ provideFluentDesignSystem().register(
   fluentSelect(),
   fluentOption(),
   fluentButton(),
-  fluentDivider()
+  fluentDivider(),
+  fluentProgressRing()
 );

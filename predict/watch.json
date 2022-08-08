@@ -1,0 +1,19 @@
+{
+  "install": {
+    "include": [
+      "^package\\.json$"
+    ],
+    "exclude": []
+  },
+  "restart": {
+    "include": [
+      "^backend/",
+      "^\\.glitch-assets"
+    ],
+    "exclude": [
+      "^app/",
+      "^model/"
+    ]
+  },
+  "noSavedEvents": true
+}

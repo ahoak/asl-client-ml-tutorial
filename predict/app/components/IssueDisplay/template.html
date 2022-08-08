@@ -1,0 +1,27 @@
+<style>
+	.severity-display {
+		display: inline-block;
+		font-weight: bold;
+		vertical-align: top;
+	}
+	.issue.error .severity-display {
+		color: red;
+	}
+	.issue.warning .severity-display {
+		color: yellow;
+	}
+	.issue.info .severity-display {
+		color: lightblue;
+	}
+	.issue.hint .severity-display {
+		color: grey;
+	}
+	.severity-display::after {
+		content: ':';
+	}
+	.detail {
+		display: inline-block;
+	}
+</style>
+<div class="root" part="main">
+</div>

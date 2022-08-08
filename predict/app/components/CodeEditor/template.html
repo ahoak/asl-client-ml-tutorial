@@ -1,0 +1,30 @@
+<style>
+	.root {
+		display: flex;
+		flex-direction: column;
+	}
+	.issue-display::part(main) {
+		padding: 5px;
+	}
+	.issue-container {
+		flex: 0.33;
+		overflow: hidden;
+		margin-top: 5px;
+		box-sizing: border-box;
+		border: 1px solid #ccc;
+		overflow-y: auto;
+		display: none;
+	}
+	.editor-container {
+		box-sizing: border-box;
+		flex: 1;
+		overflow: hidden;
+	}
+
+</style>
+<div class="root" part="main">
+	<div class="editor-container"></div>
+	<div class="issue-container">
+		<code-editor-issue-display class="issue-display"></code-editor-issue-display>
+	</div>
+</div>

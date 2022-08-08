@@ -1,0 +1,54 @@
+<style>
+  .predictions-output {
+    text-align: center;
+    margin: 10px;
+  }
+  
+  .root {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .start-button {
+    width: 100px;
+    align-self: center;
+  }
+  
+  .options {
+    text-align: center;
+/*     margin-top: 10px; */
+  }
+  
+  .options .model-options h4 {
+    margin-top: 0px;
+    margin-bottom: 5px;
+  }
+  .options h4 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+  fluent-divider {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .import-model-button::part(content)::before {
+    content: "<div>test</div>"
+  }
+  
+</style>
+<div class="root" part="element-root">
+  <h3 class="predictions-output">No Predictions</h3>
+  <video-stream-viewer class="video-stream-viewer"></video-stream-viewer>
+  <fluent-button class="start-button" appearance="accent">Start</fluent-button>
+  <fluent-divider></fluent-divider>
+  <div class="options">
+    <div class="datasource-options">
+      <h4>Datasource</h4>
+      <fluent-select class="datasource-select" title="Select a data source">
+        <fluent-option value="webcam">Webcam</fluent-option>
+      </fluent-select>
+    </div>
+  </div>
+</div>

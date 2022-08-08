@@ -1,0 +1,54 @@
+<style>
+  .name {
+    font-weight: 200;
+  }
+
+  .root {
+    height: 600px;
+    width: 50vw;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .detail {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-style: italic;
+    font-weight: bold;
+  }
+  .error {
+    margin-left: 20px;
+  }
+
+  .editor-container {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .issue-container {
+		flex: 0.33;
+		overflow: hidden;
+		margin-top: 5px;
+		box-sizing: border-box;
+		border: 1px solid #ccc;
+    padding: 5px;
+		overflow-y: auto;
+    display: none;
+  }
+
+  .code-editor::part(main) {
+    height: 100%;
+  }
+  .issue-display::part(main) {
+    height: 100%;
+  }
+</style>
+<div class="root">
+  <h2 class="name"></h2>
+  <div class="editor-container">
+    <code-editor hide-errors class="code-editor"></code-editor>
+  </div>
+  <div class="issue-container">
+		<code-editor-issue-display class="issue-display"></code-editor-issue-display>
+  </div>
+</div>

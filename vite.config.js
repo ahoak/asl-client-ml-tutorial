@@ -14,7 +14,7 @@ export default defineConfig(async () => {
         // eslint-disable-next-line no-undef
         partialDirectory: resolve(__dirname, 'src/layout'),
 
-        context: { ...Settings },
+        context: { settings: Settings },
         ...helpers({ handlebars }),
         ...layouts(handlebars),
         reloadOnPartialChange: true,

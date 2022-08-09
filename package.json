@@ -48,10 +48,9 @@
     }
   },
   "lint-staged": {
-    "**/*.{ts,tsx,js,jsx}": [
+    "src/**/*.{ts,tsx,js,jsx}": [
       "npm run prettify",
-      "npm run lint",
-      "git add"
+      "npm run lint"
     ]
   }
 }

@@ -1,4 +1,4 @@
-import { Logs } from '@tensorflow/tfjs';
+import type { Logs } from '@tensorflow/tfjs';
 
 export interface TensorData {
   [key: string]: number[][];

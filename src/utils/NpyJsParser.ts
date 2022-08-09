@@ -1,20 +1,22 @@
-export class npyJsParser {
-  dtypes: {
-    [key: string]: {
-      name: string;
-      size: number;
-      arrayConstructor:
-        | Uint8ArrayConstructor
-        | Uint16ArrayConstructor
-        | Int16ArrayConstructor
-        | Int8ArrayConstructor
-        | BigUint64ArrayConstructor
-        | Int32ArrayConstructor
-        | Float32ArrayConstructor
-        | BigInt64ArrayConstructor
-        | Float64ArrayConstructor;
-    };
+interface DataType {
+  [key: string]: {
+    name: string;
+    size: number;
+    arrayConstructor:
+      | Uint8ArrayConstructor
+      | Uint16ArrayConstructor
+      | Int16ArrayConstructor
+      | Int8ArrayConstructor
+      | BigUint64ArrayConstructor
+      | Int32ArrayConstructor
+      | Float32ArrayConstructor
+      | BigInt64ArrayConstructor
+      | Float64ArrayConstructor;
   };
+}
+export class npyJsParser {
+  dtypes: DataType;
+
   constructor(opts?: any) {
     if (opts) {
       console.error(
@@ -84,7 +86,21 @@ export class npyJsParser {
     };
   }
 
-  parse(arrayBufferContents) {
+  parse(arrayBufferContents: ArrayBuffer): {
+    dtype: string;
+    data:
+      | Uint8Array
+      | Uint16Array
+      | Int16Array
+      | Int8Array
+      | BigUint64Array
+      | Int32Array
+      | Float32Array
+      | BigInt64Array
+      | Float64Array;
+    shape: string;
+    fortranOrder: string;
+  } {
     // const version = arrayBufferContents.slice(6, 8); // Uint8-encoded
     const headerLength = new DataView(arrayBufferContents.slice(8, 10)).getUint8(0);
     const offsetBytes = 10 + headerLength;
@@ -98,7 +114,7 @@ export class npyJsParser {
         .replace(/'/g, '"')
         .replace('(', '[')
         .replace(/,*\),*/g, ']'),
-    );
+    ) as { shape: string; descr: keyof DataType; fortran_order: string };
     const shape = header.shape;
     const dtype = this.dtypes[header.descr];
     const nums = new dtype['arrayConstructor'](arrayBufferContents, offsetBytes);
@@ -110,7 +126,53 @@ export class npyJsParser {
     };
   }
 
-  async load(filename, callback, fetchArgs) {
+  async load(
+    filename: RequestInfo | URL,
+    callback: (arg0: {
+      dtype: string;
+      data:
+        | Uint8Array
+        | Uint16Array
+        | Int16Array
+        | Int8Array
+        | BigUint64Array
+        | Int32Array
+        | Float32Array
+        | BigInt64Array
+        | Float64Array;
+      shape: string;
+      fortranOrder: string;
+    }) => {
+      dtype: string;
+      data:
+        | Uint8Array
+        | Uint16Array
+        | Int16Array
+        | Int8Array
+        | BigUint64Array
+        | Int32Array
+        | Float32Array
+        | BigInt64Array
+        | Float64Array;
+      shape: string;
+      fortranOrder: string;
+    },
+    fetchArgs: RequestInit | undefined,
+  ): Promise<{
+    dtype: string;
+    data:
+      | Uint8Array
+      | Uint16Array
+      | Int16Array
+      | Int8Array
+      | BigUint64Array
+      | Int32Array
+      | Float32Array
+      | BigInt64Array
+      | Float64Array;
+    shape: string;
+    fortranOrder: string;
+  }> {
     /*
 			Loads an array from a stream of bytes.
 			*/

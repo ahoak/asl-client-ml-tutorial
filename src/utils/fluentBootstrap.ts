@@ -1,10 +1,10 @@
 import {
-  fluentButton,
-  fluentProgress,
-  fluentProgressRing,
-  fluentCard,
   fluentBreadcrumb,
   fluentBreadcrumbItem,
+  fluentButton,
+  fluentCard,
+  fluentProgress,
+  fluentProgressRing,
   provideFluentDesignSystem,
 } from '@fluentui/web-components';
 

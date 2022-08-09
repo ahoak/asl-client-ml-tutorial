@@ -1,19 +1,21 @@
+import '../utils/fluentBootstrap';
+
+import type { LayersModel, Logs } from '@tensorflow/tfjs';
+import * as tf from '@tensorflow/tfjs';
+
+// import { fillColor } from "@fluentui/web-components";
+import Settings from '../../settings.json';
+import type { TensorData } from '../types';
+import { loadTensorData, millisToMinutesAndSeconds } from '../utils/utils';
 import {
+  configureModel,
+  createModel,
+  encodeAndSplitData,
   // train,
   exportModel,
   setTensorFlowBackend,
-  encodeAndSplitData,
-  createModel,
-  configureModel,
   trainModel,
 } from './train.js';
-import * as tf from '@tensorflow/tfjs';
-import { millisToMinutesAndSeconds, loadTensorData } from '../utils/utils';
-// import { fillColor } from "@fluentui/web-components";
-import Settings from '../../settings.json';
-import '../utils/fluentBootstrap';
-import { TensorData } from '../types';
-import { LayersModel, Logs } from '@tensorflow/tfjs';
 
 const tutorialSteps = Settings.tutorialSteps;
 
@@ -50,19 +52,21 @@ let y_val: number[];
 //   fillColor.setValueFor(loadActionButton, "#ff7698");
 // }
 
-function highlightNavStep(step: number) {
+function highlightNavStep(step: number): void {
   const step1Element: HTMLElement | null = document.querySelector(`#tutorial-step${step}`);
-
-  step1Element ? (step1Element.style['font-weight'] = 'bold') : null;
+  if (step1Element) {
+    step1Element.style['font-weight'] = 'bold';
+  }
 }
 
-function unhighlightNavStep(step: number) {
+function unhighlightNavStep(step: number): void {
   const step1Element: HTMLElement | null = document.querySelector(`#tutorial-step${step}`);
-
-  step1Element ? (step1Element.style['font-weight'] = 'revert') : null;
+  if (step1Element) {
+    step1Element.style['font-weight'] = 'revert';
+  }
 }
 
-function setCurrentStep(stepcount: number) {
+function setCurrentStep(stepcount: number): void {
   const step = tutorialSteps.find((tutorialStep) => tutorialStep.step === stepcount);
   if (step != null) {
     currentStep = step;
@@ -123,9 +127,9 @@ function handleConfigureModel() {
       configureModel(aslModel);
       const output = aslModel.evaluate(tf.truncatedNormal([1, 63]), tf.truncatedNormal([1, 26]));
       if (output) {
-        solutionFeedbackElement
-          ? (solutionFeedbackElement.innerHTML = 'Look at you go! Great work.')
-          : undefined;
+        if (solutionFeedbackElement) {
+          solutionFeedbackElement.innerHTML = 'Look at you go! Great work.';
+        }
         setCurrentStep(currentStep.step + 1);
         actionButton.onclick = handleTrainModel;
       } else {
@@ -167,9 +171,9 @@ function handleCreateModel() {
   }
 }
 
-async function handleTrainingDataSplit() {
+function handleTrainingDataSplit() {
   if (inputData) {
-    const result = await encodeAndSplitData(inputData);
+    const result = encodeAndSplitData(inputData);
     if (result && result.length > 0) {
       [x_train, x_val, y_train, y_val] = result;
       // console.log(' [x_train,y_train,  x_val,  y_val]', [x_train, y_train, x_val, y_val]);
@@ -190,34 +194,42 @@ async function handleTrainingDataSplit() {
   }
 }
 
-function validateBackend() {
-  setTensorFlowBackend();
+async function validateBackend() {
+  await setTensorFlowBackend();
   const backendInUse = tf.getBackend();
-  const proceed = backendInUse != undefined;
   if (backendInUse) {
-    solutionFeedbackElement
-      ? (solutionFeedbackElement.innerHTML = `Nice work! You are using ${backendInUse}.`)
-      : null;
-  } else {
-    solutionFeedbackElement
-      ? (solutionFeedbackElement.innerHTML = 'Hmm no backend detected. Please check solution.')
-      : null;
-    throw new Error('no backend detected. Please check solution.');
-  }
-  if (proceed) {
+    if (solutionFeedbackElement) {
+      solutionFeedbackElement.innerHTML = `Nice work! You are using ${backendInUse}.`;
+    }
     setCurrentStep(currentStep.step + 1);
     actionButton.onclick = handleTrainingDataSplit;
+  } else {
+    if (solutionFeedbackElement) {
+      solutionFeedbackElement.innerHTML = 'Hmm no backend detected. Please check solution.';
+    }
+
+    throw new Error('no backend detected. Please check solution.');
   }
 }
 function handleBeforeDataLoadingStyles() {
-  outputContainer ? (outputContainer.style.visibility = 'visible') : null;
-  solutionFeedbackElement ? (solutionFeedbackElement.innerHTML = `Loading data...`) : null;
-  loadingElement ? (loadingElement.style.visibility = 'visible') : null;
+  if (outputContainer) {
+    outputContainer.style.visibility = 'visible';
+  }
+  if (solutionFeedbackElement) {
+    solutionFeedbackElement.innerHTML = `Loading data...`;
+  }
+  if (loadingElement) {
+    loadingElement.style.visibility = 'visible';
+  }
 }
 
 function handleAfterDataLoadingStyles() {
-  solutionFeedbackElement ? (solutionFeedbackElement.innerHTML = `Data loaded 😀`) : null;
-  loadingElement ? (loadingElement.style.visibility = 'hidden') : null;
+  if (solutionFeedbackElement) {
+    solutionFeedbackElement.innerHTML = `Data loaded 😀`;
+  }
+  if (loadingElement) {
+    loadingElement.style.visibility = 'hidden';
+  }
   actionButton.style.visibility = 'visible';
   loadActionButton.disabled = true;
   actionButton.disabled = false;
@@ -229,7 +241,9 @@ function onBatchEnd(epoch: number, batch: number, logs?: Logs) {
   if (!initTime) {
     initTime = true;
     setCurrentStep(currentStep.step + 1);
-    trainingStatusElement ? (trainingStatusElement.style.visibility = 'visible') : null;
+    if (trainingStatusElement) {
+      trainingStatusElement.style.visibility = 'visible';
+    }
   }
 
   const currentIncrement = epoch * batchSize + (batch + 1);
@@ -238,17 +252,16 @@ function onBatchEnd(epoch: number, batch: number, logs?: Logs) {
   if (progressBarElement) {
     progressBarElement.value = progressValue;
   }
-
-  trainingStatusElement
-    ? (trainingStatusElement.innerHTML = `
+  if (trainingStatusElement) {
+    trainingStatusElement.innerHTML = `
     Epoch: ${epoch} Batch: ${batch}
     <br>
-    Loss: ${logs?.loss.toFixed(3)}
+    Loss: ${logs?.loss.toFixed(3) ?? ''}
     <br>
-    Accuracy: ${logs?.acc.toFixed(3)}
+    Accuracy: ${logs?.acc.toFixed(3) ?? ''}
     <br>
-    `)
-    : null;
+    `;
+  }
 }
 
 function onEpochEnd(epoch: number) {
@@ -256,9 +269,10 @@ function onEpochEnd(epoch: number) {
   const remainingIncrements = epochs - epoch;
   const msRemaining = batchDuration * remainingIncrements;
   const [time, hasMinutes] = millisToMinutesAndSeconds(msRemaining);
-  timeElement
-    ? (timeElement.innerHTML = `${time} ${hasMinutes ? 'minutes' : 'seconds'} remaining`)
-    : null;
+  if (timeElement) {
+    timeElement.innerHTML = `${time} ${hasMinutes ? 'minutes' : 'seconds'} remaining`;
+  }
+
   startBatchTime = Date.now();
   if (epoch === epochs - 1) {
     trainingComplete = true;
@@ -277,11 +291,11 @@ async function handleDownloadModelButtonClick() {
 async function start() {
   try {
     await handleLoadDataClick();
-    validateBackend();
+    await validateBackend();
     handleTrainingDataSplit();
     handleCreateModel();
     handleConfigureModel();
-    handleTrainModel();
+    await handleTrainModel();
   } catch (err) {
     console.log(err);
   }

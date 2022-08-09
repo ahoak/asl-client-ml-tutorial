@@ -9,10 +9,12 @@
     "serve": "vite preview",
     "prepare": "husky install",
     "prettify": "prettier \"src/**/*.{ts, json, js}\" --write --config ./.prettierrc",
-    "lint": "eslint . --fix",
+    "lint": "eslint \"src/**/*.ts\" --fix",
     "precommit": "lint-staged"
   },
   "devDependencies": {
+    "@essex/eslint-config": "^20.3.5",
+    "@essex/eslint-plugin": "^20.3.8",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
     "eslint": "^8.21.0",

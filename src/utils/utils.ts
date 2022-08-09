@@ -1,14 +1,15 @@
-import { assetURL, classes } from './constants.js';
-import JSZip, { loadAsync } from 'jszip';
-import { npyJsParser } from './NpyJsParser';
-// import { TensorData } from "../types/";
 import * as tf from '@tensorflow/tfjs';
-import { TensorData } from '../types/index.js';
+import type JSZip from 'jszip';
+import { loadAsync } from 'jszip';
 
-export function millisToMinutesAndSeconds(millis: number) {
+import type { TensorData } from '../types/index.js';
+import { assetURL, classes } from './constants.js';
+import { npyJsParser } from './NpyJsParser.js';
+
+export function millisToMinutesAndSeconds(millis: number): [string, boolean] {
   const minutes: number = Math.floor(millis / 60000);
   const seconds: number = +((millis % 60000) / 1000).toFixed(0);
-  const timeString = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+  const timeString = `${minutes} : ${seconds < 10 ? '0' : ''} seconds`;
   const hasMinutes = minutes > 0;
   return [timeString, hasMinutes];
 }
@@ -32,28 +33,30 @@ async function loadTensors(zipFolder: JSZip) {
     await Promise.all(
       classes.map(async (n) => {
         const fetchedResult = await zipFolder.file(`${n}.npy`)?.async('arraybuffer');
-        const result = np.parse(fetchedResult);
-        const numItems = result.shape[0];
-        const data = [] as number[][];
-        for (let i = 0; i < numItems; i++) {
-          // x, y, z...xₙ, yₙ, zₙ for each joint
-          const joints = result.data.slice(i * numComponents, (i + 1) * numComponents);
-          const tensor = Array.from(joints as any);
-          // Also push the mirror
-          const mirror = tensor.slice(0) as number[];
-          const wristX = mirror[0] as number;
-          // Skip the wrist
-          for (let j = 1; j < numJoints; j++) {
-            // 3 for x, y, z
-            // 1 for x
-            const jointCoordIdx = j * 3;
-            const xVal = mirror[jointCoordIdx] as number;
-            // Mirror around wrist X
-            mirror[jointCoordIdx] = wristX + (wristX - xVal);
+        if (fetchedResult) {
+          const result = np.parse(fetchedResult);
+          const numItems = +result.shape[0];
+          const data = [] as number[][];
+          for (let i = 0; i < numItems; i++) {
+            // x, y, z...xₙ, yₙ, zₙ for each joint
+            const joints = result.data.slice(i * numComponents, (i + 1) * numComponents);
+            const tensor = Array.from(joints);
+            // Also push the mirror
+            const mirror = tensor.slice(0) as number[];
+            const wristX = mirror[0] as number;
+            // Skip the wrist
+            for (let j = 1; j < numJoints; j++) {
+              // 3 for x, y, z
+              // 1 for x
+              const jointCoordIdx = j * 3;
+              const xVal = mirror[jointCoordIdx] as number;
+              // Mirror around wrist X
+              mirror[jointCoordIdx] = wristX + (wristX - xVal);
+            }
+            data.push(mirror);
           }
-          data.push(mirror);
+          output[n] = data;
         }
-        output[n] = data;
       }),
     );
   }
@@ -63,25 +66,26 @@ async function loadTensors(zipFolder: JSZip) {
 
 export function trainTestSplit(
   X: number[][],
-  Y: number[],
+  Y: number[][],
   options?: {
     testSize?: number;
     randomState?: number;
   },
-) {
+): [number[][], number[][], number[], number[]] {
   const opts = options ?? {};
 
   const testSize = opts.testSize ?? 0.2;
   const randSeed = opts.randomState ?? Math.random() * Number.MAX_SAFE_INTEGER;
 
   const shuffled = [X, Y].map((n) => shuffle(n, null, randomGenerator(randSeed)));
-  const output: any = [];
+  const output: (number[] | number[][])[] = [];
   shuffled.forEach((data) => {
     const train = data.slice(0, Math.floor((1 - testSize) * data.length));
     const test = data.slice(train.length);
     output.push(train, test);
   });
-  return output;
+  const [x, xVal, y, yVal] = output as [number[][], number[][], number[], number[]];
+  return [x, xVal, y, yVal];
 }
 
 // https://towardsdatascience.com/how-to-split-a-tensorflow-dataset-into-train-validation-and-test-sets-526c8dd29438

@@ -1,8 +1,10 @@
+import type { CustomCallbackArgs, LayersModel, Logs } from '@tensorflow/tfjs';
+import * as tf from '@tensorflow/tfjs';
+import { string, Tensor } from '@tensorflow/tfjs';
+
+import type { Callbacks, TensorData } from '../types';
 import { classes } from '../utils/constants.js';
 import { getDatasetPartitions, trainTestSplit } from '../utils/utils.js';
-import * as tf from '@tensorflow/tfjs';
-import { CustomCallbackArgs, LayersModel, Logs, string, Tensor } from '@tensorflow/tfjs';
-import { Callbacks, TensorData } from '../types';
 
 /*
   Modify below to build model
@@ -13,10 +15,10 @@ import { Callbacks, TensorData } from '../types';
   Sets Tensorflow backend to use either webgl, cpu or wasm
   returns string ('webgl', 'cpu', 'wasm')
 */
-export function setTensorFlowBackend() {
+export async function setTensorFlowBackend() {
   // specify backend (not necessary, should default to webgl if available)
   const option = 'webgl' || 'cpu' || 'wasm';
-  tf.setBackend('webgl');
+  await tf.setBackend('webgl');
 }
 
 // Step 3: Use One Hot Encoding to convert letters (i.e "A", "B", "C") to binary vector
@@ -55,9 +57,9 @@ export function encodeAndSplitData(data: TensorData) {
 
 // }
 
-export function applyOneHotEncoding(data: TensorData) {
-  const X: any = [];
-  const Y: any = [];
+export function applyOneHotEncoding(data: TensorData): { X: number[][]; Y: number[][] } {
+  const X: number[][] = [];
+  const Y: number[][] = [];
 
   const oneHotClasses = classes.reduce((acc, item, i) => {
     acc[item] = Array.from({ length: classes.length }).fill(0) as number[];
@@ -78,7 +80,10 @@ export function applyOneHotEncoding(data: TensorData) {
   return { X, Y };
 }
 
-export function splitTrainingData(X: number[][], Y: number[]) {
+export function splitTrainingData(
+  X: number[][],
+  Y: number[][],
+): [number[][], number[][], number[], number[]] {
   //Split data between training and test set
   const [X_train_1, X_test_1, y_train_1, y_test] = trainTestSplit(X, Y, {
     testSize: 0.1,

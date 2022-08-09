@@ -1,10 +1,11 @@
+import handlebars from 'handlebars';
+import helpers from 'handlebars-helpers';
+import layouts from 'handlebars-layouts';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import handlebarsPlugin from 'vite-plugin-handlebars';
-import handlebars from 'handlebars';
-import layouts from 'handlebars-layouts';
-import helpers from 'handlebars-helpers';
-import Settings from './settings.json';
+
+const Settings = require('./settings.json');
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => {

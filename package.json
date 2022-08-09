@@ -9,7 +9,7 @@
     "serve": "vite preview",
     "prepare": "husky install",
     "prettify": "prettier \"src/**/*.{ts, json, js}\" --write --config ./.prettierrc",
-    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint": "eslint \"**/*.{ts,tsx,js,jsx}\" --fix",
     "precommit": "lint-staged"
   },
   "devDependencies": {

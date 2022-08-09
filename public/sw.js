@@ -6,6 +6,7 @@
 
 // Specify what we want added to the cache for offline use
 self.addEventListener("install", e => {
+
   e.waitUntil(
     // Give the cache a name
     caches.open("tutorial").then(cache => {
@@ -25,7 +26,9 @@ self.addEventListener("install", e => {
 // Network falling back to cache approach
 self.addEventListener('fetch', function(event) {
   event.respondWith(
+
     fetch(event.request).catch(function() {
+
       return caches.match(event.request);
     })
   );

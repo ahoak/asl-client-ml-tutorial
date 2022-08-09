@@ -1,5 +1,6 @@
 export class npyJsParser {
-	constructor(opts) {
+	dtypes: {[key: string]: {name: string, size: number, arrayConstructor: Uint8ArrayConstructor |Uint16ArrayConstructor | Int16ArrayConstructor | Int8ArrayConstructor|BigUint64ArrayConstructor |Int32ArrayConstructor | Float32ArrayConstructor | BigInt64ArrayConstructor | Float64ArrayConstructor}}
+	constructor(opts: any) {
 	  if (opts) {
 		console.error(
 		  [

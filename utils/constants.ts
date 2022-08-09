@@ -1,6 +1,6 @@
 
 export const assetURL = './data/alphabet_tensors.zip'
-export const classes = [
+export const classes: string[] = [
   "A",
   "B",
   "C",
@@ -32,8 +32,8 @@ export const classes = [
   // "del",
 ];
 
-export const BackendOptions = {
-  'webgl' :'webgl',
-  'cpu' : 'cpu',
-  'wasm' : 'wasm'
+export enum BackendOptions {
+  'webgl',
+  'cpu',
+  'wasm'
 } 

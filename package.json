@@ -5,13 +5,14 @@
   "main": "index.html",
   "scripts": {
     "start": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "serve": "vite preview"
   },
   "devDependencies": {
     "handlebars": "^4.7.7",
     "handlebars-helpers": "^0.10.0",
     "handlebars-layouts": "^3.1.4",
+    "typescript": "^4.7.4",
     "vite": "^3.0.4",
     "vite-plugin-handlebars": "^1.6.0",
     "vite-plugin-string": "^1.1.2"

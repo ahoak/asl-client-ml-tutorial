@@ -1,10 +1,11 @@
 import { getModelJSONForModelArtifacts } from "@tensorflow/tfjs-core/dist/io/io_utils";
 import * as tf from '@tensorflow/tfjs'
+import { WeightsManifestEntry } from "@tensorflow/tfjs-core/dist/io/types";
 
 const getModelArtifactsForJSON = tf.io.getModelArtifactsForJSON;
 const getModelArtifactsInfoForJSON = tf.io.getModelArtifactsInfoForJSON;
 const concatenateArrayBuffers = tf.io.concatenateArrayBuffers;
-const basename = function basename(path) {
+const basename = function basename(path): string {
   const SEPARATOR = "/";
   path = path.trim();
   while (path.endsWith(SEPARATOR)) {
@@ -22,9 +23,11 @@ const DEFAULT_WEIGHT_DATA_EXTENSION_NAME = '.weights.bin';
  */
 // Adapted from https://github.com/tensorflow/tfjs/blob/master/tfjs-core/src/io/browser_files.ts
 export class ArrayBufferModelLoader /*implements IOHandler */ {
-  #modelJsonFileName = null;
+  #modelJsonFileName: string | null = null;
   #files = null
-  #initPromise = null
+  #initPromise: Promise<void> | null = null
+  weightsFiles 
+  jsonFile
 
   /**
    * 
@@ -57,7 +60,7 @@ export class ArrayBufferModelLoader /*implements IOHandler */ {
         value = JSON.parse(value)
       }
       
-      if (fileName.indexOf(this.#modelJsonFileName) >= 0) {
+      if (this.#modelJsonFileName && fileName.indexOf(this.#modelJsonFileName) >= 0) {
         this.jsonFile = value;
       } else {
         this.weightsFiles.set(fileName, value);
@@ -102,9 +105,9 @@ export class ArrayBufferModelLoader /*implements IOHandler */ {
     });
   }
 
-  loadWeights(weightsManifest) {
-    const weightSpecs = [];
-    const paths = [];
+  loadWeights(weightsManifest):  Promise<[WeightsManifestEntry[], ArrayBuffer]> {
+    const weightSpecs: WeightsManifestEntry[] = [];
+    const paths: string[] = [];
     for (const entry of weightsManifest) {
       weightSpecs.push(...entry.weights);
       paths.push(...entry.paths);
@@ -125,14 +128,14 @@ export class ArrayBufferModelLoader /*implements IOHandler */ {
    * Check the compatibility between weights manifest and weight files.
    */
   checkManifestAndWeightFiles(manifest) {
-    const basenames = [];
+    const basenames: string[] = [];
     const fileNames = Array.from(this.weightsFiles.keys()).map((fileName) =>
       basename(fileName)
     );
     const pathToFile = {};
     for (const group of manifest) {
       group.paths.forEach((path) => {
-        const pathBasename = basename(path);
+        const pathBasename: string = basename(path);
         if (basenames.indexOf(pathBasename) !== -1) {
           throw new Error(
             `Duplicate file basename found in weights manifest: ` +
@@ -166,8 +169,8 @@ export class ArrayBufferModelLoader /*implements IOHandler */ {
  */
  export class ArrayBufferModelSaver /*implements IOHandler */ {
   
-  #modelJsonFileName = null;
-  #weightDataFileName = null;
+  #modelJsonFileName: string |  null = null;
+  #weightDataFileName: string | null = null;
 
   /**
    * 
@@ -207,8 +210,8 @@ export class ArrayBufferModelLoader /*implements IOHandler */ {
       return {
         modelArtifactsInfo: getModelArtifactsInfoForJSON(modelArtifacts),
         data: {
-          [this.#modelJsonFileName]: modelJSON,
-          [this.#weightDataFileName]: modelArtifacts.weightData,
+          [this.#modelJsonFileName ?? '']: modelJSON,
+          [this.#weightDataFileName ?? '']: modelArtifacts.weightData,
         }
       };
     }

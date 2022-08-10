@@ -1,12 +1,12 @@
 import {
-  fluentButton,
-  fluentProgress,
-  fluentProgressRing,
-  fluentCard,
   fluentBreadcrumb,
   fluentBreadcrumbItem,
+  fluentButton,
+  fluentCard,
+  fluentProgress,
+  fluentProgressRing,
   provideFluentDesignSystem,
-} from "@fluentui/web-components";
+} from '@fluentui/web-components';
 
 provideFluentDesignSystem().register(
   fluentButton(),
@@ -18,6 +18,6 @@ provideFluentDesignSystem().register(
   fluentCard(),
   fluentBreadcrumb(),
   fluentBreadcrumbItem({
-    separator: " -> ",
-  })
+    separator: ' -> ',
+  }),
 );

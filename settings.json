@@ -2,7 +2,8 @@
   "metaTitle": "ASL Fingerspelling Model Tutorial",
   "metaDescription": "Train ASL Fingerspelling ML Model using Tensorflowjs",
   "name": "ASL Fingerspelling Model Tutorial 👋",
-  "theme": "glitch",
+  "test": "123455",
+  "theme": "",
   "avatarImage": "",
   "social": {
     "glitch": "https://glitch.com/",

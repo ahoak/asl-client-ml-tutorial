@@ -2,19 +2,33 @@
   "name": "asl-fingerspelling-tutorial",
   "version": "0.0.1",
   "description": "asl fingerspelling client ml tutorial",
-  "main": "index.html",
   "scripts": {
     "start": "vite",
-    "build": "vite build",
-    "serve": "vite preview"
+    "build": "tsc && vite build",
+    "serve": "vite preview",
+    "prepare": "husky install",
+    "prettify": "prettier \"src/**/*.{ts, json, js}\" --write --config ./.prettierrc",
+    "lint": "eslint \"src/**/*.{ts,tsx,js,jsx}\" --fix",
+    "precommit": "lint-staged"
   },
   "devDependencies": {
+    "@essex/eslint-config": "^20.3.5",
+    "@essex/eslint-plugin": "^20.3.8",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
+    "eslint": "^8.21.0",
     "handlebars": "^4.7.7",
     "handlebars-helpers": "^0.10.0",
     "handlebars-layouts": "^3.1.4",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4",
     "vite": "^3.0.4",
     "vite-plugin-handlebars": "^1.6.0",
-    "vite-plugin-string": "^1.1.2"
+    "vite-plugin-mpa": "^1.1.4",
+    "vite-plugin-string": "^1.1.2",
+    "vite-plugin-virtual-html": "^0.2.10"
   },
   "browserslist": [
     ">0.2%",
@@ -30,5 +44,16 @@
     "@tensorflow/tfjs-core": "^3.19.0",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx,js,jsx}": [
+      "npm run prettify",
+      "npm run lint"
+    ]
   }
 }

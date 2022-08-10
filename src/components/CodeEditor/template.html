@@ -1,0 +1,34 @@
+<style>
+	.root {
+		all: initial;
+		display: flex;
+		flex-direction: column;
+		min-width: 200px;
+		min-height: 100px;
+	}
+	.issue-display::part(main) {
+		padding: 5px;
+	}
+	.issue-container {
+		flex: 0.33;
+		overflow: hidden;
+		margin-top: 5px;
+		box-sizing: border-box;
+		border: 1px solid #ccc;
+		overflow-y: auto;
+		display: none;
+	}
+	.editor-container {
+		box-sizing: border-box;
+		flex: 1;
+		overflow: hidden;
+	}
+
+</style>
+<!-- <link rel="stylesheet" type="text/css" data-name="vs/editor/editor.main" href="https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs/editor/editor.main.css"> -->
+<div class="root" part="main">
+	<div class="editor-container"></div>
+	<div class="issue-container">
+		<code-issue-display class="issue-display"></code-issue-display>
+	</div>
+</div>

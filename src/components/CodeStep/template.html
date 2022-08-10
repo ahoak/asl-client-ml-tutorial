@@ -4,6 +4,7 @@
   }
 
   .root {
+    all: initial;
     height: 600px;
     width: 50vw;
     display: flex;
@@ -34,6 +35,7 @@
     padding: 5px;
 		overflow-y: auto;
     display: none;
+    background-color: lightcyan;
   }
 
   .validate-success {
@@ -73,7 +75,7 @@
 <div class="root">
   <h2 class="name"></h2>
   <div class="editor-container">
-    <code-editor hide-errors class="code-editor"></code-editor>
+    <code-editor hide-issues class="code-editor"></code-editor>
   </div>
   <div class="issue-container">
 		<code-issue-display class="issue-display"></code-issue-display>

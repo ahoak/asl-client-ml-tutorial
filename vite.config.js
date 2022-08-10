@@ -1,6 +1,3 @@
-// import handlebars from 'handlebars';
-// import helpers from 'handlebars-helpers';
-// import layouts from 'handlebars-layouts';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import handlebarsPlugin from 'vite-plugin-handlebars';

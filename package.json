@@ -17,18 +17,13 @@
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
     "eslint": "^8.21.0",
-    "handlebars": "^4.7.7",
-    "handlebars-helpers": "^0.10.0",
-    "handlebars-layouts": "^3.1.4",
     "husky": "^8.0.0",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
     "typescript": "^4.7.4",
     "vite": "^3.0.4",
     "vite-plugin-handlebars": "^1.6.0",
-    "vite-plugin-mpa": "^1.1.4",
-    "vite-plugin-string": "^1.1.2",
-    "vite-plugin-virtual-html": "^0.2.10"
+    "vite-plugin-mpa": "^1.1.4"
   },
   "browserslist": [
     ">0.2%",

@@ -16,6 +16,7 @@
         "@typescript-eslint/explicit-function-return-type": "off",
 		"@typescript-eslint/no-explicit-any": "off",
         "no-restricted-globals": ["error", "event", "fdescribe"],
-        "header/header" : 0
+        "header/header" : 0,
+        "@essex/extensions": 0
     }
 }

@@ -1,0 +1,30 @@
+<style>
+	.issue-type {
+		display: inline-block;
+		font-weight: bold;
+		vertical-align: top;
+	}
+	.issue.error .issue-type {
+		color: red;
+	}
+	.issue.warning .issue-type {
+		color: yellow;
+	}
+	.issue.validation .issue-type {
+		color: darkcyan;
+	}
+	.issue.info .issue-type {
+		color: lightblue;
+	}
+	.issue.hint .issue-type {
+		color: grey;
+	}
+	.issue-type::after {
+		content: ':';
+	}
+	.detail {
+		display: inline-block;
+	}
+</style>
+<div class="root" part="main">
+</div>

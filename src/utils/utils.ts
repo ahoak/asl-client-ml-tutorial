@@ -139,7 +139,7 @@ function shuffle(items: number[][] | number[], seed = null, rand: () => number) 
   rand = rand ?? randomGenerator(seed);
   const copy = items.slice(0);
   for (let i = 0; i < copy.length; i++) {
-    const idx1 = i == 0 ? 0 : Math.floor(rand() * copy.length);
+    const idx1 = i === 0 ? 0 : Math.floor(rand() * copy.length);
     const idx2 = Math.floor(rand() * copy.length);
     const oldItem = copy[idx1];
     copy[idx1] = copy[idx2];
@@ -174,6 +174,45 @@ function sfc32(a: number, b: number, c: number, d: number) {
     c = (c + t) | 0;
     return (t >>> 0) / 4294967296;
   };
+}
+
+/*!
+ * Copyright (c) Microsoft. All rights reserved.
+ * Licensed under the MIT license. See LICENSE file in the project.
+ */
+export function fastDebounce<T extends (...args: any[]) => any>(callback: T, delay = 100): T {
+  let lastUpdate = 0;
+  let startLoop = true;
+  let lastArgs: IArguments | null = null;
+  let lastThis: any = null;
+
+  function loop() {
+    const timeSinceLastUpdate = Date.now() - lastUpdate;
+    if (timeSinceLastUpdate < delay) {
+      // Set timeout for the remaining time
+      setTimeout(loop, delay - timeSinceLastUpdate);
+    } else {
+      startLoop = true;
+      if (lastArgs != null && lastArgs.length > 0) {
+        callback.apply(lastThis, Array.prototype.slice.call(lastArgs));
+      } else {
+        callback.call(lastThis);
+      }
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return function (this: any) {
+    // eslint-disable-next-line prefer-rest-params
+    lastArgs = arguments;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-this-alias
+    lastThis = this;
+    lastUpdate = Date.now();
+    if (startLoop) {
+      startLoop = false;
+      loop();
+    }
+  } as any;
 }
 
 // function shuffleTest() {

@@ -2,14 +2,13 @@
   "name": "asl-fingerspelling-tutorial",
   "version": "0.0.1",
   "description": "asl fingerspelling client ml tutorial",
-  "main": "index.html",
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
     "prepare": "husky install",
     "prettify": "prettier \"src/**/*.{ts, json, js}\" --write --config ./.prettierrc",
-    "lint": "eslint \"**/*.{ts,tsx,js,jsx}\" --fix",
+    "lint": "eslint \"src/**/*.{ts,tsx,js,jsx}\" --fix",
     "precommit": "lint-staged"
   },
   "devDependencies": {
@@ -27,7 +26,9 @@
     "typescript": "^4.7.4",
     "vite": "^3.0.4",
     "vite-plugin-handlebars": "^1.6.0",
-    "vite-plugin-string": "^1.1.2"
+    "vite-plugin-mpa": "^1.1.4",
+    "vite-plugin-string": "^1.1.2",
+    "vite-plugin-virtual-html": "^0.2.10"
   },
   "browserslist": [
     ">0.2%",
@@ -50,7 +51,7 @@
     }
   },
   "lint-staged": {
-    "**/*.{ts,tsx,js,jsx}": [
+    "src/**/*.{ts,tsx,js,jsx}": [
       "npm run prettify",
       "npm run lint"
     ]

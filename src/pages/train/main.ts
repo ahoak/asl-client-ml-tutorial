@@ -1,12 +1,12 @@
-import '../utils/fluentBootstrap';
+import '../../utils/fluentBootstrap';
 
 import type { LayersModel, Logs } from '@tensorflow/tfjs';
 import * as tf from '@tensorflow/tfjs';
 
 // import { fillColor } from "@fluentui/web-components";
-import Settings from '../../settings.json';
-import type { TensorData } from '../types';
-import { loadTensorData, millisToMinutesAndSeconds } from '../utils/utils';
+import Settings from '../../../settings.json';
+import type { TensorData } from '../../types';
+import { loadTensorData, millisToMinutesAndSeconds } from '../../utils/utils';
 import {
   configureModel,
   createModel,
@@ -43,9 +43,9 @@ if (actionButton) {
 
 const loadActionButton = document.querySelector('.load-data-button') as HTMLButtonElement;
 let x_train: number[][];
-let y_train: number[];
+let y_train: number[][];
 let x_val: number[][];
-let y_val: number[];
+let y_val: number[][];
 
 // if(actionButton && loadActionButton) {
 //   fillColor.setValueFor(actionButton, "#ff7698");
@@ -55,14 +55,14 @@ let y_val: number[];
 function highlightNavStep(step: number): void {
   const step1Element: HTMLElement | null = document.querySelector(`#tutorial-step${step}`);
   if (step1Element) {
-    step1Element.style['font-weight'] = 'bold';
+    step1Element.style.fontWeight = 'bold';
   }
 }
 
 function unhighlightNavStep(step: number): void {
   const step1Element: HTMLElement | null = document.querySelector(`#tutorial-step${step}`);
   if (step1Element) {
-    step1Element.style['font-weight'] = 'revert';
+    step1Element.style.fontWeight = 'revert';
   }
 }
 
@@ -288,18 +288,18 @@ async function handleDownloadModelButtonClick() {
   }
 }
 
-async function start() {
-  try {
-    await handleLoadDataClick();
-    await validateBackend();
-    handleTrainingDataSplit();
-    handleCreateModel();
-    handleConfigureModel();
-    await handleTrainModel();
-  } catch (err) {
-    console.log(err);
-  }
-}
+// async function start() {
+//   try {
+//     await handleLoadDataClick();
+//     await validateBackend();
+//     handleTrainingDataSplit();
+//     handleCreateModel();
+//     handleConfigureModel();
+//     await handleTrainModel();
+//   } catch (err) {
+//     console.log(err);
+//   }
+// }
 
 // start()
 

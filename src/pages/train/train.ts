@@ -1,10 +1,9 @@
 import type { CustomCallbackArgs, LayersModel, Logs } from '@tensorflow/tfjs';
 import * as tf from '@tensorflow/tfjs';
-import { string, Tensor } from '@tensorflow/tfjs';
 
-import type { Callbacks, TensorData } from '../types';
-import { classes } from '../utils/constants.js';
-import { getDatasetPartitions, trainTestSplit } from '../utils/utils.js';
+import type { Callbacks, TensorData } from '../../types';
+import { classes } from '../../utils/constants.js';
+import { trainTestSplit } from '../../utils/utils.js';
 
 /*
   Modify below to build model
@@ -17,7 +16,7 @@ import { getDatasetPartitions, trainTestSplit } from '../utils/utils.js';
 */
 export async function setTensorFlowBackend() {
   // specify backend (not necessary, should default to webgl if available)
-  const option = 'webgl' || 'cpu' || 'wasm';
+  //   const option = 'webgl' || 'cpu' || 'wasm';
   await tf.setBackend('webgl');
 }
 
@@ -83,9 +82,9 @@ export function applyOneHotEncoding(data: TensorData): { X: number[][]; Y: numbe
 export function splitTrainingData(
   X: number[][],
   Y: number[][],
-): [number[][], number[][], number[], number[]] {
+): [number[][], number[][], number[][], number[][]] {
   //Split data between training and test set
-  const [X_train_1, X_test_1, y_train_1, y_test] = trainTestSplit(X, Y, {
+  const [X_train_1, , y_train_1] = trainTestSplit(X, Y, {
     testSize: 0.1,
     randomState: 42,
   });
@@ -94,6 +93,7 @@ export function splitTrainingData(
     testSize: 0.1,
     randomState: 42,
   });
+  console.log('[X_train, X_val, y_train, y_val]', [X_train, X_val, y_train, y_val]);
   return [X_train, X_val, y_train, y_val];
 }
 
@@ -144,8 +144,8 @@ export async function trainModel(
   model: LayersModel,
   X_train: number[][],
   X_val: number[][],
-  y_train: number[],
-  y_val: number[],
+  y_train: number[][],
+  y_val: number[][],
   numEpochs: number,
   cbs: Callbacks,
 ) {
@@ -174,7 +174,7 @@ export async function trainModel(
 
 export async function exportModel(model: LayersModel) {
   // checkout https://www.tensorflow.org/js/guide/save_load
-  const savedModel = await model.save('localstorage://model');
+  await model.save('localstorage://model');
   // model.save(new ArrayBufferModelSaver())
   // console.log('saving to localstorage');
   // const files = ["tensorflowjs_models/model/weight_data", "tensorflowjs_models/model/weight_specs", "tensorflowjs_models/model/model_topology"]

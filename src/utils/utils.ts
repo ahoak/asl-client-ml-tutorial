@@ -39,7 +39,10 @@ async function loadTensors(zipFolder: JSZip) {
           const data = [] as number[][];
           for (let i = 0; i < numItems; i++) {
             // x, y, z...xₙ, yₙ, zₙ for each joint
-            const joints = result.data.slice(i * numComponents, (i + 1) * numComponents);
+            const joints = result.data.slice(
+              i * numComponents,
+              (i + 1) * numComponents,
+            ) as unknown as number[];
             const tensor = Array.from(joints);
             // Also push the mirror
             const mirror = tensor.slice(0) as number[];
@@ -71,7 +74,7 @@ export function trainTestSplit(
     testSize?: number;
     randomState?: number;
   },
-): [number[][], number[][], number[], number[]] {
+): [number[][], number[][], number[][], number[][]] {
   const opts = options ?? {};
 
   const testSize = opts.testSize ?? 0.2;
@@ -84,7 +87,7 @@ export function trainTestSplit(
     const test = data.slice(train.length);
     output.push(train, test);
   });
-  const [x, xVal, y, yVal] = output as [number[][], number[][], number[], number[]];
+  const [x, xVal, y, yVal] = output as [number[][], number[][], number[][], number[][]];
   return [x, xVal, y, yVal];
 }
 
@@ -173,32 +176,32 @@ function sfc32(a: number, b: number, c: number, d: number) {
   };
 }
 
-function shuffleTest() {
-  // const counts = classes.reduce((acc, item) => {
-  //   acc[item] = 0;
-  //   return acc;
-  // }, {});
-  // for (let i = 0; i < 1000000; i++) {
-  //   const shuffled = shuffle(classes);
-  //   const item = shuffled[0];
-  //   counts[item] = (counts[item] || 0) + 1;
-  // }
-  // let max = null;
-  // classes.forEach((item) => {
-  //   if (max == null || counts[item] > counts[max]) {
-  //     max = item;
-  //   }
-  // });
-  // const normalizedCounts = classes.reduce((acc, item) => {
-  //   acc[item] = counts[item] / counts[max];
-  //   return acc;
-  // }, {});
-  // const numSegments = 50;
-  // classes.forEach((item) => {
-  //   console.log(
-  //     `${item} -> ${Array.from({
-  //       length: Math.floor(numSegments * normalizedCounts[item]),
-  //     }).join("█")}`
-  //   );
-  // });
-}
+// function shuffleTest() {
+// const counts = classes.reduce((acc, item) => {
+//   acc[item] = 0;
+//   return acc;
+// }, {});
+// for (let i = 0; i < 1000000; i++) {
+//   const shuffled = shuffle(classes);
+//   const item = shuffled[0];
+//   counts[item] = (counts[item] || 0) + 1;
+// }
+// let max = null;
+// classes.forEach((item) => {
+//   if (max == null || counts[item] > counts[max]) {
+//     max = item;
+//   }
+// });
+// const normalizedCounts = classes.reduce((acc, item) => {
+//   acc[item] = counts[item] / counts[max];
+//   return acc;
+// }, {});
+// const numSegments = 50;
+// classes.forEach((item) => {
+//   console.log(
+//     `${item} -> ${Array.from({
+//       length: Math.floor(numSegments * normalizedCounts[item]),
+//     }).join("█")}`
+//   );
+// });
+// }

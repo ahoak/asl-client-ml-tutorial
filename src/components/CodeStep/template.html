@@ -1,0 +1,90 @@
+<style>
+  .name {
+    font-weight: 200;
+  }
+
+  .root {
+    height: 600px;
+    width: 50vw;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .detail {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-style: italic;
+    font-weight: bold;
+  }
+  .error {
+    margin-left: 20px;
+  }
+
+  .editor-container {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .issue-container {
+		flex: 0.33;
+		overflow: hidden;
+		margin-top: 5px;
+		box-sizing: border-box;
+		border: 1px solid #ccc;
+    padding: 5px;
+		overflow-y: auto;
+    display: none;
+  }
+
+  .validate-success {
+    color: green;
+    text-align: center;
+    display: none;
+  }
+
+  .validate-container {
+    font-size: 25px;
+    display: none;
+  }
+
+  .validate-progress {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 40px;
+  }
+
+  .validate-progress .validate-label {
+    align-self: center;
+    margin-left: 10px;
+  }
+
+  .validate-progress fluent-progress-ring {
+    align-self: center;
+  }
+
+  .code-editor::part(main) {
+    height: 100%;
+  }
+  .issue-display::part(main) {
+    height: 100%;
+  }
+</style>
+<div class="root">
+  <h2 class="name"></h2>
+  <div class="editor-container">
+    <code-editor hide-errors class="code-editor"></code-editor>
+  </div>
+  <div class="issue-container">
+		<code-issue-display class="issue-display"></code-issue-display>
+  </div>
+  <div class="validate-container">
+    <div class="validate-progress">
+      <fluent-progress-ring class="validate-progress"></fluent-progress-ring>
+      <span class="validate-label">...Verifying Solution</span>
+    </div>
+    <div class="validate-success">
+      👍Looks Good!
+    </div>
+  </div>
+</div>

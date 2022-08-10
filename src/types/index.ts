@@ -8,3 +8,24 @@ export interface Callbacks {
   onBatchEnd: (epoch: number, batch: number, logs?: Logs) => void;
   onEpochEnd: (epoch: number) => void;
 }
+
+export interface SocialLinks {
+  [key: string]: string;
+}
+
+export interface TrainTutorialSteps {
+  step: number;
+  description: string;
+  helperText: string;
+}
+
+export interface ProjectSettings {
+  metaTitle: string;
+  metaDescription: string;
+  name: string;
+  theme: string;
+  avatarImage: string;
+  social: SocialLinks;
+  showDataVideo: boolean;
+  trainTutorialSteps: TrainTutorialSteps[];
+}

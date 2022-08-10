@@ -205,3 +205,21 @@ function sfc32(a: number, b: number, c: number, d: number) {
 //   );
 // });
 // }
+
+export function getOrCreateElement(query: string, type?: keyof HTMLElementTagNameMap): Element {
+  const tag = type ?? 'div';
+  let element = document.querySelector(query);
+  if (!element) {
+    element = document.createElement(tag);
+    const regexId = /#/g;
+    const regexClass = /\./g;
+    const isId = regexId.exec(query);
+    const isClass = regexClass.exec(query);
+    if (isId) {
+      element.id = query.replace('#', '');
+    } else if (isClass) {
+      element.className = query.replace('.', '');
+    }
+  }
+  return element;
+}

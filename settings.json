@@ -2,7 +2,6 @@
   "metaTitle": "ASL Fingerspelling Model Tutorial",
   "metaDescription": "Train ASL Fingerspelling ML Model using Tensorflowjs",
   "name": "ASL Fingerspelling Model Tutorial 👋",
-  "test": "123455",
   "theme": "",
   "avatarImage": "",
   "social": {
@@ -11,7 +10,7 @@
     "twitter": "https://twitter.com/glitch"
   },
   "showDataVideo": false,
-  "tutorialSteps": [
+  "trainTutorialSteps": [
     {
       "step": 1,
       "description": "Load Data",
@@ -48,4 +47,4 @@
       "helperText": "Click the button to download your shiney new model. We will use this in our webapp."
     }
   ]
-}
+} 

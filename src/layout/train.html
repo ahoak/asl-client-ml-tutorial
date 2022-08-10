@@ -1,10 +1,9 @@
 <div class="training-container">
-  {{#if settings.tutorialSteps}}
+  {{#if settings.trainTutorialSteps}}
   <fluent-breadcrumb>
-    {{#each settings.tutorialSteps}}
+    {{#each settings.trainTutorialSteps}}
     <fluent-breadcrumb-item id="tutorial-step{{this.step}}">
-      {{this.description}}</fluent-breadcrumb-item
-    >
+      {{this.description}}</fluent-breadcrumb-item>
     {{/each}}
   </fluent-breadcrumb>
   {{/if}}
@@ -19,9 +18,7 @@
     </fluent-card>
   </div>
   <div>
-    <fluent-button class="load-data-button" appearance="accent"
-      >Load data</fluent-button
-    >
+    <fluent-button class="load-data-button" appearance="accent">Load data</fluent-button>
     <fluent-button class="train-button" appearance="accent">
       Next
     </fluent-button>
@@ -37,17 +34,11 @@
   <fluent-card class="image-card">
     <div class="video-wrapper__16-9">
       <p>Image data</p>
-      <iframe
-        width="560"
-        height="315"
-        src="https://www.youtube.com/embed/H1HGW5JpBmg"
-        title="YouTube video player"
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/H1HGW5JpBmg" title="YouTube video player"
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture;"
-        allowfullscreen
-      ></iframe>
+        allowfullscreen></iframe>
     </div>
   </fluent-card>
   {{/if}}
 </div>
-

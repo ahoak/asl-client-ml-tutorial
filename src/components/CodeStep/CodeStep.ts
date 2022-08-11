@@ -147,7 +147,7 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
 
       const hasIssues = this.#syntaxIssues.length > 0 || this.#validationIssues.length > 0;
       this.#issueContainer!.style.display = hasIssues ? 'block' : 'none';
-      this.#successContainer!.style.display = this.#hasCodeChanged && !hasIssues ? 'block' : 'none';
+      this.#successContainer!.style.display = !hasIssues ? 'block' : 'none';
     }
   }
 

@@ -7,11 +7,11 @@ export const template = `
  * @param {string[]} classes The list of classes this model can predict
  * @param {Record<StepNames, Function>} helpers The helpers that were created
  */
-export async function predict(
+async function predict(
   model,
   imageSource,
-  loadMirrored = false,
-  classes = defaultModelClasses
+  loadMirrored,
+  classes
 ) {
   const jointPositionsResult = await getFlattenedJointPositions(
     imageSource,
@@ -57,11 +57,11 @@ export const solution = `
  * @param {string[]} classes The list of classes this model can predict
  * @param {Record<StepNames, Function>} helpers The helpers that were created
  */
-export async function predict(
+async function predict(
   model,
   imageSource,
-  loadMirrored = false,
-  classes = defaultModelClasses
+  loadMirrored,
+  classes
 ) {
   const jointPositionsResult = await getFlattenedJointPositions(
     imageSource,

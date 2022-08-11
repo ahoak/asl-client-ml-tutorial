@@ -15,6 +15,9 @@ const tfLibs = [
     declaration: `
       declare type Point3D = { x: number; y: number; z: number };
       declare function extractAllJointPositions(imageSource: CanvasImageSource, loadMirrored: boolean): Promise<Point3D[][]>;
+      declare const defaultModelClasses: string[];
+      declare function argMax(values: number[]): number;
+      declare function normalize(values: number[]): number[];
     `,
     uri: `main.d.ts`,
   },

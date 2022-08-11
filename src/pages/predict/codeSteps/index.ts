@@ -1,3 +1,4 @@
+import type { ValidationResult } from '../../../types';
 import * as cleanup from './cleanup';
 import * as getFlattenedJointPositions from './getFlattenedJointPositions';
 import * as normalizeTensor from './normalizeTensor';
@@ -8,6 +9,7 @@ export const codeSteps: Record<
   string,
   {
     template: string;
+    validate?: (impl: (...args: any[]) => any) => Promise<ValidationResult>;
   }
 > = {
   getFlattenedJointPositions,

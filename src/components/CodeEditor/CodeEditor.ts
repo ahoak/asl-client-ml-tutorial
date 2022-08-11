@@ -94,7 +94,7 @@ export class CodeEditorComponent extends BaseComponent {
   }
 
   /**
-   * Listener for when the element is initialized
+   * @inheritDoc
    */
   async connectedCallback() {
     this.#issueDisplayEle = this.#getRoot().querySelector('.issue-display');

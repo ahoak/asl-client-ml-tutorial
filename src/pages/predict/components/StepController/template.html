@@ -1,0 +1,16 @@
+<style>
+	.contents slot::slotted(*[step]) {
+		display: none;
+	}
+	.contents slot::slotted(.active-step) {
+		display: unset;
+	}
+</style>
+<div class="root" part="main">
+	<div class="header" part="header">
+		<slot name="header"></slot>
+	</div>
+	<div class="contents" part="contents">
+		<slot></slot>
+	</div>
+</div>

@@ -6,6 +6,11 @@ import type { CodeIssueDisplayComponent } from '../IssueDisplay';
 import template from './template.html';
 import type { RawValidationIssue } from './types';
 
+export type CodeStepChangeEventArgs = CodeEditorChangeEventArgs & {
+  hasSyntaxErrors: boolean;
+};
+export type CodeStepChangeEvent = CustomEvent<CodeStepChangeEventArgs>;
+
 const attributes = ['name', 'code', 'validation-issues', 'syntax-issues', 'validating'] as const;
 export class CodeStepComponent extends BaseComponent<typeof attributes[number]> {
   /**

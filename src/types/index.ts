@@ -17,6 +17,7 @@ export interface TrainTutorialSteps {
   step: number;
   description: string;
   helperText: string;
+  codeBlock?: string;
 }
 
 export interface ProjectSettings {
@@ -28,4 +29,19 @@ export interface ProjectSettings {
   social: SocialLinks;
   showDataVideo: boolean;
   trainTutorialSteps: TrainTutorialSteps[];
+}
+
+export type ValidationResult = {
+  valid: boolean;
+  errors: ValidationError[];
+};
+
+export type ValidationError = {
+  type: ValidationErrorType;
+  detail: string;
+};
+
+export enum ValidationErrorType {
+  IncompleteImplementation,
+  Unknown,
 }

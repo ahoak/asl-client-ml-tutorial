@@ -26,7 +26,14 @@ export async function setTensorFlowBackend() {
   Encodes data useing one hot encoding and splits data into training and test set
   returns array of values [X_train, X_val, y_train, y_val];
 */
-export function encodeAndSplitData(data: TensorData) {
+export function encodeAndSplitData(
+  data: TensorData,
+  applyOneHotEncoding: (data: TensorData) => { X: number[][]; Y: number[][] },
+  splitTrainingData: (
+    X: number[][],
+    Y: number[][],
+  ) => [number[][], number[][], number[][], number[][]],
+) {
   // apply one-hot encoding function below
   const { X, Y } = applyOneHotEncoding(data);
   // take the results from one-hot encoding and split data
@@ -97,7 +104,7 @@ export function splitTrainingData(
 }
 
 // https://js.tensorflow.org/api/latest/#tf.LayersModel.compile
-export function configureModel(model: LayersModel) {
+export function configureModel(model: LayersModel): void {
   // Compile the model with the defined optimizer and specify a loss function to use.
   model.compile({
     // Adam changes the learning rate over time which is useful.
@@ -138,7 +145,7 @@ export function getCallbacks(epoch: number, opts?: Callbacks): CustomCallbackArg
   }
   return { onBatchEnd, onEpochEnd };
 }
-// TODO: Type for model
+
 export async function trainModel(
   model: LayersModel,
   X_train: number[][],
@@ -147,7 +154,7 @@ export async function trainModel(
   y_val: number[][],
   numEpochs: number,
   cbs: Callbacks,
-) {
+): Promise<void> {
   const epoch = 0;
   const callbacks = getCallbacks(epoch, cbs);
 
@@ -171,12 +178,7 @@ export async function trainModel(
   yValidateTensor.dispose();
 }
 
-export async function exportModel(model: LayersModel) {
+export async function exportModel(model: LayersModel): Promise<void> {
   // checkout https://www.tensorflow.org/js/guide/save_load
   await model.save('localstorage://model');
-  // model.save(new ArrayBufferModelSaver())
-  // console.log('saving to localstorage');
-  // const files = ["tensorflowjs_models/model/weight_data", "tensorflowjs_models/model/weight_specs", "tensorflowjs_models/model/model_topology"]
 }
-
-//https://js.tensorflow.org/api/latest/#data.webcam

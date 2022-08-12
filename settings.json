@@ -19,27 +19,27 @@
     {
       "step": 2,
       "description": "Set TF Backend",
-      "helperText": "Open train.js file (located at model/train.js) and edit function `setTensorFlowBackend()` (line 45) so that we set tensorflow backend to use webGL (or WASM or CPU)."
+      "helperText": "edit function `setTensorFlowBackend()` (line 45) so that we set tensorflow backend to use webGL (or WASM or CPU)."
     },
     {
       "step": 3,
       "description": "Encode and Split Data",
-      "helperText": "In train.js, edit function `encodeAndSplitData()` (line 57) and use pre-built functions to encode data using one-hot encoder and then split data into training and test set."
+      "helperText": " use pre-built functions to encode data using one-hot encoder and then split data into training and test set."
     },
     {
       "step": 4,
       "description": "Create Model",
-      "helperText": "In train.js, edit function createModel() (line 111) by creating a feed-forward model. We will use 5 layers with relu activation function. Function must return the model."
+      "helperText": "creating a feed-forward model. We will use 5 layers with relu activation function. Function must return the model."
     },
     {
       "step": 5,
       "description": "Configure Model",
-      "helperText": "In train.js, edit function configureModel() (line 126) by using the Tf.compile API. We will use an adam optimizer, and add correct loss function."
+      "helperText": "edit function configureModel() (line 126) by using the Tf.compile API. We will use an adam optimizer, and add correct loss function."
     },
     {
       "step": 6,
       "description": "Train Model",
-      "helperText": "In train.js, edit function trainModel() (line 156) by using the Tf.fit API. Set the following parameters: epochs, batchSize,validationData, callbacks. Hint, you may need to transform your data into tensors "
+      "helperText": " edit function trainModel() (line 156) by using the Tf.fit API. Set the following parameters: epochs, batchSize,validationData, callbacks. Hint, you may need to transform your data into tensors "
     },
       {
       "step": 7,

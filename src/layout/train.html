@@ -18,7 +18,7 @@
     </fluent-card>
   </div>
   <div>
-    <fluent-button class="load-data-button" appearance="accent">Load data</fluent-button>
+    <fluent-button class="load-data-button" appearance="accent" step="1">Load data</fluent-button>
     <fluent-button class="train-button" appearance="accent">
       Next
     </fluent-button>
@@ -29,8 +29,13 @@
       <fluent-progress-ring></fluent-progress-ring>
     </div>
   </div>
-  <div class="helper-text"></div>
-  {{#if settings.showDataVideo}}
+  <!-- <code-step name="loadData" step="1" code="function step1() {}" style="display: initial;"></code-step> -->
+  <code-step name="setTensorFlowBackend" step="2" code="function step2() {}" style="display: initial;"></code-step>
+  <code-step name="encodeAndSplitData" step="3" code="function step3() {}" style="display: initial;"></code-step>
+  <code-step name="createModel" step="4" code="function step4() {}" style="display: initial;"></code-step>
+  <code-step name="configureModel" step="5" code="function step5() {}" style="display: initial;"></code-step>
+  <code-step name="trainModel" step="6" code="function step5() {}"> </code-step>
+  <!-- {{#if settings.showDataVideo}}
   <fluent-card class="image-card">
     <div class="video-wrapper__16-9">
       <p>Image data</p>
@@ -40,5 +45,5 @@
         allowfullscreen></iframe>
     </div>
   </fluent-card>
-  {{/if}}
+  {{/if}} -->
 </div>

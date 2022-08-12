@@ -3,6 +3,7 @@ import * as configureModel from './configureModel';
 import * as createModel from './createModel';
 import * as encodeAndSplitData from './encodeAndSplitData';
 import * as exportModel from './exportModel';
+import * as loadData from './loadData';
 import * as setTensorFlowBackend from './setTensorFlowBackend';
 import * as trainModel from './trainModel';
 
@@ -20,4 +21,5 @@ export const codeSteps: CodeStep = {
   exportModel,
   setTensorFlowBackend,
   trainModel,
+  loadData,
 };

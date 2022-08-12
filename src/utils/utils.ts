@@ -2,7 +2,8 @@ import * as tf from '@tensorflow/tfjs';
 import type JSZip from 'jszip';
 import { loadAsync } from 'jszip';
 
-import type { TensorData } from '../types/index.js';
+import type { TensorData, ValidationResult } from '../types/index.js';
+import { ValidationErrorType } from '../types/index.js';
 import { assetURL, classes } from './constants.js';
 import { npyJsParser } from './NpyJsParser.js';
 
@@ -16,14 +17,16 @@ export function millisToMinutesAndSeconds(millis: number): [string, boolean] {
 
 // Loads tensors based on image data processed using mediapipe hands model
 // loads zip folder located in assets
-export async function loadTensorData() {
+export async function loadTensorData(
+  loadTensors: (folder: JSZip) => Promise<{ [key: string]: number[][] }>,
+): Promise<{ [key: string]: number[][] }> {
   const zippedModelBuffer = await (await fetch(assetURL)).arrayBuffer();
   const zipFolder = await loadAsync(zippedModelBuffer);
   const output = await loadTensors(zipFolder);
   return output;
 }
 
-async function loadTensors(zipFolder: JSZip) {
+export async function loadTensors(zipFolder: JSZip) {
   const np = new npyJsParser();
   const output: TensorData = {};
   const numJoints = 21;
@@ -261,4 +264,27 @@ export function getOrCreateElement(query: string, type?: keyof HTMLElementTagNam
     }
   }
   return element;
+}
+
+export function createIncompleteImplValidationError(detail: string): ValidationResult {
+  return {
+    valid: false,
+    errors: [
+      {
+        type: ValidationErrorType.IncompleteImplementation,
+        detail,
+      },
+    ],
+  };
+}
+export function createUnknownValidationError(detail: string): ValidationResult {
+  return {
+    valid: false,
+    errors: [
+      {
+        type: ValidationErrorType.Unknown,
+        detail,
+      },
+    ],
+  };
 }

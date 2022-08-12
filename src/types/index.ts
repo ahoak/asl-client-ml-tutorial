@@ -34,6 +34,7 @@ export interface ProjectSettings {
 export type ValidationResult = {
   valid: boolean;
   errors: ValidationError[];
+  data?: any[];
 };
 
 export type ValidationError = {

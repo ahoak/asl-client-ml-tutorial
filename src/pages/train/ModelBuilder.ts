@@ -1,15 +1,21 @@
 import '../../utils/fluentBootstrap';
 
-import type { LayersModel, Logs } from '@tensorflow/tfjs';
-import * as tf from '@tensorflow/tfjs';
+import type { LayersModel } from '@tensorflow/tfjs';
 
 import Settings from '../../../settings.json';
-import type { CodeStepChangeEvent, CodeStepComponent } from '../../components';
-import type { ProjectSettings, TensorData, TrainTutorialSteps } from '../../types';
-import { getOrCreateElement, loadTensorData, millisToMinutesAndSeconds } from '../../utils/utils';
-import type { CodeStep, CodeStepRecord } from './codeSteps';
+import type { CodeStepComponent } from '../../components';
+import type {
+  ProjectSettings,
+  TensorData,
+  TrainTutorialSteps,
+  ValidationResult,
+} from '../../types';
+import { assetURL } from '../../utils/constants';
+import { getOrCreateElement, loadTensors } from '../../utils/utils';
+import type { CodeStepRecord } from './codeSteps';
 import { codeSteps } from './codeSteps';
-import { StepViewer } from './StepViewer';
+import { StepViewer, Validated } from './StepViewer';
+import { handleAfterDataLoadingStyles, handleBeforeDataLoadingStyles } from './utils/DataLoader';
 
 const ProjectSettingsConfig = Settings as unknown as ProjectSettings;
 
@@ -33,13 +39,10 @@ export class ModelBuilder {
   #currentStep?: TrainTutorialSteps;
 
   #mainEle = '#output-element';
-  #loadingstring = '.loading-element';
   #solutionFeedbackstring = '.solution-feedback';
   #trainingStatusstring = '.training-feedback';
   #trainingContainerstring = '.training-feedback-container';
   #actionButton = '.train-button';
-  #loadActionButton = '.load-data-button';
-  #outputContainer = '.output-container';
   #progressBarstring = '.training-progress-bar';
   #timestring = '.time-remaining';
 
@@ -52,19 +55,23 @@ export class ModelBuilder {
 
   #aslModel: LayersModel | undefined;
   #inputData: TensorData | undefined;
+  #stepMap: Record<string, StepViewer> = {};
 
   constructor(options?: ModelBuilderOptions) {
     this.#epochs = options?.epochs ?? DefaultEpoch;
-    this.mapCodeSteps();
   }
 
   init() {
+    // try {
     const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
     actionButton.disabled = true;
-    const loadActionButton = getOrCreateElement(this.#loadActionButton) as HTMLButtonElement;
-    loadActionButton.onclick = this.handleLoadDataClick;
+    // const loadActionButton = getOrCreateElement(this.#loadActionButton) as HTMLButtonElement;
+    // loadActionButton.onclick = this.handleLoadDataClick;
     this.mapCodeSteps();
-    // this.setCurrentStep(1);
+    this.setCurrentStep(1);
+    // } catch (err) {
+    //   console.warn(err);
+    // }
   }
 
   mapCodeSteps() {
@@ -82,12 +89,10 @@ export class ModelBuilder {
     this.#codeStepEles.forEach((codeStep: CodeStepComponent) => {
       const name = codeStep.getAttribute('name') ?? '';
       const step = codeStep.getAttribute('step') ?? '';
-      //   codeStep.setAttribute('style', 'display: none;');
       const stepDef = codeSteps[name];
       if (name && stepDef) {
         // const defaultCode = localStorage.getItem(`build:${name}`) ?? stepDef.template;
         const defaultCode = stepDef.template;
-        // codeStep.setAttribute('code', defaultCode);
         const stepImpl = stepImpls[name];
         const StepViewerInstance = new StepViewer({
           stepRecord: stepImpl,
@@ -95,8 +100,14 @@ export class ModelBuilder {
           name,
           stepCount: +step,
         });
+
+        this.#stepMap[step] = StepViewerInstance;
         // StepViewerInstance.show = false;
         StepViewerInstance.code = defaultCode;
+        StepViewerInstance.on(Validated, this.handleValidationComplete);
+        if (+step === 1) {
+          StepViewerInstance.funcInput = [loadTensors, assetURL];
+        }
       } else {
         console.error('Expected code-step to have a step attribute!');
       }
@@ -105,37 +116,30 @@ export class ModelBuilder {
     // loadStepFromHash();
   }
 
-  handleBeforeDataLoadingStyles() {
-    const outputContainer = getOrCreateElement(this.#outputContainer) as HTMLElement;
-    outputContainer.style.visibility = 'visible';
-    const solutionFeedbackstring = getOrCreateElement(this.#solutionFeedbackstring) as HTMLElement;
-    solutionFeedbackstring.innerHTML = `Loading data...`;
-    const loadingstring = getOrCreateElement(this.#loadingstring) as HTMLElement;
-    loadingstring.style.visibility = 'visible';
-  }
-
-  handleAfterDataLoadingStyles() {
-    const solutionFeedbackstring = getOrCreateElement(this.#solutionFeedbackstring) as HTMLElement;
-    solutionFeedbackstring.innerHTML = `Data loaded 😀`;
-    const loadingstring = getOrCreateElement(this.#loadingstring) as HTMLElement;
-    loadingstring.style.visibility = 'hidden';
-    const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
-    const loadActionButton = getOrCreateElement(this.#loadActionButton) as HTMLButtonElement;
-    actionButton.style.visibility = 'visible';
-    loadActionButton.disabled = true;
-    actionButton.disabled = false;
-    actionButton.onclick = this.validateBackend;
-    const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
-    this.setCurrentStep(nextStep);
-  }
-
-  handleLoadDataClick = async () => {
-    this.handleBeforeDataLoadingStyles();
-    this.#inputData = await loadTensorData();
-    this.handleAfterDataLoadingStyles();
+  handleLoadDataLoad = async (instance: StepViewer) => {
+    handleBeforeDataLoadingStyles();
+    const feedback = await instance.handleEvalInput();
+    console.log(feedback);
+    handleAfterDataLoadingStyles();
   };
 
-  setCurrentStep(stepcount: number): void {
+  handleValidationComplete = (result: ValidationResult) => {
+    console.log('validation complete', result);
+  };
+
+  handleStepChange(currentStep: number) {
+    const instance = this.#stepMap[currentStep];
+    if (instance) {
+      instance.show = true;
+      if (currentStep === 1) {
+        // await this.handleLoadDataLoad(instance);
+      }
+    } else {
+      console.error(`Instance of StepViewer for ${currentStep} is not found`);
+    }
+  }
+
+  setCurrentStep(stepcount: number) {
     const step = ProjectSettingsConfig.trainTutorialSteps.find(
       (tutorialStep) => tutorialStep.step === stepcount,
     );
@@ -146,26 +150,27 @@ export class ModelBuilder {
       unhighlightNavStep(this.#currentStep.step - 1);
       const mainEle = getOrCreateElement(this.#mainEle) as HTMLElement;
       mainEle.innerHTML = `${this.#currentStep.step}. ${this.#currentStep.description} `;
+      this.handleStepChange(this.#currentStep.step);
     }
   }
 
-  validateBackend = () => {
-    // await setTensorFlowBackend();
-    const backendInUse = tf.getBackend();
-    const solutionFeedbackElement = getOrCreateElement(this.#solutionFeedbackstring) as HTMLElement;
-    const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
-    const errorText = 'Hmm no backend detected. Please check solution.';
-    if (backendInUse) {
-      const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
-      solutionFeedbackElement.innerHTML = `Nice work! You are using ${backendInUse}.`;
+  // validateBackend = () => {
+  //   // await setTensorFlowBackend();
+  //   const backendInUse = tf.getBackend();
+  //   const solutionFeedbackElement = getOrCreateElement(this.#solutionFeedbackstring) as HTMLElement;
+  //   const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
+  //   const errorText = 'Hmm no backend detected. Please check solution.';
+  //   if (backendInUse) {
+  //     const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
+  //     solutionFeedbackElement.innerHTML = `Nice work! You are using ${backendInUse}.`;
 
-      this.setCurrentStep(nextStep);
-      actionButton.onclick = this.handleTrainingDataSplit;
-    } else {
-      solutionFeedbackElement.innerHTML = errorText;
-      throw new Error(errorText);
-    }
-  };
+  //     this.setCurrentStep(nextStep);
+  //     actionButton.onclick = this.handleTrainingDataSplit;
+  //   } else {
+  //     solutionFeedbackElement.innerHTML = errorText;
+  //     throw new Error(errorText);
+  //   }
+  // };
 
   handleTrainingDataSplit = () => {
     if (this.#inputData) {
@@ -243,87 +248,87 @@ export class ModelBuilder {
     }
   };
 
-  onBatchEnd = (epoch: number, batch: number, logs?: Logs) => {
-    const trainingStatusElement = getOrCreateElement(this.#trainingStatusstring) as HTMLElement;
+  // onBatchEnd = (epoch: number, batch: number, logs?: Logs) => {
+  //   const trainingStatusElement = getOrCreateElement(this.#trainingStatusstring) as HTMLElement;
 
-    if (!this.#initTime) {
-      this.#initTime = true;
-      const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
-      this.setCurrentStep(nextStep);
-      trainingStatusElement.style.visibility = 'visible';
-    }
+  //   if (!this.#initTime) {
+  //     this.#initTime = true;
+  //     const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
+  //     this.setCurrentStep(nextStep);
+  //     trainingStatusElement.style.visibility = 'visible';
+  //   }
 
-    const currentIncrement = epoch * this.#batchSize + (batch + 1);
+  //   const currentIncrement = epoch * this.#batchSize + (batch + 1);
 
-    const totalIncrements = this.#epochs * this.#batchSize;
-    const progressValue = (currentIncrement / totalIncrements) * 100;
-    const progressBarElement = getOrCreateElement(this.#progressBarstring) as HTMLProgressElement;
-    progressBarElement.value = progressValue;
+  //   const totalIncrements = this.#epochs * this.#batchSize;
+  //   const progressValue = (currentIncrement / totalIncrements) * 100;
+  //   const progressBarElement = getOrCreateElement(this.#progressBarstring) as HTMLProgressElement;
+  //   progressBarElement.value = progressValue;
 
-    trainingStatusElement.innerHTML = `
-      Epoch: ${epoch} Batch: ${batch}
-      <br>
-      Loss: ${logs?.loss.toFixed(3) ?? ''}
-      <br>
-      Accuracy: ${logs?.acc.toFixed(3) ?? ''}
-      <br>
-      `;
-  };
+  //   trainingStatusElement.innerHTML = `
+  //     Epoch: ${epoch} Batch: ${batch}
+  //     <br>
+  //     Loss: ${logs?.loss.toFixed(3) ?? ''}
+  //     <br>
+  //     Accuracy: ${logs?.acc.toFixed(3) ?? ''}
+  //     <br>
+  //     `;
+  // };
 
-  onEpochEnd = (epoch: number) => {
-    const batchDuration = Date.now() - this.#startBatchTime;
-    const remainingIncrements = this.#epochs - epoch;
-    const msRemaining = batchDuration * remainingIncrements;
-    const [time, hasMinutes] = millisToMinutesAndSeconds(msRemaining);
-    const timeElement = getOrCreateElement(this.#timestring) as HTMLElement;
-    timeElement.innerHTML = `${time} ${hasMinutes ? 'minutes' : 'seconds'} remaining`;
-    this.#startBatchTime = Date.now();
-    if (epoch === this.#epochs - 1) {
-      this.#trainingComplete = true;
-    }
-  };
+  // onEpochEnd = (epoch: number) => {
+  //   const batchDuration = Date.now() - this.#startBatchTime;
+  //   const remainingIncrements = this.#epochs - epoch;
+  //   const msRemaining = batchDuration * remainingIncrements;
+  //   const [time, hasMinutes] = millisToMinutesAndSeconds(msRemaining);
+  //   const timeElement = getOrCreateElement(this.#timestring) as HTMLElement;
+  //   timeElement.innerHTML = `${time} ${hasMinutes ? 'minutes' : 'seconds'} remaining`;
+  //   this.#startBatchTime = Date.now();
+  //   if (epoch === this.#epochs - 1) {
+  //     this.#trainingComplete = true;
+  //   }
+  // };
 
-  handleTrainModel = () => {
-    const trainingContainerElement = getOrCreateElement(
-      this.#trainingContainerstring,
-    ) as HTMLElement;
-    trainingContainerElement.style.visibility = 'visible';
-    const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
+  // handleTrainModel = () => {
+  //   const trainingContainerElement = getOrCreateElement(
+  //     this.#trainingContainerstring,
+  //   ) as HTMLElement;
+  //   trainingContainerElement.style.visibility = 'visible';
+  //   const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
 
-    this.#startBatchTime = Date.now();
+  //   this.#startBatchTime = Date.now();
 
-    if (this.#aslModel) {
-      //   await trainModel(
-      //     this.#aslModel,
-      //     this.x_train,
-      //     this.x_val,
-      //     this.y_train,
-      //     this.y_val,
-      //     this.#epochs,
-      //     {
-      //       onBatchEnd: this.onBatchEnd,
-      //       onEpochEnd: this.onEpochEnd,
-      //     },
-      //   );
-      if (this.#currentStep && this.#currentStep.step === 7 && this.#trainingComplete) {
-        actionButton.style.visibility = 'visible';
-        actionButton.innerText = 'Download model';
-        actionButton.onclick = this.handleDownloadModelButtonClick;
-      } else {
-        // throw new Error("Training did not complete.")
-      }
-    }
-  };
+  //   if (this.#aslModel) {
+  //     //   await trainModel(
+  //     //     this.#aslModel,
+  //     //     this.x_train,
+  //     //     this.x_val,
+  //     //     this.y_train,
+  //     //     this.y_val,
+  //     //     this.#epochs,
+  //     //     {
+  //     //       onBatchEnd: this.onBatchEnd,
+  //     //       onEpochEnd: this.onEpochEnd,
+  //     //     },
+  //     //   );
+  //     if (this.#currentStep && this.#currentStep.step === 7 && this.#trainingComplete) {
+  //       actionButton.style.visibility = 'visible';
+  //       actionButton.innerText = 'Download model';
+  //       actionButton.onclick = this.handleDownloadModelButtonClick;
+  //     } else {
+  //       // throw new Error("Training did not complete.")
+  //     }
+  //   }
+  // };
 
-  handleDownloadModelButtonClick = () => {
-    const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
-    if (this.#aslModel) {
-      //   await exportModel(this.#aslModel);
-      actionButton.innerText = 'Downloaded!';
-    } else {
-      console.log('no model to export');
-    }
-  };
+  // handleDownloadModelButtonClick = () => {
+  //   const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
+  //   if (this.#aslModel) {
+  //     //   await exportModel(this.#aslModel);
+  //     actionButton.innerText = 'Downloaded!';
+  //   } else {
+  //     console.log('no model to export');
+  //   }
+  // };
 }
 
 // Utils

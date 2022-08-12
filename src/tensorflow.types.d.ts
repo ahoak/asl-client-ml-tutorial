@@ -94,3 +94,12 @@ declare const tf: tfjs;
 declare type Logs = {
   [key: string]: number;
 };
+
+// TODO: MOVE OUT OF FILE
+declare interface jsZipInstance {
+  loadAsync: (data: InputFileFormat, options?: any) => Promise<jsZip>;
+}
+
+declare type loadAsync = (data: InputFileFormat, options?: any) => Promise<jsZip>;
+
+declare const jszip: jsZipInstance;

@@ -1,6 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
 
-import type { TensorData } from '../../../types';
 import { applyOneHotEncoding, splitTrainingData } from '../train';
 
 export const template = `
@@ -11,9 +10,9 @@ export const template = `
   Encodes data useing one hot encoding and splits data into training and test set
   returns array of values [X_train, X_val, y_train, y_val];
 */
-export function encodeAndSplitData(
-  data: TensorData,
-  applyOneHotEncoding: (data: TensorData) => { X: number[][]; Y: number[][] },
+function encodeAndSplitData(
+  data:  {[key: string]: number[][];},
+  applyOneHotEncoding: (data: { [key: string]: number[][];}) => { X: number[][]; Y: number[][] },
   splitTrainingData: (
     X: number[][],
     Y: number[][],
@@ -27,7 +26,10 @@ export function encodeAndSplitData(
   `;
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function implementation<T = (...args: any[]) => any>(code: string, data: TensorData): T {
+export function implementation<T = (...args: any[]) => any>(
+  code: string,
+  data: { [key: string]: number[][] },
+): T {
   // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
   const wrapper = new Function(
     'data',

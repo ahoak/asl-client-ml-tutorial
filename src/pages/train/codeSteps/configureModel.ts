@@ -2,7 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 
 export const template = `
 // https://js.tensorflow.org/api/latest/#tf.LayersModel.compile
-export function configureModel(model: LayersModel):void {
+function configureModel(model: LayersModel):void {
     // Compile the model with the defined optimizer and specify a loss function to use.
     model.compile({
       // Adam changes the learning rate over time which is useful.

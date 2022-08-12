@@ -4,7 +4,13 @@
 declare interface LayersModel {
   predict(tensor: Tensor): Tensor;
   fit(x: Tensor | Tensor[], y: Tensor | Tensor[], ModelFitArgs): Promise<void>;
-  compile();
+  compile(config: ModelConfig);
+}
+
+interface ModelConfig {
+  optimizer: any;
+  loss: string;
+  metrics: string[];
 }
 
 declare interface Tensor {
@@ -84,3 +90,7 @@ interface tfjs {
 }
 
 declare const tf: tfjs;
+
+declare type Logs = {
+  [key: string]: number;
+};

@@ -63,7 +63,7 @@ body {
 .content {
   display: flex;
   flex-direction: column;
-  max-width: 550px;
+  max-width: calc(100vw - 200px);
   margin: 0 auto;
   margin-top: 1rem;
 }

@@ -1,6 +1,6 @@
 export const template = `
 // Create a feed-forward model using the tf.sequential (https://js.tensorflow.org/api/latest/#sequential)
-export function createModel():LayersModel {
+function createModel(classes: string[]):LayersModel {
   // Create a feed-forward model
   const model = tf.sequential({
     layers: [

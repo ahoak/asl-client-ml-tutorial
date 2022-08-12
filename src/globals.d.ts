@@ -11,7 +11,3 @@ declare module '*.html' {
   const contents: string;
   export default contents;
 }
-
-declare interface TensorData {
-  [key: string]: number[][];
-}

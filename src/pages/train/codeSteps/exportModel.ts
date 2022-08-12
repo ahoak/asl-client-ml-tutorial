@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 
 export const template = `
-export async function exportModel(model: LayersModel): Promise<void> {
+async function exportModel(model: LayersModel): Promise<void> {
     // checkout https://www.tensorflow.org/js/guide/save_load
     await model.save('localstorage://model');
 }

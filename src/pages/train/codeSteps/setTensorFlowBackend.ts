@@ -4,7 +4,7 @@ export const template = `
 /*
 Sets Tensorflow backend to use either webgl, cpu or wasm
 */
-export async function setTensorFlowBackend(): Promise<void> {
+async function setTensorFlowBackend(): Promise<void> {
     // specify backend (not necessary, should default to webgl if available)
     //  const option = 'webgl' || 'cpu' || 'wasm';
     await tf.setBackend('webgl');

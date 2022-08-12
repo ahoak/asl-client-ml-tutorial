@@ -64,7 +64,7 @@ export class ModelBuilder {
     const loadActionButton = getOrCreateElement(this.#loadActionButton) as HTMLButtonElement;
     loadActionButton.onclick = this.handleLoadDataClick;
     this.mapCodeSteps();
-    this.setCurrentStep(1);
+    // this.setCurrentStep(1);
   }
 
   mapCodeSteps() {
@@ -85,7 +85,8 @@ export class ModelBuilder {
       //   codeStep.setAttribute('style', 'display: none;');
       const stepDef = codeSteps[name];
       if (name && stepDef) {
-        const defaultCode = localStorage.getItem(`build:${name}`) ?? stepDef.template;
+        // const defaultCode = localStorage.getItem(`build:${name}`) ?? stepDef.template;
+        const defaultCode = stepDef.template;
         // codeStep.setAttribute('code', defaultCode);
         const stepImpl = stepImpls[name];
         const StepViewerInstance = new StepViewer({

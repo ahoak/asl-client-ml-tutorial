@@ -3,14 +3,21 @@ import * as tf from '@tensorflow/tfjs';
 import type { Callbacks } from '../../../types';
 
 export const template = `
-export async function trainModel(
+async function trainModel(
     model: LayersModel,
     X_train: number[][],
     X_val: number[][],
     y_train: number[][],
     y_val: number[][],
     numEpochs: number,
-    cbs: Callbacks,
+    cbs: {
+      onBatchEnd: (epoch: number, batch: number, logs?: Logs) => void;
+      onEpochEnd: (epoch: number) => void;
+    },
+    getCallbacks: (epoch: number, cbs: {
+      onBatchEnd: (epoch: number, batch: number, logs?: Logs) => void;
+      onEpochEnd: (epoch: number) => void;
+    }) => void
   ): Promise<void> {
     const epoch = 0;
     const callbacks = getCallbacks(epoch, cbs);

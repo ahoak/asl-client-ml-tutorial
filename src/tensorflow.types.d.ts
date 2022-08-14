@@ -4,8 +4,21 @@
 declare interface LayersModel {
   predict(tensor: Tensor): Tensor;
   fit(x: Tensor | Tensor[], y: Tensor | Tensor[], ModelFitArgs): Promise<void>;
-  compile(config: ModelConfig);
+  compile(arg0: {
+    // Adam changes the learning rate over time which is useful.
+    // optimizer: 'adam',
+    optimizer: any;
+    // Use the correct loss function. If 2 classes of data, must use binaryCrossentropy.
+    // Else categoricalCrossentropy is used if more than 2 classes.
+    loss: string;
+    // As this is a classification problem you can record accuracy in the logs too!
+    metrics: string[];
+  }): void;
+  evaluate(t1: Tensor<Rank>, t2: Tensor<Rank>): Tensor;
 }
+
+declare type LayersModelType = LayersModel;
+declare const sequentialModel: LayersModel;
 
 interface ModelConfig {
   optimizer: any;

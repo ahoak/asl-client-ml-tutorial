@@ -1,6 +1,7 @@
 import '../../utils/fluentBootstrap';
 
 import type { LayersModel } from '@tensorflow/tfjs';
+import * as tf from '@tensorflow/tfjs';
 
 import Settings from '../../../settings.json';
 import type { CodeStepComponent } from '../../components';
@@ -10,11 +11,12 @@ import type {
   TrainTutorialSteps,
   ValidationResult,
 } from '../../types';
-import { assetURL } from '../../utils/constants';
-import { getOrCreateElement, loadTensors } from '../../utils/utils';
+import { assetURL, classes } from '../../utils/constants';
+import { getOrCreateElement, loadTensors, millisToMinutesAndSeconds } from '../../utils/utils';
 import type { CodeStepRecord } from './codeSteps';
 import { codeSteps } from './codeSteps';
 import { StepViewer, Validated } from './StepViewer';
+import { applyOneHotEncoding, splitTrainingData } from './train';
 import { handleAfterDataLoadingStyles, handleBeforeDataLoadingStyles } from './utils/DataLoader';
 
 const ProjectSettingsConfig = Settings as unknown as ProjectSettings;
@@ -35,18 +37,23 @@ export class ModelBuilder {
   #startBatchTime = 0;
 
   #initTime = false;
-  #trainingComplete = false;
   #currentStep?: TrainTutorialSteps;
 
   #mainEle = '#output-element';
   #solutionFeedbackstring = '.solution-feedback';
   #trainingStatusstring = '.training-feedback';
-  #trainingContainerstring = '.training-feedback-container';
-  #actionButton = '.train-button';
   #progressBarstring = '.training-progress-bar';
   #timestring = '.time-remaining';
 
+  // #trainingContainerstring = '.training-feedback-container';
+  // #actionButtonQuery = '.train-button';
+  #trainingStatusElement = getOrCreateElement(this.#trainingStatusstring) as HTMLElement;
+  #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;
+  #solutionFeedbackElement = getOrCreateElement(this.#solutionFeedbackstring);
   #codeStepEles = document.querySelectorAll('code-step') as NodeListOf<CodeStepComponent>;
+  #progressBarElement = getOrCreateElement(this.#progressBarstring) as HTMLProgressElement;
+
+  #timeElement = getOrCreateElement(this.#timestring) as HTMLElement;
 
   x_train: number[][] = [[]];
   y_train: number[][] = [[]];
@@ -62,16 +69,10 @@ export class ModelBuilder {
   }
 
   init() {
-    // try {
-    const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
-    actionButton.disabled = true;
-    // const loadActionButton = getOrCreateElement(this.#loadActionButton) as HTMLButtonElement;
-    // loadActionButton.onclick = this.handleLoadDataClick;
+    this.#actionButton.disabled = true;
+    this.#actionButton.onclick = this.handleNextButtonClick;
     this.mapCodeSteps();
     this.setCurrentStep(1);
-    // } catch (err) {
-    //   console.warn(err);
-    // }
   }
 
   mapCodeSteps() {
@@ -104,9 +105,33 @@ export class ModelBuilder {
         this.#stepMap[step] = StepViewerInstance;
         // StepViewerInstance.show = false;
         StepViewerInstance.code = defaultCode;
-        StepViewerInstance.on(Validated, this.handleValidationComplete);
-        if (+step === 1) {
-          StepViewerInstance.funcInput = [loadTensors, assetURL];
+        switch (+step) {
+          case 1:
+            StepViewerInstance.funcInput = [loadTensors, assetURL];
+            StepViewerInstance.on(Validated, this.handleDataValidation);
+            break;
+          case 2:
+            StepViewerInstance.funcInput = [tf];
+            StepViewerInstance.on(Validated, this.handleBackendValidation);
+            break;
+          case 3:
+            StepViewerInstance.on(Validated, this.handleDataSplitValidation);
+            break;
+          case 4:
+            StepViewerInstance.funcInput = [tf, classes];
+            StepViewerInstance.on(Validated, this.handleModelCreation);
+            break;
+          case 5:
+            StepViewerInstance.on(Validated, this.handleConfigureModel);
+            break;
+          case 6:
+            StepViewerInstance.on(Validated, this.handleTrainingValidation);
+            break;
+          case 7:
+            StepViewerInstance.on(Validated, this.handleDownloadValidation);
+            break;
+          default:
+            break;
         }
       } else {
         console.error('Expected code-step to have a step attribute!');
@@ -116,24 +141,145 @@ export class ModelBuilder {
     // loadStepFromHash();
   }
 
-  handleLoadDataLoad = async (instance: StepViewer) => {
-    handleBeforeDataLoadingStyles();
-    const feedback = await instance.handleEvalInput();
-    console.log(feedback);
-    handleAfterDataLoadingStyles();
+  handleDownloadValidation = (result: ValidationResult) => {
+    if (result.valid) {
+      console.log('model download validation complete', result);
+      this.#solutionFeedbackElement.innerHTML = 'Done!';
+    }
   };
 
-  handleValidationComplete = (result: ValidationResult) => {
-    console.log('validation complete', result);
+  onBatchEnd = (epoch: number, batch: number, logs?: Logs) => {
+    if (!this.#initTime) {
+      this.#initTime = true;
+      this.#trainingStatusElement.style.visibility = 'visible';
+    }
+
+    const currentIncrement = epoch * this.#batchSize + (batch + 1);
+
+    const totalIncrements = this.#epochs * this.#batchSize;
+    const progressValue = (currentIncrement / totalIncrements) * 100;
+    this.#progressBarElement.value = progressValue;
+    this.#trainingStatusElement.innerHTML = `
+      Epoch: ${epoch} Batch: ${batch}
+      <br>
+      Loss: ${logs?.loss.toFixed(3) ?? ''}
+      <br>
+      Accuracy: ${logs?.acc.toFixed(3) ?? ''}
+      <br>
+      `;
+  };
+
+  onEpochEnd = (epoch: number) => {
+    const batchDuration = Date.now() - this.#startBatchTime;
+    const remainingIncrements = this.#epochs - epoch;
+    const msRemaining = batchDuration * remainingIncrements;
+    const [time, hasMinutes] = millisToMinutesAndSeconds(msRemaining);
+
+    this.#timeElement.innerHTML = `${time} ${hasMinutes ? 'minutes' : 'seconds'} remaining`;
+    this.#startBatchTime = Date.now();
+  };
+
+  handleTrainingValidation = (result: ValidationResult) => {
+    console.log('model training validation complete', result);
+    if (result.valid) {
+      this.#solutionFeedbackElement.innerHTML = 'Almost done! Now let us download our model.';
+      this.#actionButton.disabled = false;
+    }
+  };
+
+  handleConfigureModel = (result: ValidationResult) => {
+    console.log('model config validation complete', result);
+    if (result.valid) {
+      this.#solutionFeedbackElement.innerHTML = 'Look at you go! Great work.';
+      this.#actionButton.disabled = false;
+    }
+  };
+
+  handleModelCreation = (result: ValidationResult) => {
+    console.log('model creation validation complete', result);
+    if (result.valid && result.data && result.data.length > 0) {
+      this.#aslModel = result.data as unknown as LayersModel;
+      this.#solutionFeedbackElement.innerHTML = 'Yay! Model created! 🎉';
+      this.#actionButton.disabled = false;
+    } else {
+      console.log('no data provided to ModelBuilder, please retry load data function');
+    }
+  };
+
+  handleDataSplitValidation = (result: ValidationResult) => {
+    console.log('encode and split data validation complete', result);
+    if (result.valid && result.data && result.data.length > 0) {
+      [this.x_train, this.x_val, this.y_train, this.y_val] = result.data as [
+        number[][],
+        number[][],
+        number[][],
+        number[][],
+      ];
+      this.#solutionFeedbackElement.innerHTML = 'Great job! Training data is ready';
+      this.#actionButton.disabled = false;
+    } else {
+      console.log('no data provided to ModelBuilder, please retry load data function');
+    }
+  };
+
+  handleBackendValidation = (result: ValidationResult) => {
+    console.log('setBackend validation complete', result);
+    if (result.valid && result.data && result.data.length > 0) {
+      const backendInUse = result.data[0] as string;
+      this.#solutionFeedbackElement.innerHTML = `Nice work! You are using ${backendInUse}.`;
+      this.#actionButton.disabled = false;
+    } else {
+      console.log('no data provided to ModelBuilder, please retry load data function');
+    }
+  };
+
+  handleDataValidation = (result: ValidationResult) => {
+    console.log('data load validation complete', result);
+    if (result.valid && result.data && result.data.length > 0) {
+      const data = result.data[0] as TensorData;
+      this.#inputData = data;
+      handleAfterDataLoadingStyles();
+      this.#actionButton.disabled = false;
+    } else {
+      console.log('no data provided to ModelBuilder, please retry load data function');
+    }
+  };
+
+  handleNextButtonClick = () => {
+    const step = this.#currentStep?.step ?? 1;
+    const currentInstance = this.#stepMap[step];
+    currentInstance.show = false;
+    const nextStep = step + 1;
+    this.setCurrentStep(nextStep);
+    this.#solutionFeedbackElement.innerHTML = '';
+    this.#actionButton.disabled = true;
   };
 
   handleStepChange(currentStep: number) {
     const instance = this.#stepMap[currentStep];
     if (instance) {
-      instance.show = true;
-      if (currentStep === 1) {
-        // await this.handleLoadDataLoad(instance);
+      if (currentStep === 3 && this.#inputData) {
+        instance.funcInput = [this.#inputData];
       }
+      if ((currentStep === 5 || currentStep === 7) && this.#aslModel) {
+        instance.funcInput = [this.#aslModel, tf];
+      }
+      if (currentStep === 6 && this.#aslModel)
+        instance.funcInput = [
+          this.#aslModel,
+          this.x_train,
+          this.x_val,
+          this.y_train,
+          this.y_val,
+          this.#epochs,
+          // callbacks
+          {
+            onBatchEnd: this.onBatchEnd,
+            onEpochEnd: this.onEpochEnd,
+          },
+          // getCallback
+        ];
+      instance.show = true;
     } else {
       console.error(`Instance of StepViewer for ${currentStep} is not found`);
     }
@@ -154,169 +300,36 @@ export class ModelBuilder {
     }
   }
 
-  // validateBackend = () => {
-  //   // await setTensorFlowBackend();
-  //   const backendInUse = tf.getBackend();
-  //   const solutionFeedbackElement = getOrCreateElement(this.#solutionFeedbackstring) as HTMLElement;
-  //   const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
-  //   const errorText = 'Hmm no backend detected. Please check solution.';
-  //   if (backendInUse) {
-  //     const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
-  //     solutionFeedbackElement.innerHTML = `Nice work! You are using ${backendInUse}.`;
-
-  //     this.setCurrentStep(nextStep);
-  //     actionButton.onclick = this.handleTrainingDataSplit;
-  //   } else {
-  //     solutionFeedbackElement.innerHTML = errorText;
-  //     throw new Error(errorText);
-  //   }
-  // };
-
-  handleTrainingDataSplit = () => {
-    if (this.#inputData) {
-      //   const result = encodeAndSplitData(this.#inputData);
-      const solutionFeedbackElement = getOrCreateElement(
-        this.#solutionFeedbackstring,
-      ) as HTMLElement;
-      //   const errorText = 'It appears encodeAndSplitData() function may not be implemented ';
-      //   if (result && result.length > 0) {
-      //     [this.x_train, this.x_val, this.y_train, this.y_val] = result;
-
-      //     solutionFeedbackElement.innerHTML = 'Great job! Training data is ready';
-      //     const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
-      //     this.setCurrentStep(nextStep);
-      //     const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
-      //     actionButton.onclick = this.handleCreateModel;
-    } else {
-      //     solutionFeedbackElement.innerHTML = errorText;
-      //     throw new Error(errorText);
-    }
-    // } else {
-    //   throw new Error('Data no loaded');
-    // }
-  };
-
-  handleCreateModel = () => {
-    // const model = createModel();
-    const solutionFeedbackElement = getOrCreateElement(this.#solutionFeedbackstring) as HTMLElement;
-    const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
-    const errorText =
-      "We couldn't find your model. Did you implement createModel function? If so, check that you return your model";
-    // if (model) {
-    //   this.#aslModel = model;
-    //   const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
-    //   solutionFeedbackElement.innerHTML = 'Yay! Model created! 🎉';
-
-    //   this.setCurrentStep(nextStep);
-    //   actionButton.onclick = this.handleConfigureModel;
-    // } else {
-    //   solutionFeedbackElement.innerHTML = errorText;
-    //   throw new Error(errorText);
-    // }
-  };
-
-  handleConfigureModel = () => {
-    if (this.#aslModel) {
-      const solutionFeedbackElement = getOrCreateElement(
-        this.#solutionFeedbackstring,
-      ) as HTMLElement;
-      const errorMsg =
-        'The model needs to be compiled before being used. Check configureModel() method';
-      const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
-
-      try {
-        // configureModel(this.#aslModel);
-        // const output = this.#aslModel.evaluate(
-        //   tf.truncatedNormal([1, 63]),
-        //   tf.truncatedNormal([1, 26]),
-        // );
-        // if (output) {
-        //   solutionFeedbackElement.innerHTML = 'Look at you go! Great work.';
-        //   const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
-        //   this.setCurrentStep(nextStep);
-        //   actionButton.onclick = this.handleTrainModel;
-        // } else {
-        //   throw new Error(errorMsg);
-        // }
-      } catch (err) {
-        solutionFeedbackElement.innerHTML = errorMsg;
-
-        throw new Error(errorMsg);
-      }
-    } else {
-      throw new Error('No model found');
-    }
-  };
-
-  // onBatchEnd = (epoch: number, batch: number, logs?: Logs) => {
-  //   const trainingStatusElement = getOrCreateElement(this.#trainingStatusstring) as HTMLElement;
-
-  //   if (!this.#initTime) {
-  //     this.#initTime = true;
-  //     const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
-  //     this.setCurrentStep(nextStep);
-  //     trainingStatusElement.style.visibility = 'visible';
-  //   }
-
-  //   const currentIncrement = epoch * this.#batchSize + (batch + 1);
-
-  //   const totalIncrements = this.#epochs * this.#batchSize;
-  //   const progressValue = (currentIncrement / totalIncrements) * 100;
-  //   const progressBarElement = getOrCreateElement(this.#progressBarstring) as HTMLProgressElement;
-  //   progressBarElement.value = progressValue;
-
-  //   trainingStatusElement.innerHTML = `
-  //     Epoch: ${epoch} Batch: ${batch}
-  //     <br>
-  //     Loss: ${logs?.loss.toFixed(3) ?? ''}
-  //     <br>
-  //     Accuracy: ${logs?.acc.toFixed(3) ?? ''}
-  //     <br>
-  //     `;
-  // };
-
-  // onEpochEnd = (epoch: number) => {
-  //   const batchDuration = Date.now() - this.#startBatchTime;
-  //   const remainingIncrements = this.#epochs - epoch;
-  //   const msRemaining = batchDuration * remainingIncrements;
-  //   const [time, hasMinutes] = millisToMinutesAndSeconds(msRemaining);
-  //   const timeElement = getOrCreateElement(this.#timestring) as HTMLElement;
-  //   timeElement.innerHTML = `${time} ${hasMinutes ? 'minutes' : 'seconds'} remaining`;
-  //   this.#startBatchTime = Date.now();
-  //   if (epoch === this.#epochs - 1) {
-  //     this.#trainingComplete = true;
-  //   }
-  // };
-
-  // handleTrainModel = () => {
-  //   const trainingContainerElement = getOrCreateElement(
-  //     this.#trainingContainerstring,
-  //   ) as HTMLElement;
-  //   trainingContainerElement.style.visibility = 'visible';
-  //   const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
-
-  //   this.#startBatchTime = Date.now();
-
+  // handleConfigureModel = () => {
   //   if (this.#aslModel) {
-  //     //   await trainModel(
-  //     //     this.#aslModel,
-  //     //     this.x_train,
-  //     //     this.x_val,
-  //     //     this.y_train,
-  //     //     this.y_val,
-  //     //     this.#epochs,
-  //     //     {
-  //     //       onBatchEnd: this.onBatchEnd,
-  //     //       onEpochEnd: this.onEpochEnd,
-  //     //     },
-  //     //   );
-  //     if (this.#currentStep && this.#currentStep.step === 7 && this.#trainingComplete) {
-  //       actionButton.style.visibility = 'visible';
-  //       actionButton.innerText = 'Download model';
-  //       actionButton.onclick = this.handleDownloadModelButtonClick;
-  //     } else {
-  //       // throw new Error("Training did not complete.")
+  //     const solutionFeedbackElement = getOrCreateElement(
+  //       this.#solutionFeedbackstring,
+  //     ) as HTMLElement;
+  //     const errorMsg =
+  //       'The model needs to be compiled before being used. Check configureModel() method';
+  //     // const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
+
+  //     try {
+  //       // configureModel(this.#aslModel);
+  //       // const output = this.#aslModel.evaluate(
+  //       //   tf.truncatedNormal([1, 63]),
+  //       //   tf.truncatedNormal([1, 26]),
+  //       // );
+  //       // if (output) {
+  //       //   solutionFeedbackElement.innerHTML = 'Look at you go! Great work.';
+  //       //   const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
+  //       //   this.setCurrentStep(nextStep);
+  //       //   actionButton.onclick = this.handleTrainModel;
+  //       // } else {
+  //       //   throw new Error(errorMsg);
+  //       // }
+  //     } catch (err) {
+  //       solutionFeedbackElement.innerHTML = errorMsg;
+
+  //       throw new Error(errorMsg);
   //     }
+  //   } else {
+  //     throw new Error('No model found');
   //   }
   // };
 

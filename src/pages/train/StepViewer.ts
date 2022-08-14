@@ -16,7 +16,7 @@ export class StepViewer {
   #element: CodeStepComponent;
   #name: string;
   #isValid = false;
-  #args = [loadTensors, assetURL] as any[];
+  #args = [] as any[];
   #emitter: Emitter<Events>;
 
   constructor(props: {
@@ -73,7 +73,8 @@ export class StepViewer {
 
   async handleEvalInput(transpiledCode?: string) {
     const code = transpiledCode ?? this.#element.getAttribute('code') ?? '';
-    console.log('code', this.#element);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    console.log('args', ...this.#args);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const implementation = this.#stepRecord.implementation(
       code,
@@ -81,7 +82,8 @@ export class StepViewer {
       ...this.#args,
     );
     if (this.#stepRecord.validate) {
-      const results = await this.#stepRecord.validate(implementation);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const results = await this.#stepRecord.validate(implementation, ...this.#args);
       this.#element.setAttribute(
         'validation-issues',
         JSON.stringify(results.valid ? [] : results.errors),

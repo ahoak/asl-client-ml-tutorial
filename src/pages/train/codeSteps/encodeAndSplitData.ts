@@ -1,5 +1,8 @@
 import * as tf from '@tensorflow/tfjs';
 
+import type { TensorData, ValidationResult } from '../../../types';
+import { ValidationErrorType } from '../../../types';
+import { createIncompleteImplValidationError } from '../../../utils/utils';
 import { applyOneHotEncoding, splitTrainingData } from '../train';
 
 export const template = `
@@ -41,4 +44,48 @@ export function implementation<T = (...args: any[]) => any>(
     `return (${code.replace(/export/g, '')})`,
   );
   return wrapper(data, applyOneHotEncoding, splitTrainingData, tf, tf) as T;
+}
+
+type encodeAndSplitData = (
+  data: TensorData,
+  applyOneHotEncoding: (data: TensorData) => { X: number[][]; Y: number[][] },
+  splitTrainingData: (
+    X: number[][],
+    Y: number[][],
+  ) => [number[][], number[][], number[][], number[][]],
+) => [number[][], number[][], number[][], number[][]];
+
+export async function validate(
+  impl: encodeAndSplitData,
+  data: TensorData,
+): Promise<ValidationResult> {
+  let result = [];
+  try {
+    console.log('data', data);
+    // eslint-disable-next-line @typescript-eslint/await-thenable
+    result = await impl(data, applyOneHotEncoding, splitTrainingData);
+    if (result && result.length <= 0) {
+      return createIncompleteImplValidationError(
+        `It appears encodeAndSplitData() function may not be implemented or is not returning a result`,
+      );
+    }
+  } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    const error = `${e}`;
+    return {
+      valid: false,
+      errors: [
+        {
+          type: ValidationErrorType.Unknown,
+          detail: error,
+        },
+      ],
+    };
+  }
+
+  return {
+    valid: true,
+    errors: [],
+    data: result,
+  };
 }

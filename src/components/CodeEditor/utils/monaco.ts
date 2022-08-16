@@ -13,9 +13,12 @@ const tfLibs = [
   },
   {
     declaration: `
-    declare type Point3D = { x: number; y: number; z: number };
-    declare function extractAllJointPositions(imageSource: CanvasImageSource, loadMirrored: boolean): Promise<Point3D[][]>;
-  `,
+      declare type Point3D = { x: number; y: number; z: number };
+      declare function extractAllJointPositions(imageSource: CanvasImageSource, loadMirrored: boolean): Promise<Point3D[][]>;
+      declare const defaultModelClasses: string[];
+      declare function argMax(values: number[]): number;
+      declare function normalize(values: number[]): number[];
+    `,
     uri: `main.d.ts`,
   },
 ];
@@ -35,7 +38,7 @@ const initMonaco = new Promise(async (resolve) => {
   //   noSuggestionDiagnostics: true,
   // });
   const options = monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
-  options.noImplicitAny = true; // example change
+  options.noImplicitAny = false; // example change
   options.strict = false; // example change
   options.noUncheckedIndexedAccess = false;
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions(options);

@@ -3,10 +3,14 @@
     font-weight: 200;
   }
 
+  :root {
+    all: initial;
+  }
+
   .root {
     all: initial;
-    height: 600px;
-    width: 50vw;
+    min-height: 200px;
+    min-width: 200px;
     display: flex;
     flex-direction: column;
   }
@@ -46,11 +50,12 @@
 
   .validate-container {
     font-size: 25px;
-    display: none;
+    margin-top: 10px;
   }
 
   .validate-progress {
-    display: flex;
+    /* display: flex; */
+    display: none;
     flex-direction: row;
     justify-content: center;
     height: 40px;
@@ -72,9 +77,9 @@
     height: 100%;
   }
 </style>
-<div class="root">
-  <h2 class="name"></h2>
-  <div class="editor-container">
+<div class="root" part="main">
+  <h2 class="name" part="name-header"></h2>
+  <div class="editor-container" part="editor-container">
     <code-editor hide-issues class="code-editor"></code-editor>
   </div>
   <div class="issue-container">

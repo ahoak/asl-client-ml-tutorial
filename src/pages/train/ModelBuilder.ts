@@ -16,7 +16,12 @@ import { getOrCreateElement, loadTensors, millisToMinutesAndSeconds } from '../.
 import type { CodeStepRecord } from './codeSteps';
 import { codeSteps } from './codeSteps';
 import { StepViewer, Validated } from './StepViewer';
-import { handleAfterDataLoadingStyles } from './utils/DataLoader';
+import {
+  clearValidationFeedback,
+  getSuccessStatement,
+  handleValidatingStep,
+  handleValidationgComplete,
+} from './utils/DataLoader';
 
 const ProjectSettingsConfig = Settings as unknown as ProjectSettings;
 
@@ -39,14 +44,12 @@ export class ModelBuilder {
   #currentStep?: TrainTutorialSteps;
 
   #mainEle = '#output-element';
-  #solutionFeedbackstring = '.solution-feedback';
   #trainingStatusstring = '.training-feedback';
   #progressBarstring = '.training-progress-bar';
   #timestring = '.time-remaining';
 
   #trainingStatusElement = getOrCreateElement(this.#trainingStatusstring) as HTMLElement;
   #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;
-  #solutionFeedbackElement = getOrCreateElement(this.#solutionFeedbackstring);
   #codeStepEles = document.querySelectorAll('code-step') as NodeListOf<CodeStepComponent>;
   #progressBarElement = getOrCreateElement(this.#progressBarstring) as HTMLProgressElement;
 
@@ -65,11 +68,11 @@ export class ModelBuilder {
     this.#epochs = options?.epochs ?? DefaultEpoch;
   }
 
-  init() {
+  async init() {
     this.#actionButton.disabled = true;
     this.#actionButton.onclick = this.handleNextButtonClick;
     this.mapCodeSteps();
-    this.setCurrentStep(1);
+    await this.setCurrentStep(1);
   }
 
   mapCodeSteps() {
@@ -89,8 +92,6 @@ export class ModelBuilder {
       const step = codeStep.getAttribute('step') ?? '';
       const stepDef = codeSteps[name];
       if (name && stepDef) {
-        // const defaultCode = localStorage.getItem(`build:${name}`) ?? stepDef.template;
-        const defaultCode = stepDef.template;
         const stepImpl = stepImpls[name];
         const StepViewerInstance = new StepViewer({
           stepRecord: stepImpl,
@@ -100,17 +101,12 @@ export class ModelBuilder {
         });
 
         this.#stepMap[step] = StepViewerInstance;
-        // StepViewerInstance.show = false;
-        StepViewerInstance.code = defaultCode;
+        StepViewerInstance.setCodeFromCacheOrDefault();
         switch (+step) {
           case 1:
             StepViewerInstance.funcInput = [loadTensors, assetURL];
             StepViewerInstance.on(Validated, this.handleDataValidation);
             StepViewerInstance.readonly = 'true';
-            break;
-          case 2:
-            StepViewerInstance.funcInput = [tf];
-            StepViewerInstance.on(Validated, this.handleBackendValidation);
             break;
           case 3:
             StepViewerInstance.on(Validated, this.handleDataSplitValidation);
@@ -122,15 +118,11 @@ export class ModelBuilder {
           case 5:
             StepViewerInstance.on(Validated, this.handleConfigureModel);
             break;
-          case 6:
-            StepViewerInstance.on(Validated, this.handleTrainingValidation);
-            break;
-          case 7:
-            StepViewerInstance.on(Validated, this.handleDownloadValidation);
-            break;
           default:
             break;
         }
+        StepViewerInstance.on('validationInProgress', this.handleValidationStarted);
+        StepViewerInstance.on('validationComplete', this.handleValidationComplete);
       } else {
         console.error('Expected code-step to have a step attribute!');
       }
@@ -139,9 +131,23 @@ export class ModelBuilder {
     // loadStepFromHash();
   }
 
-  handleDownloadValidation = (result: ValidationResult) => {
-    if (result.valid) {
-      this.#solutionFeedbackElement.innerHTML = 'Done!';
+  handleValidationStarted = (name: string, step: number) => {
+    if (this.#currentStep?.step === step) {
+      handleValidatingStep();
+    }
+  };
+
+  handleValidationComplete = (name: string, step: number, passedValidation: boolean) => {
+    if (this.#currentStep?.step === step) {
+      let successStatement = 'validation failed';
+      if (passedValidation) {
+        let backendInUse;
+        if (step === 2) {
+          backendInUse = tf.getBackend();
+        }
+        successStatement = getSuccessStatement(step, backendInUse);
+      }
+      handleValidationgComplete(step, passedValidation, successStatement);
     }
   };
 
@@ -176,20 +182,10 @@ export class ModelBuilder {
     this.#startBatchTime = Date.now();
   };
 
-  handleTrainingValidation = (result: ValidationResult) => {
-    // console.log('model training validation complete', result);
-    if (result.valid) {
-      this.#solutionFeedbackElement.innerHTML = 'Almost done! Now let us download our model.';
-      this.#actionButton.disabled = false;
-    }
-  };
-
   handleConfigureModel = (result: ValidationResult) => {
     // console.log('model config validation complete', result);
     if (result.valid && result.data && result.data.length > 0) {
       this.#aslModel = result.data[0] as unknown as LayersModel;
-      this.#solutionFeedbackElement.innerHTML = 'Look at you go! Great work. Model is configured.';
-      this.#actionButton.disabled = false;
     }
   };
 
@@ -197,8 +193,6 @@ export class ModelBuilder {
     // console.log('model creation validation complete', result);
     if (result.valid && result.data && result.data.length > 0) {
       this.#aslModel = result.data[0] as unknown as LayersModel;
-      this.#solutionFeedbackElement.innerHTML = 'Yay! Model created! 🎉';
-      this.#actionButton.disabled = false;
     } else {
       console.log('no data provided to ModelBuilder, please retry load data function');
     }
@@ -213,19 +207,6 @@ export class ModelBuilder {
         number[][],
         number[][],
       ];
-      this.#solutionFeedbackElement.innerHTML = 'Great job! Training data is ready';
-      this.#actionButton.disabled = false;
-    } else {
-      console.log('no data provided to ModelBuilder, please retry load data function');
-    }
-  };
-
-  handleBackendValidation = (result: ValidationResult) => {
-    // console.log('setBackend validation complete', result);
-    if (result.valid && result.data && result.data.length > 0) {
-      const backendInUse = result.data[0] as string;
-      this.#solutionFeedbackElement.innerHTML = `Nice work! You are using ${backendInUse}.`;
-      this.#actionButton.disabled = false;
     } else {
       console.log('no data provided to ModelBuilder, please retry load data function');
     }
@@ -236,24 +217,21 @@ export class ModelBuilder {
     if (result.valid && result.data && result.data.length > 0) {
       const data = result.data[0] as TensorData;
       this.#inputData = data;
-      handleAfterDataLoadingStyles();
-      this.#actionButton.disabled = false;
     } else {
       console.log('no data provided to ModelBuilder, please retry load data function');
     }
   };
 
-  handleNextButtonClick = () => {
+  handleNextButtonClick = async () => {
     const step = this.#currentStep?.step ?? 1;
     const currentInstance = this.#stepMap[step];
     currentInstance.show = false;
     const nextStep = step + 1;
-    this.setCurrentStep(nextStep);
-    this.#solutionFeedbackElement.innerHTML = '';
-    this.#actionButton.disabled = true;
+    clearValidationFeedback();
+    await this.setCurrentStep(nextStep);
   };
 
-  handleStepChange(currentStep: number) {
+  async handleStepChange(currentStep: number) {
     const instance = this.#stepMap[currentStep];
     if (instance) {
       if (currentStep === 3 && this.#inputData) {
@@ -278,12 +256,13 @@ export class ModelBuilder {
           // getCallback
         ];
       instance.show = true;
+      await instance.runCachedCode();
     } else {
       console.error(`Instance of StepViewer for ${currentStep} is not found`);
     }
   }
 
-  setCurrentStep(stepcount: number) {
+  async setCurrentStep(stepcount: number) {
     const step = ProjectSettingsConfig.trainTutorialSteps.find(
       (tutorialStep) => tutorialStep.step === stepcount,
     );
@@ -294,7 +273,7 @@ export class ModelBuilder {
       unhighlightNavStep(this.#currentStep.step - 1);
       const mainEle = getOrCreateElement(this.#mainEle) as HTMLElement;
       mainEle.innerHTML = `${this.#currentStep.step}. ${this.#currentStep.description} `;
-      this.handleStepChange(this.#currentStep.step);
+      await this.handleStepChange(this.#currentStep.step);
     }
   }
 }

@@ -302,6 +302,14 @@ ul.link-list li a span {
 fluent-button {
   --accent-fill-rest: var(--glitch-pink);
 }
+
+#validation-status {
+  font-size: medium;
+}
+.bottom-button-container {
+  margin-top: 1rem;
+  text-align: left;
+}
 /******************************************************************************
 END default theme
 ******************************************************************************/

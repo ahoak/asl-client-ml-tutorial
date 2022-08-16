@@ -11,7 +11,7 @@ export const ValidationComplete = 'validationComplete';
 interface Events {
   [Validated]: (args: any) => void;
   [ValidationInProgress]: (name: string, stepCount: number) => void;
-  [ValidationComplete]: (name: string, stepCount: number) => void;
+  [ValidationComplete]: (name: string, stepCount: number, passedValidation: boolean) => void;
 }
 
 export class StepViewer {
@@ -23,6 +23,8 @@ export class StepViewer {
   #args = [] as any[];
   #emitter: Emitter<Events>;
   #isLoading?: boolean;
+  #transpiledCode: string | null;
+
   // todo TRANSPILECODE
 
   constructor(props: {
@@ -35,6 +37,7 @@ export class StepViewer {
     this.#stepRecord = props.stepRecord;
     this.#element = props.element;
     this.#name = props.name;
+    this.#transpiledCode = localStorage.getItem(`build:${this.#name}`);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     this.#emitter = createNanoEvents<Events>();
     this.setEventListener();
@@ -42,7 +45,7 @@ export class StepViewer {
 
   set show(state: boolean) {
     if (state) {
-      this.#element.setAttribute('style', 'display: flex;width: 100%;');
+      this.#element.setAttribute('style', 'display: flex;width: 100%;max-height: 400px;');
     } else {
       this.#element.setAttribute('style', 'display:none;');
     }
@@ -68,10 +71,15 @@ export class StepViewer {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.#element.addEventListener('change', async (event: Event) => {
       const ce = event as CodeStepChangeEvent;
-      localStorage.setItem(`build:${this.#name}`, ce.detail.code);
       const noSyntaxErrors = !ce.detail.hasSyntaxErrors;
+      // Save if no errors?
+      if (noSyntaxErrors) {
+        localStorage.setItem(`build-ts:${this.#name}`, ce.detail.transpiledCode);
+        localStorage.setItem(`build:${this.#name}`, ce.detail.code);
+        this.#transpiledCode = ce.detail.transpiledCode;
+      }
       const code = ce.detail.transpiledCode;
-      if (noSyntaxErrors && !this.#isLoading) {
+      if (noSyntaxErrors && !this.#isLoading && !this.#isValid) {
         await this.handleEvalInput(code);
       }
     });
@@ -79,6 +87,16 @@ export class StepViewer {
 
   set funcInput(args: any[]) {
     this.#args = args;
+  }
+
+  setCodeFromCacheOrDefault() {
+    this.code = localStorage.getItem(`build:${this.#name}`) ?? this.#stepRecord.template;
+  }
+
+  async runCachedCode() {
+    if (this.#transpiledCode) {
+      await this.handleEvalInput(this.#transpiledCode);
+    }
   }
 
   async handleEvalInput(transpiledCode?: string) {
@@ -104,7 +122,7 @@ export class StepViewer {
         this.#emitter.emit(Validated, results);
       }
     }
-    this.#emitter.emit(ValidationComplete, this.#name, this.#stepCount);
+    this.#emitter.emit(ValidationComplete, this.#name, this.#stepCount, this.#isValid);
     this.#isLoading = false;
   }
 

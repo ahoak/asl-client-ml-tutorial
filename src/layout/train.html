@@ -29,6 +29,8 @@
       <fluent-progress-ring></fluent-progress-ring>
     </div>
   </div>
+  <p id="validation-status"></p>
+
   <code-step name="loadData" step="1" code="function step1() {}" style="display: none;" read-only="true"></code-step>
   <code-step name="setTensorFlowBackend" step="2" code="function step2() {}" style="display: none;"></code-step>
   <code-step name="encodeAndSplitData" step="3" code="function step3() {}" style="display: none;">
@@ -37,6 +39,10 @@
   <code-step name="configureModel" step="5" code="function step5() {}" style="display: none;"></code-step>
   <code-step name="trainModel" step="6" code="function step6() {}" style="display: none;"> </code-step>
   <code-step name="exportModel" step="7" code="function step7() {}" style="display: none;"> </code-step>
+  <div class="bottom-button-container">
+    <fluent-button class="view-solution-button">View solution</fluent-button>
+    <fluent-button class="reset-button">Reset</fluent-button>
+  </div>
   <!-- {{#if settings.showDataVideo}}
   <fluent-card class="image-card">
     <div class="video-wrapper__16-9">

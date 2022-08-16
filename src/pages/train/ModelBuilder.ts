@@ -52,6 +52,7 @@ export class ModelBuilder {
 
   #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;
   #solutionButton = getOrCreateElement('.view-solution-button') as HTMLButtonElement;
+  #resetButton = getOrCreateElement('.reset-button') as HTMLButtonElement;
 
   x_train: number[][] = [[]];
   y_train: number[][] = [[]];
@@ -70,6 +71,7 @@ export class ModelBuilder {
     this.#actionButton.disabled = true;
     this.#actionButton.onclick = this.handleNextButtonClick;
     this.#solutionButton.onclick = this.handleSolutionButtonClick;
+    this.#resetButton.onclick = this.handleResetButtonClick;
     this.mapCodeSteps();
     await this.setCurrentStep(1);
   }
@@ -166,6 +168,12 @@ export class ModelBuilder {
     }
   };
 
+  handleResetButtonClick = () => {
+    const step = this.#currentStep?.step ?? 1;
+    const currentInstance = this.#stepMap[step];
+    currentInstance.resetCodeToDefault();
+  };
+
   onBatchEnd = (epoch: number, batch: number, logs?: Logs) => {
     if (!this.#initTime) {
       this.#initTime = true;
@@ -216,12 +224,10 @@ export class ModelBuilder {
   handleDataSplitValidation = (result: ValidationResult) => {
     // console.log('encode and split data validation complete', result);
     if (result.valid && result.data && result.data.length > 0) {
-      [this.x_train, this.x_val, this.y_train, this.y_val] = result.data as [
-        number[][],
-        number[][],
-        number[][],
-        number[][],
-      ];
+      this.x_train = result.data[0] as unknown as number[][];
+      this.x_val = result.data[1] as unknown as number[][];
+      this.y_train = result.data[2] as unknown as number[][];
+      this.y_val = result.data[3] as unknown as number[][];
     } else {
       console.log('no data provided to ModelBuilder, please retry load data function');
     }

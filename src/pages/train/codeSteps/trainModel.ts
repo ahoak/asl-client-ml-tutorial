@@ -26,24 +26,13 @@ async function trainModel(
     const epoch = 0;
     const callbacks = getCallbacks(epoch, cbs);
   
-    const xTensor = tf.tensor(X_train);
-    const yTensor = tf.tensor(y_train);
-    const xValidateTensor = tf.tensor(X_val);
-    const yValidateTensor = tf.tensor(y_val);
+    // Transform X_train, y_train, X_val, y_val to tensors
+ 
   
-    await model.fit(xTensor, yTensor, {
-      epochs: numEpochs,
-      batchSize: 128,
-      verbose: 1,
-      validationData: [xValidateTensor, yValidateTensor],
-      callbacks: callbacks,
-    });
+    // call model.fit( )
+   
     // Free up memory resources
   
-    xTensor.dispose();
-    yTensor.dispose();
-    xValidateTensor.dispose();
-    yValidateTensor.dispose();
   }
 `;
 

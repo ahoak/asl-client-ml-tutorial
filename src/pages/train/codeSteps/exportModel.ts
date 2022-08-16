@@ -6,9 +6,9 @@ import { createIncompleteImplValidationError } from '../../../utils/utils';
 
 export const template = `
 async function exportModel(model: LayersModel): Promise<void> {
-    // checkout https://www.tensorflow.org/js/guide/save_load
-    await model.save('localstorage://model');
-    await model.save('downloads://model')
+    // checkout https://www.tensorflow.org/js/guide/save_load\
+    // save to localstorage 
+    // optional: save to downloads
 }
 `;
 

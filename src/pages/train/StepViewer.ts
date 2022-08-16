@@ -74,6 +74,15 @@ export class StepViewer {
     return this.#solutionElement;
   }
 
+  resetCodeToDefault() {
+    this.code = this.#stepRecord.template;
+    localStorage.removeItem(`build:${this.#name}`);
+    localStorage.removeItem(`build-ts:${this.#name}`);
+    this.#transpiledCode = null;
+    this.#isValid = false;
+    this.#isLoading = false;
+  }
+
   on<E extends keyof Events>(
     event: E,
     callback: Events[E],
@@ -94,7 +103,7 @@ export class StepViewer {
         this.#transpiledCode = ce.detail.transpiledCode;
       }
       const code = ce.detail.transpiledCode;
-      if (noSyntaxErrors && !this.#isLoading && !this.#isValid) {
+      if (noSyntaxErrors && !this.#isLoading) {
         await this.handleEvalInput(code);
       }
     });

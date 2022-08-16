@@ -1,9 +1,10 @@
+import '@tensorflow/tfjs-backend-webgl';
+
 import * as tf from '@tensorflow/tfjs';
 
 import type { ValidationResult } from '../../../types';
 import { ValidationErrorType } from '../../../types';
 import { createIncompleteImplValidationError } from '../../../utils/utils';
-
 export const template = `
 /*
 Sets Tensorflow backend to use either webgl, cpu or wasm
@@ -11,7 +12,6 @@ Sets Tensorflow backend to use either webgl, cpu or wasm
 async function setTensorFlowBackend(): Promise<void> {
     // specify backend (not necessary, should default to webgl if available)
     //  const option = 'webgl' || 'cpu' || 'wasm';
-    await tf.setBackend('webgl');
 }
 `;
 

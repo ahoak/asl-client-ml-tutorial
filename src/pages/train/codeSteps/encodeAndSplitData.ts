@@ -22,9 +22,9 @@ function encodeAndSplitData(
   ) => [number[][], number[][], number[][], number[][]],
 ) {
   // apply one-hot encoding function below
-  const { X, Y } = applyOneHotEncoding(data);
   // take the results from one-hot encoding and split data
-  return splitTrainingData(X, Y);
+ 
+  // return resullt from data split
 }
   `;
 
@@ -86,7 +86,7 @@ export async function validate(
   try {
     // eslint-disable-next-line @typescript-eslint/await-thenable
     result = await impl(data, applyOneHotEncoding, splitTrainingData);
-    if (result && result.length <= 0) {
+    if (!result || result.length <= 0) {
       return createIncompleteImplValidationError(
         `It appears encodeAndSplitData() function may not be implemented or is not returning a result`,
       );

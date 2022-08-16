@@ -1,6 +1,5 @@
 import '../IssueDisplay';
 
-import { fastDebounce } from '../../utils/utils';
 import BaseComponent from '../BaseComponent';
 import template from './template.html';
 import type { CodeEditorChangeEventArgs, CodeIssue, CodeIssueType } from './types';
@@ -77,8 +76,13 @@ export class CodeEditorComponent extends BaseComponent {
     if (name === 'style') {
       this.#getRoot().style.cssText = newValue ?? '';
     } else if (name === 'placeholder' || name === 'code') {
-      this.#placeholder = newValue ?? 'function placeholder() {\n}';
-      if (this.#model) {
+      this.#placeholder =
+        this.getAttribute('code') ??
+        this.getAttribute('placeholder') ??
+        'function placeholder() {\n}';
+
+      // Make sure the model code matches the new code passed in
+      if (this.#model && this.#model.getValue() !== this.#placeholder) {
         this.#model.setValue(this.#placeholder);
       }
     } else if (name === 'hide-issues') {
@@ -116,7 +120,6 @@ export class CodeEditorComponent extends BaseComponent {
 
     this.#model = this.#editor.getModel();
     const tsProxy = await getTSProxy(this.#monaco!, this.#model!);
-    let first = true;
     this.#model!.onDidChangeDecorations(async () => {
       const markers = this.#monaco!.editor.getModelMarkers({
         resource: this.#model!.uri,
@@ -124,20 +127,21 @@ export class CodeEditorComponent extends BaseComponent {
       const code = this.#model!.getValue() ?? '';
       const transpiledCode = (await tsProxy.getEmitOutput(`${this.#model!.uri.toString()}`))
         .outputFiles[0].text;
-      // ADD PROP
+
+      this.setAttribute('code', code);
+      this.setAttribute('transpiled-code', transpiledCode);
+
       const issues = markers.map((n) => ({
         type: this.#getIssueTypeFromSeverity(n.severity)!,
         startLineNumber: n.startLineNumber,
         startColumn: n.startColumn,
         message: n.message,
       }));
-      if (first) {
-        this.#emitChangeEvent(code, transpiledCode, issues);
-      } else {
-        this.#debouncedEmitChangeEvent(code, transpiledCode, issues);
-      }
-      first = false;
+      this.#emitChangeEvent(code, transpiledCode, issues);
     });
+
+    // Update the model with the current code
+    this.#model!.setValue(this.#placeholder ?? 'function placeholder() {}');
   }
 
   /**
@@ -157,15 +161,15 @@ export class CodeEditorComponent extends BaseComponent {
       }),
     );
 
-    const issuesToDisplay = issues.filter((n) => n.type === 'error' || n.type === 'warning');
-
-    this.#issueDisplayEle!.setAttribute('issues', JSON.stringify(issuesToDisplay));
     if (this.readOnly) {
       const value = this.readOnly === 'true';
       this.#editor?.updateOptions({ readOnly: value, domReadOnly: value });
     }
 
     if (!this.hideIssues) {
+      const issuesToDisplay = issues.filter((n) => n.type === 'error' || n.type === 'warning');
+      this.#issueDisplayEle!.setAttribute('issues', JSON.stringify(issuesToDisplay));
+
       const oldDisplay = this.#issueContainerEle!.style.display;
       const newDisplay = issuesToDisplay.length > 0 ? 'block' : 'none';
       if (oldDisplay !== newDisplay) {
@@ -176,19 +180,6 @@ export class CodeEditorComponent extends BaseComponent {
       this.#issueContainerEle!.style.display = 'none';
     }
   }
-
-  /**
-   * Dispatches the "change" event, debounced
-   * @param {string} code The new code
-   * @param {string} transpiledCode The transpiled code
-   * @param {any[]} issues The list of issues with the code
-   */
-  #debouncedEmitChangeEvent = fastDebounce(
-    (code: string, transpiledCode: string, issues: CodeIssue[]) => {
-      this.#emitChangeEvent(code, transpiledCode, issues);
-    },
-    500,
-  );
 
   /**
    * Gets an issue type for the given severity

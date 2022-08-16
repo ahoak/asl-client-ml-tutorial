@@ -82,6 +82,9 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
       const event = rawEvent as CustomEvent<CodeEditorChangeEventArgs>;
       this.#hasCodeChanged = true;
 
+      this.setAttribute('code', event.detail.code);
+      this.setAttribute('transpiledCode', event.detail.transpiledCode);
+
       const issues = (event.detail.issues ?? []).filter(
         (n) => n.type === 'error' || n.type === 'warning',
       );
@@ -138,7 +141,9 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
       }
       if (this.#firstRender || attribute === 'code') {
         attribValue = (attribute ? attribValue : this.getAttribute('code')) ?? '';
-        this.#codeEditorEle!.setAttribute('placeholder', attribValue);
+        if (attribValue !== this.#codeEditorEle!.getAttribute('code')) {
+          this.#codeEditorEle!.setAttribute('code', attribValue);
+        }
       }
       if (attribute === 'read-only') {
         this.#codeEditorEle!.setAttribute('read-only', attribValue ?? '');

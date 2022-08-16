@@ -24,20 +24,21 @@ export class StepViewer {
   #emitter: Emitter<Events>;
   #isLoading?: boolean;
   #transpiledCode: string | null;
-
-  // todo TRANSPILECODE
+  #solutionElement?: CodeStepComponent;
 
   constructor(props: {
     stepRecord: StepImplementationRecord;
     element: CodeStepComponent;
     name: string;
     stepCount?: number;
+    solutionElement?: CodeStepComponent;
   }) {
     this.#stepCount = props.stepCount ?? 0;
     this.#stepRecord = props.stepRecord;
     this.#element = props.element;
     this.#name = props.name;
-    this.#transpiledCode = localStorage.getItem(`build:${this.#name}`);
+    this.#transpiledCode = localStorage.getItem(`build-ts:${this.#name}`);
+    this.#solutionElement = props.solutionElement;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     this.#emitter = createNanoEvents<Events>();
     this.setEventListener();
@@ -51,12 +52,26 @@ export class StepViewer {
     }
   }
 
+  showSolution(state: boolean) {
+    if (this.#solutionElement) {
+      if (state) {
+        this.#solutionElement.setAttribute('style', 'display: flex;width: 100%;max-height: 400px;');
+      } else {
+        this.#solutionElement.setAttribute('style', 'display:none;');
+      }
+    }
+  }
+
   set code(value: string) {
     this.#element.setAttribute('code', value);
   }
 
   set readonly(value: string) {
     this.#element.setAttribute('read-only', value);
+  }
+
+  get solutionElement() {
+    return this.#solutionElement;
   }
 
   on<E extends keyof Events>(
@@ -94,8 +109,12 @@ export class StepViewer {
   }
 
   async runCachedCode() {
-    if (this.#transpiledCode) {
-      await this.handleEvalInput(this.#transpiledCode);
+    try {
+      if (this.#transpiledCode) {
+        await this.handleEvalInput(this.#transpiledCode);
+      }
+    } catch (err) {
+      console.warn(err);
     }
   }
 
@@ -109,6 +128,7 @@ export class StepViewer {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       ...this.#args,
     );
+
     if (this.#stepRecord.validate) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const results = await this.#stepRecord.validate(implementation, ...this.#args);
@@ -122,6 +142,7 @@ export class StepViewer {
         this.#emitter.emit(Validated, results);
       }
     }
+
     this.#emitter.emit(ValidationComplete, this.#name, this.#stepCount, this.#isValid);
     this.#isLoading = false;
   }

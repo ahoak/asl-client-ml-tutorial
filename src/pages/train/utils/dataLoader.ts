@@ -44,12 +44,12 @@ export function clearValidationFeedback() {
 }
 
 const stepSuccessStatements = new Map([
-  [1, `✅ Data loaded 😀`],
-  [3, ' ✅ Great job! Training data is ready'],
-  [4, '✅ Yay! Model created! 🎉'],
-  [5, '✅ Look at you go! Model is configured.'],
-  [6, '✅ Training complete!'],
-  [7, '✅Downloaded'],
+  [1, `✔️ Data loaded 😀`],
+  [3, ' ✔️ Great job! Training data is ready'],
+  [4, '✔️ Yay! Model created! 🎉'],
+  [5, '✔️ Look at you go! Model is configured.'],
+  [6, '✔️ Training complete!'],
+  [7, '✔️ Downloaded'],
 ]) as Map<number, string>;
 
 export function getSuccessStatement(step: number, backendInUse?: string) {

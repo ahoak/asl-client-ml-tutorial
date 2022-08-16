@@ -15,6 +15,17 @@ async function setTensorFlowBackend(): Promise<void> {
 }
 `;
 
+export const solution = `
+/*
+Sets Tensorflow backend to use either webgl, cpu or wasm
+*/
+async function setTensorFlowBackendSolution(): Promise<void> {
+    // specify backend (not necessary, should default to webgl if available)
+    //  const option = 'webgl' || 'cpu' || 'wasm';
+    await tf.setBackend('webgl');
+}
+`;
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function implementation<T = (...args: any[]) => any>(code: string): T {
   // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func

@@ -12,6 +12,14 @@ async function exportModel(model: LayersModel): Promise<void> {
 }
 `;
 
+export const solution = `
+async function exportModelSolution(model: LayersModel): Promise<void> {
+    // checkout https://www.tensorflow.org/js/guide/save_load
+    await model.save('localstorage://model');
+    await model.save('downloads://model')
+}
+`;
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function implementation<T = (...args: any[]) => any>(code: string, model: LayersModel): T {
   // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
@@ -28,7 +36,7 @@ export async function validate(
   try {
     // eslint-disable-next-line @typescript-eslint/await-thenable
     await impl(model);
-    const modelSaved = localStorage.getItem('model.json');
+    const modelSaved = localStorage.getItem('tensorflowjs_models/model/info');
     if (!modelSaved) {
       return createIncompleteImplValidationError(`
       Hmm no model.json saved to localstorage.'

@@ -42,18 +42,16 @@ export class ModelBuilder {
 
   #initTime = false;
   #currentStep?: TrainTutorialSteps;
+  #isSolutionVisble = false;
 
-  #mainEle = '#output-element';
-  #trainingStatusstring = '.training-feedback';
-  #progressBarstring = '.training-progress-bar';
-  #timestring = '.time-remaining';
-
-  #trainingStatusElement = getOrCreateElement(this.#trainingStatusstring) as HTMLElement;
-  #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;
+  #mainEle = getOrCreateElement('#output-element') as HTMLElement;
+  #trainingStatusElement = getOrCreateElement('.training-feedback-container') as HTMLElement;
+  #timeElement = getOrCreateElement('.training-progress-bar') as HTMLElement;
   #codeStepEles = document.querySelectorAll('code-step') as NodeListOf<CodeStepComponent>;
-  #progressBarElement = getOrCreateElement(this.#progressBarstring) as HTMLProgressElement;
+  #progressBarElement = getOrCreateElement('.training-progress-bar') as HTMLProgressElement;
 
-  #timeElement = getOrCreateElement(this.#timestring) as HTMLElement;
+  #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;
+  #solutionButton = getOrCreateElement('.view-solution-button') as HTMLButtonElement;
 
   x_train: number[][] = [[]];
   y_train: number[][] = [[]];
@@ -71,6 +69,7 @@ export class ModelBuilder {
   async init() {
     this.#actionButton.disabled = true;
     this.#actionButton.onclick = this.handleNextButtonClick;
+    this.#solutionButton.onclick = this.handleSolutionButtonClick;
     this.mapCodeSteps();
     await this.setCurrentStep(1);
   }
@@ -87,17 +86,33 @@ export class ModelBuilder {
   }
 
   initCodeSteps(stepImpls: StepImplementation) {
+    const solutionMap = {} as { [key: string]: CodeStepComponent };
+    this.#codeStepEles.forEach((codeStep) => {
+      const name = codeStep.getAttribute('name') ?? '';
+      const pattern = /-solution/;
+      if (pattern.test(name)) {
+        const primaryFunction = name.replace('-solution', '');
+        solutionMap[primaryFunction] = codeStep;
+      }
+    });
     this.#codeStepEles.forEach((codeStep: CodeStepComponent) => {
       const name = codeStep.getAttribute('name') ?? '';
       const step = codeStep.getAttribute('step') ?? '';
       const stepDef = codeSteps[name];
       if (name && stepDef) {
         const stepImpl = stepImpls[name];
+        let element;
+        if (solutionMap[name]) {
+          element = solutionMap[name];
+          element.setAttribute('code', stepImpl.solution);
+          element.setAttribute('read-only', 'true');
+        }
         const StepViewerInstance = new StepViewer({
           stepRecord: stepImpl,
           element: codeStep,
           name,
           stepCount: +step,
+          solutionElement: element,
         });
 
         this.#stepMap[step] = StepViewerInstance;
@@ -154,7 +169,7 @@ export class ModelBuilder {
   onBatchEnd = (epoch: number, batch: number, logs?: Logs) => {
     if (!this.#initTime) {
       this.#initTime = true;
-      this.#trainingStatusElement.style.visibility = 'visible';
+      this.#trainingStatusElement.style.display = 'inline-block';
     }
 
     const currentIncrement = epoch * this.#batchSize + (batch + 1);
@@ -225,11 +240,26 @@ export class ModelBuilder {
   handleNextButtonClick = async () => {
     const step = this.#currentStep?.step ?? 1;
     const currentInstance = this.#stepMap[step];
+    if (this.#isSolutionVisble) {
+      this.toggleSolution(false, step);
+    }
     currentInstance.show = false;
     const nextStep = step + 1;
     clearValidationFeedback();
     await this.setCurrentStep(nextStep);
   };
+
+  handleSolutionButtonClick = () => {
+    const state = !this.#isSolutionVisble;
+    const step = this.#currentStep?.step ?? 1;
+    this.toggleSolution(state, step);
+  };
+
+  toggleSolution(isVisible: boolean, step: number) {
+    this.#isSolutionVisble = isVisible;
+    const currentInstance = this.#stepMap[step];
+    currentInstance.showSolution(isVisible);
+  }
 
   async handleStepChange(currentStep: number) {
     const instance = this.#stepMap[currentStep];
@@ -271,8 +301,7 @@ export class ModelBuilder {
       this.#currentStep = step;
       highlightNavStep(this.#currentStep.step);
       unhighlightNavStep(this.#currentStep.step - 1);
-      const mainEle = getOrCreateElement(this.#mainEle) as HTMLElement;
-      mainEle.innerHTML = `${this.#currentStep.step}. ${this.#currentStep.description} `;
+      this.#mainEle.innerHTML = `${this.#currentStep.step}. ${this.#currentStep.description} `;
       await this.handleStepChange(this.#currentStep.step);
     }
   }

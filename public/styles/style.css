@@ -295,7 +295,7 @@ ul.link-list li a span {
   color: white
 }
 .training-feedback-container {
-  visibility: hidden;
+  display: none;
 }
 
 
@@ -309,6 +309,10 @@ fluent-button {
 .bottom-button-container {
   margin-top: 1rem;
   text-align: left;
+}
+
+.next-button-container {
+  margin-top: 1rem;
 }
 /******************************************************************************
 END default theme

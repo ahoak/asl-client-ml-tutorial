@@ -18,7 +18,7 @@ export class CodeEditorComponent extends BaseComponent {
    * The list of observed attributes
    */
   static get observedAttributes() {
-    return ['style', 'placeholder', 'code', 'hide-issues'];
+    return ['style', 'placeholder', 'code', 'hide-issues', 'read-only'];
   }
 
   constructor() {
@@ -55,6 +55,19 @@ export class CodeEditorComponent extends BaseComponent {
       this.removeAttribute('hide-issues');
     }
   }
+  /**
+   * Gets whether or not issues are hidden
+   */
+  get readOnly(): string {
+    return this.getAttribute('read-only') ?? 'false';
+  }
+
+  /**
+   * Sets to read-only mode
+   */
+  set readOnly(value: string) {
+    this.setAttribute('read-only', value);
+  }
 
   /**
    * Listener for when the attribute changed
@@ -71,6 +84,11 @@ export class CodeEditorComponent extends BaseComponent {
     } else if (name === 'hide-issues') {
       if (this.#issueContainerEle) {
         this.#issueContainerEle.style.display = 'none';
+      }
+    } else if (name === 'read-only') {
+      if (this.#editor) {
+        const value = newValue === 'true';
+        this.#editor?.updateOptions({ readOnly: value, domReadOnly: value });
       }
     }
   }
@@ -106,6 +124,7 @@ export class CodeEditorComponent extends BaseComponent {
       const code = this.#model!.getValue() ?? '';
       const transpiledCode = (await tsProxy.getEmitOutput(`${this.#model!.uri.toString()}`))
         .outputFiles[0].text;
+      // ADD PROP
       const issues = markers.map((n) => ({
         type: this.#getIssueTypeFromSeverity(n.severity)!,
         startLineNumber: n.startLineNumber,
@@ -141,6 +160,10 @@ export class CodeEditorComponent extends BaseComponent {
     const issuesToDisplay = issues.filter((n) => n.type === 'error' || n.type === 'warning');
 
     this.#issueDisplayEle!.setAttribute('issues', JSON.stringify(issuesToDisplay));
+    if (this.readOnly) {
+      const value = this.readOnly === 'true';
+      this.#editor?.updateOptions({ readOnly: value, domReadOnly: value });
+    }
 
     if (!this.hideIssues) {
       const oldDisplay = this.#issueContainerEle!.style.display;

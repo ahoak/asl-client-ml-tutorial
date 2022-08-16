@@ -6,13 +6,26 @@ import type { CodeIssueDisplayComponent } from '../IssueDisplay';
 import template from './template.html';
 import type { RawValidationIssue } from './types';
 
+export type CodeStepChangeEventArgs = CodeEditorChangeEventArgs & {
+  hasSyntaxErrors: boolean;
+};
+export type CodeStepChangeEvent = CustomEvent<CodeStepChangeEventArgs>;
+
 const attributes = ['name', 'code', 'validation-issues', 'syntax-issues', 'validating'] as const;
 export class CodeStepComponent extends BaseComponent<typeof attributes[number]> {
   /**
    * The list of observed attributes
    */
   static get observedAttributes() {
-    return ['style', 'name', 'code', 'validation-issues', 'syntax-issues', 'validating'];
+    return [
+      'style',
+      'name',
+      'code',
+      'validation-issues',
+      'syntax-issues',
+      'validating',
+      'read-only',
+    ];
   }
 
   constructor() {
@@ -47,6 +60,10 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
       }));
     } else if (name === 'syntax-issues') {
       this.#syntaxIssues = JSON.parse(this.getAttribute('syntax-issues') ?? '[]') as CodeIssue[];
+    } else if (name === 'read-only') {
+      if (this.#codeEditorEle) {
+        this.#codeEditorEle.readOnly = newValue ?? 'false';
+      }
     }
     this.#render(name, newValue);
   }
@@ -122,6 +139,10 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
       if (this.#firstRender || attribute === 'code') {
         attribValue = (attribute ? attribValue : this.getAttribute('code')) ?? '';
         this.#codeEditorEle!.setAttribute('placeholder', attribValue);
+      }
+      if (attribute === 'read-only') {
+        this.#codeEditorEle!.setAttribute('read-only', attribValue ?? '');
+        this.#codeEditorEle!.readOnly = attribValue === 'true';
       }
 
       const hasIssues = this.#syntaxIssues.length > 0 || this.#validationIssues.length > 0;

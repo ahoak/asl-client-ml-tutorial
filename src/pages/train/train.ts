@@ -12,7 +12,6 @@ import { trainTestSplit } from '../../utils/utils.js';
 // Step 2: Set TensorflowBackend
 /*
   Sets Tensorflow backend to use either webgl, cpu or wasm
-  returns string ('webgl', 'cpu', 'wasm')
 */
 export async function setTensorFlowBackend() {
   // specify backend (not necessary, should default to webgl if available)
@@ -27,7 +26,14 @@ export async function setTensorFlowBackend() {
   Encodes data useing one hot encoding and splits data into training and test set
   returns array of values [X_train, X_val, y_train, y_val];
 */
-export function encodeAndSplitData(data: TensorData) {
+export function encodeAndSplitData(
+  data: TensorData,
+  applyOneHotEncoding: (data: TensorData) => { X: number[][]; Y: number[][] },
+  splitTrainingData: (
+    X: number[][],
+    Y: number[][],
+  ) => [number[][], number[][], number[][], number[][]],
+) {
   // apply one-hot encoding function below
   const { X, Y } = applyOneHotEncoding(data);
   // take the results from one-hot encoding and split data
@@ -93,8 +99,23 @@ export function splitTrainingData(
     testSize: 0.1,
     randomState: 42,
   });
-  console.log('[X_train, X_val, y_train, y_val]', [X_train, X_val, y_train, y_val]);
+  // console.log('[X_train, X_val, y_train, y_val]', [X_train, X_val, y_train, y_val]);
   return [X_train, X_val, y_train, y_val];
+}
+
+// https://js.tensorflow.org/api/latest/#tf.LayersModel.compile
+export function configureModel(model: LayersModel): void {
+  // Compile the model with the defined optimizer and specify a loss function to use.
+  model.compile({
+    // Adam changes the learning rate over time which is useful.
+    // optimizer: 'adam',
+    optimizer: tf.train.adam(0.001),
+    // Use the correct loss function. If 2 classes of data, must use binaryCrossentropy.
+    // Else categoricalCrossentropy is used if more than 2 classes.
+    loss: 'categoricalCrossentropy',
+    // As this is a classification problem you can record accuracy in the logs too!
+    metrics: ['accuracy'],
+  });
 }
 
 // Create a feed-forward model using the tf.sequential (https://js.tensorflow.org/api/latest/#sequential)
@@ -113,21 +134,6 @@ export function createModel() {
   return model;
 }
 
-// https://js.tensorflow.org/api/latest/#tf.LayersModel.compile
-export function configureModel(model: LayersModel) {
-  // Compile the model with the defined optimizer and specify a loss function to use.
-  model.compile({
-    // Adam changes the learning rate over time which is useful.
-    // optimizer: 'adam',
-    optimizer: tf.train.adam(0.001),
-    // Use the correct loss function. If 2 classes of data, must use binaryCrossentropy.
-    // Else categoricalCrossentropy is used if more than 2 classes.
-    loss: 'categoricalCrossentropy',
-    // As this is a classification problem you can record accuracy in the logs too!
-    metrics: ['accuracy'],
-  });
-}
-
 export function getCallbacks(epoch: number, opts?: Callbacks): CustomCallbackArgs {
   function onBatchEnd(batch: number, logs?: Logs) {
     opts?.onBatchEnd && opts.onBatchEnd(epoch, batch, logs);
@@ -139,7 +145,7 @@ export function getCallbacks(epoch: number, opts?: Callbacks): CustomCallbackArg
   }
   return { onBatchEnd, onEpochEnd };
 }
-// TODO: Type for model
+
 export async function trainModel(
   model: LayersModel,
   X_train: number[][],
@@ -148,7 +154,7 @@ export async function trainModel(
   y_val: number[][],
   numEpochs: number,
   cbs: Callbacks,
-) {
+): Promise<void> {
   const epoch = 0;
   const callbacks = getCallbacks(epoch, cbs);
 
@@ -172,12 +178,7 @@ export async function trainModel(
   yValidateTensor.dispose();
 }
 
-export async function exportModel(model: LayersModel) {
+export async function exportModel(model: LayersModel): Promise<void> {
   // checkout https://www.tensorflow.org/js/guide/save_load
   await model.save('localstorage://model');
-  // model.save(new ArrayBufferModelSaver())
-  // console.log('saving to localstorage');
-  // const files = ["tensorflowjs_models/model/weight_data", "tensorflowjs_models/model/weight_specs", "tensorflowjs_models/model/model_topology"]
 }
-
-//https://js.tensorflow.org/api/latest/#data.webcam

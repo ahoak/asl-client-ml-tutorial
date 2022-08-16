@@ -99,7 +99,7 @@ export function splitTrainingData(
     testSize: 0.1,
     randomState: 42,
   });
-  console.log('[X_train, X_val, y_train, y_val]', [X_train, X_val, y_train, y_val]);
+  // console.log('[X_train, X_val, y_train, y_val]', [X_train, X_val, y_train, y_val]);
   return [X_train, X_val, y_train, y_val];
 }
 

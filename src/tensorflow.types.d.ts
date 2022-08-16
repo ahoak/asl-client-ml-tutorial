@@ -15,6 +15,7 @@ declare interface LayersModel {
     metrics: string[];
   }): void;
   evaluate(t1: Tensor<Rank>, t2: Tensor<Rank>): Tensor;
+  save(url: string): Promise<void>;
 }
 
 declare type LayersModelType = LayersModel;

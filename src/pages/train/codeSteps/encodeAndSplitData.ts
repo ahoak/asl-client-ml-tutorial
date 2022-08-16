@@ -61,7 +61,6 @@ export async function validate(
 ): Promise<ValidationResult> {
   let result = [];
   try {
-    console.log('data', data);
     // eslint-disable-next-line @typescript-eslint/await-thenable
     result = await impl(data, applyOneHotEncoding, splitTrainingData);
     if (result && result.length <= 0) {

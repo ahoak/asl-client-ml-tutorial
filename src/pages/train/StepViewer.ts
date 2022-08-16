@@ -2,12 +2,16 @@ import type { Emitter } from 'nanoevents';
 import { createNanoEvents } from 'nanoevents';
 
 import type { CodeStepChangeEvent, CodeStepComponent } from '../../components';
-import { assetURL } from '../../utils/constants';
-import { loadTensors } from '../../utils/utils';
 import type { StepImplementationRecord } from './ModelBuilder';
+
 export const Validated = 'validated';
+export const ValidationInProgress = 'validationInProgress';
+export const ValidationComplete = 'validationComplete';
+
 interface Events {
   [Validated]: (args: any) => void;
+  [ValidationInProgress]: (name: string, stepCount: number) => void;
+  [ValidationComplete]: (name: string, stepCount: number) => void;
 }
 
 export class StepViewer {
@@ -18,6 +22,8 @@ export class StepViewer {
   #isValid = false;
   #args = [] as any[];
   #emitter: Emitter<Events>;
+  #isLoading?: boolean;
+  // todo TRANSPILECODE
 
   constructor(props: {
     stepRecord: StepImplementationRecord;
@@ -46,6 +52,10 @@ export class StepViewer {
     this.#element.setAttribute('code', value);
   }
 
+  set readonly(value: string) {
+    this.#element.setAttribute('read-only', value);
+  }
+
   on<E extends keyof Events>(
     event: E,
     callback: Events[E],
@@ -61,7 +71,7 @@ export class StepViewer {
       localStorage.setItem(`build:${this.#name}`, ce.detail.code);
       const noSyntaxErrors = !ce.detail.hasSyntaxErrors;
       const code = ce.detail.transpiledCode;
-      if (noSyntaxErrors) {
+      if (noSyntaxErrors && !this.#isLoading) {
         await this.handleEvalInput(code);
       }
     });
@@ -72,9 +82,9 @@ export class StepViewer {
   }
 
   async handleEvalInput(transpiledCode?: string) {
+    this.#emitter.emit(ValidationInProgress, this.#name, this.#stepCount);
     const code = transpiledCode ?? this.#element.getAttribute('code') ?? '';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    console.log('args', ...this.#args);
+    this.#isLoading = true;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const implementation = this.#stepRecord.implementation(
       code,
@@ -88,13 +98,14 @@ export class StepViewer {
         'validation-issues',
         JSON.stringify(results.valid ? [] : results.errors),
       );
-      console.log('result', results);
       this.#isValid = results.valid;
       if (this.#isValid) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         this.#emitter.emit(Validated, results);
       }
     }
+    this.#emitter.emit(ValidationComplete, this.#name, this.#stepCount);
+    this.#isLoading = false;
   }
 
   get isValid(): boolean {

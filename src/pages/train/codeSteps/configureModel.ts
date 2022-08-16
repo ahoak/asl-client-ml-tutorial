@@ -1,5 +1,4 @@
 import * as tf from '@tensorflow/tfjs';
-import { LayersModel } from '@tensorflow/tfjs';
 
 import type { ValidationResult } from '../../../types';
 import { ValidationErrorType } from '../../../types';
@@ -11,7 +10,7 @@ export const template = `
  * @param {tf.LayersModel} model The model to run the compile with
 
  */
-function configureModel(model: LayersModel):void {
+function configureModel(model: LayersModel):LayersModel {
     // Compile the model with the defined optimizer and specify a loss function to use.
     model.compile({
       // Adam changes the learning rate over time which is useful.
@@ -23,6 +22,7 @@ function configureModel(model: LayersModel):void {
       // As this is a classification problem you can record accuracy in the logs too!
       metrics: ['accuracy'],
     });
+    return model
   }
   `;
 
@@ -32,28 +32,23 @@ export function implementation<T = (...args: any[]) => any>(
   layerModel: LayersModel,
 ): T {
   // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
-  const wrapper = new Function(
-    'model',
-    'tf',
-    'tfjs',
-    'LayersModel',
-    `return (${code.replace(/export/g, '')})`,
-  );
-  return wrapper(layerModel, tf, tf, LayersModel) as T;
+  const wrapper = new Function('model', 'tf', 'tfjs', `return (${code.replace(/export/g, '')})`);
+  return wrapper(layerModel, tf, tf) as T;
 }
 
-type configureModel = (model: LayersModelType) => void;
+type configureModel = (model: LayersModel) => LayersModel;
 
 export async function validate(
   impl: configureModel,
-  model: LayersModelType,
+  model: LayersModel,
 ): Promise<ValidationResult> {
+  let result = model;
   try {
     // eslint-disable-next-line @typescript-eslint/await-thenable
-    await impl(model);
+    result = await impl(model);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const output = model.evaluate(tf.truncatedNormal([1, 63]), tf.truncatedNormal([1, 26]));
-
+    console.log('compiledModel', result);
     if (!output) {
       return createIncompleteImplValidationError(`
       The model does not seemed to be compiled or compiled correctly'
@@ -76,6 +71,6 @@ export async function validate(
   return {
     valid: true,
     errors: [],
-    data: [model],
+    data: [result],
   };
 }

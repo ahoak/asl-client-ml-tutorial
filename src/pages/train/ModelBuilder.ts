@@ -16,8 +16,7 @@ import { getOrCreateElement, loadTensors, millisToMinutesAndSeconds } from '../.
 import type { CodeStepRecord } from './codeSteps';
 import { codeSteps } from './codeSteps';
 import { StepViewer, Validated } from './StepViewer';
-import { applyOneHotEncoding, splitTrainingData } from './train';
-import { handleAfterDataLoadingStyles, handleBeforeDataLoadingStyles } from './utils/DataLoader';
+import { handleAfterDataLoadingStyles } from './utils/DataLoader';
 
 const ProjectSettingsConfig = Settings as unknown as ProjectSettings;
 
@@ -45,8 +44,6 @@ export class ModelBuilder {
   #progressBarstring = '.training-progress-bar';
   #timestring = '.time-remaining';
 
-  // #trainingContainerstring = '.training-feedback-container';
-  // #actionButtonQuery = '.train-button';
   #trainingStatusElement = getOrCreateElement(this.#trainingStatusstring) as HTMLElement;
   #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;
   #solutionFeedbackElement = getOrCreateElement(this.#solutionFeedbackstring);
@@ -109,6 +106,7 @@ export class ModelBuilder {
           case 1:
             StepViewerInstance.funcInput = [loadTensors, assetURL];
             StepViewerInstance.on(Validated, this.handleDataValidation);
+            StepViewerInstance.readonly = 'true';
             break;
           case 2:
             StepViewerInstance.funcInput = [tf];
@@ -143,7 +141,6 @@ export class ModelBuilder {
 
   handleDownloadValidation = (result: ValidationResult) => {
     if (result.valid) {
-      console.log('model download validation complete', result);
       this.#solutionFeedbackElement.innerHTML = 'Done!';
     }
   };
@@ -180,7 +177,7 @@ export class ModelBuilder {
   };
 
   handleTrainingValidation = (result: ValidationResult) => {
-    console.log('model training validation complete', result);
+    // console.log('model training validation complete', result);
     if (result.valid) {
       this.#solutionFeedbackElement.innerHTML = 'Almost done! Now let us download our model.';
       this.#actionButton.disabled = false;
@@ -188,17 +185,18 @@ export class ModelBuilder {
   };
 
   handleConfigureModel = (result: ValidationResult) => {
-    console.log('model config validation complete', result);
-    if (result.valid) {
-      this.#solutionFeedbackElement.innerHTML = 'Look at you go! Great work.';
+    // console.log('model config validation complete', result);
+    if (result.valid && result.data && result.data.length > 0) {
+      this.#aslModel = result.data[0] as unknown as LayersModel;
+      this.#solutionFeedbackElement.innerHTML = 'Look at you go! Great work. Model is configured.';
       this.#actionButton.disabled = false;
     }
   };
 
   handleModelCreation = (result: ValidationResult) => {
-    console.log('model creation validation complete', result);
+    // console.log('model creation validation complete', result);
     if (result.valid && result.data && result.data.length > 0) {
-      this.#aslModel = result.data as unknown as LayersModel;
+      this.#aslModel = result.data[0] as unknown as LayersModel;
       this.#solutionFeedbackElement.innerHTML = 'Yay! Model created! 🎉';
       this.#actionButton.disabled = false;
     } else {
@@ -207,7 +205,7 @@ export class ModelBuilder {
   };
 
   handleDataSplitValidation = (result: ValidationResult) => {
-    console.log('encode and split data validation complete', result);
+    // console.log('encode and split data validation complete', result);
     if (result.valid && result.data && result.data.length > 0) {
       [this.x_train, this.x_val, this.y_train, this.y_val] = result.data as [
         number[][],
@@ -223,7 +221,7 @@ export class ModelBuilder {
   };
 
   handleBackendValidation = (result: ValidationResult) => {
-    console.log('setBackend validation complete', result);
+    // console.log('setBackend validation complete', result);
     if (result.valid && result.data && result.data.length > 0) {
       const backendInUse = result.data[0] as string;
       this.#solutionFeedbackElement.innerHTML = `Nice work! You are using ${backendInUse}.`;
@@ -234,7 +232,7 @@ export class ModelBuilder {
   };
 
   handleDataValidation = (result: ValidationResult) => {
-    console.log('data load validation complete', result);
+    // console.log('data load validation complete', result);
     if (result.valid && result.data && result.data.length > 0) {
       const data = result.data[0] as TensorData;
       this.#inputData = data;
@@ -299,49 +297,6 @@ export class ModelBuilder {
       this.handleStepChange(this.#currentStep.step);
     }
   }
-
-  // handleConfigureModel = () => {
-  //   if (this.#aslModel) {
-  //     const solutionFeedbackElement = getOrCreateElement(
-  //       this.#solutionFeedbackstring,
-  //     ) as HTMLElement;
-  //     const errorMsg =
-  //       'The model needs to be compiled before being used. Check configureModel() method';
-  //     // const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
-
-  //     try {
-  //       // configureModel(this.#aslModel);
-  //       // const output = this.#aslModel.evaluate(
-  //       //   tf.truncatedNormal([1, 63]),
-  //       //   tf.truncatedNormal([1, 26]),
-  //       // );
-  //       // if (output) {
-  //       //   solutionFeedbackElement.innerHTML = 'Look at you go! Great work.';
-  //       //   const nextStep = this.#currentStep != undefined ? this.#currentStep.step + 1 : 0;
-  //       //   this.setCurrentStep(nextStep);
-  //       //   actionButton.onclick = this.handleTrainModel;
-  //       // } else {
-  //       //   throw new Error(errorMsg);
-  //       // }
-  //     } catch (err) {
-  //       solutionFeedbackElement.innerHTML = errorMsg;
-
-  //       throw new Error(errorMsg);
-  //     }
-  //   } else {
-  //     throw new Error('No model found');
-  //   }
-  // };
-
-  // handleDownloadModelButtonClick = () => {
-  //   const actionButton = getOrCreateElement(this.#actionButton) as HTMLButtonElement;
-  //   if (this.#aslModel) {
-  //     //   await exportModel(this.#aslModel);
-  //     actionButton.innerText = 'Downloaded!';
-  //   } else {
-  //     console.log('no model to export');
-  //   }
-  // };
 }
 
 // Utils

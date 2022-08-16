@@ -62,7 +62,11 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
       this.#syntaxIssues = JSON.parse(this.getAttribute('syntax-issues') ?? '[]') as CodeIssue[];
     } else if (name === 'read-only') {
       if (this.#codeEditorEle) {
-        this.#codeEditorEle.readOnly = newValue ?? 'false';
+        if (newValue === null) {
+          this.#codeEditorEle.removeAttribute('read-only');
+        } else {
+          this.#codeEditorEle.setAttribute('read-only', '');
+        }
       }
     }
     this.#render(name, newValue);
@@ -146,8 +150,11 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
         }
       }
       if (attribute === 'read-only') {
-        this.#codeEditorEle!.setAttribute('read-only', attribValue ?? '');
-        this.#codeEditorEle!.readOnly = attribValue === 'true';
+        if (attribValue === null) {
+          this.#codeEditorEle!.removeAttribute('read-only');
+        } else {
+          this.#codeEditorEle!.setAttribute('read-only', '');
+        }
       }
 
       const hasIssues = this.#syntaxIssues.length > 0 || this.#validationIssues.length > 0;

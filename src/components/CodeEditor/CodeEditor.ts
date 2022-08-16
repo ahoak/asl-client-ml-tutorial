@@ -57,15 +57,19 @@ export class CodeEditorComponent extends BaseComponent {
   /**
    * Gets whether or not issues are hidden
    */
-  get readOnly(): string {
-    return this.getAttribute('read-only') ?? 'false';
+  get readOnly(): boolean {
+    return this.hasAttribute('read-only');
   }
 
   /**
    * Sets to read-only mode
    */
-  set readOnly(value: string) {
-    this.setAttribute('read-only', value);
+  set readOnly(value: boolean) {
+    if (value) {
+      this.setAttribute('read-only', '');
+    } else {
+      this.removeAttribute('read-only');
+    }
   }
 
   /**
@@ -91,8 +95,7 @@ export class CodeEditorComponent extends BaseComponent {
       }
     } else if (name === 'read-only') {
       if (this.#editor) {
-        const value = newValue === 'true';
-        this.#editor?.updateOptions({ readOnly: value, domReadOnly: value });
+        this.#editor?.updateOptions({ readOnly: this.readOnly, domReadOnly: this.readOnly });
       }
     }
   }
@@ -161,10 +164,7 @@ export class CodeEditorComponent extends BaseComponent {
       }),
     );
 
-    if (this.readOnly) {
-      const value = this.readOnly === 'true';
-      this.#editor?.updateOptions({ readOnly: value, domReadOnly: value });
-    }
+    this.#editor?.updateOptions({ readOnly: this.readOnly, domReadOnly: this.readOnly });
 
     if (!this.hideIssues) {
       const issuesToDisplay = issues.filter((n) => n.type === 'error' || n.type === 'warning');

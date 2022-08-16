@@ -33,3 +33,4 @@ self.addEventListener('fetch', function(event) {
     })
   );
 });
+// WebAssembly.instantiate(fetch("/tfjs-backend-wasm.wasm"))

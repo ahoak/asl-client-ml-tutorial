@@ -3,6 +3,8 @@ import { defineConfig } from 'vite';
 import handlebarsPlugin from 'vite-plugin-handlebars';
 import mpa from 'vite-plugin-mpa';
 import vitePluginString from 'vite-plugin-string';
+import topLevelAwait from 'vite-plugin-top-level-await';
+import wasm from 'vite-plugin-wasm';
 
 const Settings = require('./settings.json');
 
@@ -22,21 +24,25 @@ export default defineConfig(async () => {
 
         // context: { settings: Settings },
         context: (pagePath) => {
-          console.log('pagePath', pagePath);
           return { settings: Settings };
         },
 
         reloadOnPartialChange: true,
       }),
       vitePluginString({
-        include: ["**/*.html"],
-        exclude: "node_modules/**",
+        include: ['**/*.html'],
+        exclude: 'node_modules/**',
         compress: false,
       }),
       vitePluginString({
-        include: ["**/*.d.ts"],
+        include: ['**/*.d.ts'],
         compress: false,
       }),
+      wasm(),
+      topLevelAwait(),
     ],
+    optimizeDeps: {
+      exclude: ['@tensorflow/tfjs-backend-wasm/dist'],
+    },
   };
 });

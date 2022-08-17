@@ -34,6 +34,7 @@ export function implementation<T = (...args: any[]) => any>(code: string): T {
   const wrapper = new Function('tf', 'tfjs', `return (${code.replace(/export/g, '')})`);
   return wrapper(tf, tf) as T;
 }
+
 type setTensorFlowBackend = () => void;
 
 export async function validate(impl: setTensorFlowBackend): Promise<ValidationResult> {

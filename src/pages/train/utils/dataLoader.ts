@@ -55,7 +55,7 @@ const stepSuccessStatements = new Map([
 export function getSuccessStatement(step: number, backendInUse?: string) {
   let response = '';
   if (step === 2 && backendInUse) {
-    response = `✅ Nice work! You are using ${backendInUse}.`;
+    response = `✔️ Nice work! You are using ${backendInUse}.`;
   } else {
     response = stepSuccessStatements.get(step) ?? '';
   }

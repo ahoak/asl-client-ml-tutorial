@@ -46,16 +46,19 @@ export class StepViewer {
 
   set show(state: boolean) {
     if (state) {
-      this.#element.setAttribute('style', 'display: flex;width: 100%;max-height: 400px;');
+      this.#element.setAttribute('style', 'display: flex;width: 100%;height:calc(100vw / 3)');
     } else {
       this.#element.setAttribute('style', 'display:none;');
     }
   }
-
+  // TODO: Add stying for "read-only" components
   showSolution(state: boolean) {
     if (this.#solutionElement) {
       if (state) {
-        this.#solutionElement.setAttribute('style', 'display: flex;width: 100%;max-height: 400px;');
+        this.#solutionElement.setAttribute(
+          'style',
+          'display: flex;width: 100%;height:calc(100vw / 3)',
+        );
       } else {
         this.#solutionElement.setAttribute('style', 'display:none;');
       }

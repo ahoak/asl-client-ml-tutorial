@@ -19,6 +19,20 @@ async function loadTensorData(
 }
 `;
 
+export const solution = `
+// Loads tensors based on image data processed using mediapipe hands model
+// loads zip folder located in assets
+async function loadTensorDataSolution(
+  loadTensors: (folder: jsZipInstance) => Promise<{ [key: string]: number[][] }>,
+  assetURL: string
+): Promise<{ [key: string]: number[][] }> {
+  const zippedModelBuffer = await (await fetch(assetURL)).arrayBuffer();
+  const zipFolder = await jszip.loadAsync(zippedModelBuffer);
+  const output = await loadTensors(zipFolder);
+  return output;
+}
+`;
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function implementation<T = (...args: any[]) => any>(code: string): T {
   // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func

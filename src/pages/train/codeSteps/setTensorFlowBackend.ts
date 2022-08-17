@@ -1,14 +1,27 @@
+import '@tensorflow/tfjs-backend-wasm';
+
 import * as tf from '@tensorflow/tfjs';
 
 import type { ValidationResult } from '../../../types';
 import { ValidationErrorType } from '../../../types';
 import { createIncompleteImplValidationError } from '../../../utils/utils';
 
+// setWasmPaths('/');
 export const template = `
 /*
 Sets Tensorflow backend to use either webgl, cpu or wasm
 */
 async function setTensorFlowBackend(): Promise<void> {
+    // specify backend (not necessary, should default to webgl if available)
+    //  const option = 'webgl' || 'cpu' || 'wasm';
+}
+`;
+
+export const solution = `
+/*
+Sets Tensorflow backend to use either webgl, cpu or wasm
+*/
+async function setTensorFlowBackendSolution(): Promise<void> {
     // specify backend (not necessary, should default to webgl if available)
     //  const option = 'webgl' || 'cpu' || 'wasm';
     await tf.setBackend('webgl');
@@ -21,6 +34,7 @@ export function implementation<T = (...args: any[]) => any>(code: string): T {
   const wrapper = new Function('tf', 'tfjs', `return (${code.replace(/export/g, '')})`);
   return wrapper(tf, tf) as T;
 }
+
 type setTensorFlowBackend = () => void;
 
 export async function validate(impl: setTensorFlowBackend): Promise<ValidationResult> {

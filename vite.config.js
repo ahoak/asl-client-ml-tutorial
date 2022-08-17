@@ -22,21 +22,23 @@ export default defineConfig(async () => {
 
         // context: { settings: Settings },
         context: (pagePath) => {
-          console.log('pagePath', pagePath);
           return { settings: Settings };
         },
 
         reloadOnPartialChange: true,
       }),
       vitePluginString({
-        include: ["**/*.html"],
-        exclude: "node_modules/**",
+        include: ['**/*.html'],
+        exclude: 'node_modules/**',
         compress: false,
       }),
       vitePluginString({
-        include: ["**/*.d.ts"],
+        include: ['**/*.d.ts'],
         compress: false,
       }),
     ],
+    optimizeDeps: {
+      exclude: ['@tensorflow/tfjs-backend-wasm/dist'],
+    },
   };
 });

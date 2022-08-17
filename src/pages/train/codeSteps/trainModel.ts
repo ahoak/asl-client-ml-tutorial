@@ -26,6 +26,36 @@ async function trainModel(
     const epoch = 0;
     const callbacks = getCallbacks(epoch, cbs);
   
+    // Transform X_train, y_train, X_val, y_val to tensors
+ 
+  
+    // call model.fit( )
+   
+    // Free up memory resources
+  
+  }
+`;
+
+export const solution = `
+async function trainModelSolution(
+    model: LayersModel,
+    X_train: number[][],
+    X_val: number[][],
+    y_train: number[][],
+    y_val: number[][],
+    numEpochs: number,
+    cbs: {
+      onBatchEnd: (epoch: number, batch: number, logs?: Logs) => void;
+      onEpochEnd: (epoch: number) => void;
+    },
+    getCallbacks: (epoch: number, cbs: {
+      onBatchEnd: (epoch: number, batch: number, logs?: Logs) => void;
+      onEpochEnd: (epoch: number) => void;
+    }) => void
+  ): Promise<void> {
+    const epoch = 0;
+    const callbacks = getCallbacks(epoch, cbs);
+  
     const xTensor = tf.tensor(X_train);
     const yTensor = tf.tensor(y_train);
     const xValidateTensor = tf.tensor(X_val);

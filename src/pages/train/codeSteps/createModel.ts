@@ -8,6 +8,14 @@ import { createIncompleteImplValidationError } from '../../../utils/utils';
 export const template = `
 // Create a feed-forward model using the tf.sequential (https://js.tensorflow.org/api/latest/#sequential)
 function createModel(classes: string[]):LayersModel {
+  // Create a feed-forward model using tf.sequential
+ 
+  // return model;
+}`;
+
+export const solution = `
+// Create a feed-forward model using the tf.sequential (https://js.tensorflow.org/api/latest/#sequential)
+function createModelSolution(classes: string[]):LayersModel {
   // Create a feed-forward model
   const model = tf.sequential({
     layers: [

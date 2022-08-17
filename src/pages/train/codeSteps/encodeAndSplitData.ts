@@ -22,6 +22,29 @@ function encodeAndSplitData(
   ) => [number[][], number[][], number[][], number[][]],
 ) {
   // apply one-hot encoding function below
+  // take the results from one-hot encoding and split data
+ 
+  // return resullt from data split
+}
+  `;
+
+export const solution = `
+// Step 3: Use One Hot Encoding to convert letters (i.e "A", "B", "C") to binary vector
+// Split Training data
+// use pre-built functions below to complete
+/*
+  Encodes data useing one hot encoding and splits data into training and test set
+  returns array of values [X_train, X_val, y_train, y_val];
+*/
+function encodeAndSplitDataSolution(
+  data:  {[key: string]: number[][];},
+  applyOneHotEncoding: (data: { [key: string]: number[][];}) => { X: number[][]; Y: number[][] },
+  splitTrainingData: (
+    X: number[][],
+    Y: number[][],
+  ) => [number[][], number[][], number[][], number[][]],
+) {
+  // apply one-hot encoding function below
   const { X, Y } = applyOneHotEncoding(data);
   // take the results from one-hot encoding and split data
   return splitTrainingData(X, Y);
@@ -63,7 +86,7 @@ export async function validate(
   try {
     // eslint-disable-next-line @typescript-eslint/await-thenable
     result = await impl(data, applyOneHotEncoding, splitTrainingData);
-    if (result && result.length <= 0) {
+    if (!result || result.length <= 0) {
       return createIncompleteImplValidationError(
         `It appears encodeAndSplitData() function may not be implemented or is not returning a result`,
       );

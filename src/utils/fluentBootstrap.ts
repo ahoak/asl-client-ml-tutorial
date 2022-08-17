@@ -3,8 +3,14 @@ import {
   fluentBreadcrumbItem,
   fluentButton,
   fluentCard,
+  fluentDivider,
+  fluentOption,
   fluentProgress,
   fluentProgressRing,
+  fluentSelect,
+  fluentTab,
+  fluentTabPanel,
+  fluentTabs,
   provideFluentDesignSystem,
 } from '@fluentui/web-components';
 
@@ -16,8 +22,14 @@ provideFluentDesignSystem().register(
   }),
   fluentProgressRing(),
   fluentCard(),
+  fluentDivider(),
+  fluentOption(),
+  fluentSelect(),
   fluentBreadcrumb(),
   fluentBreadcrumbItem({
     separator: ' -> ',
   }),
+  fluentTab(),
+  fluentTabPanel(),
+  fluentTabs(),
 );

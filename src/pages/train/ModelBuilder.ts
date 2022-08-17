@@ -106,7 +106,7 @@ export class ModelBuilder {
         if (solutionMap[name]) {
           element = solutionMap[name];
           element.setAttribute('code', stepImpl.solution);
-          element.setAttribute('read-only', 'true');
+          element.toggleAttribute('readonly', true);
         }
         const StepViewerInstance = new StepViewer({
           stepRecord: stepImpl,
@@ -122,7 +122,7 @@ export class ModelBuilder {
           case 1:
             StepViewerInstance.funcInput = [loadTensors, assetURL];
             StepViewerInstance.on(Validated, this.handleDataValidation);
-            StepViewerInstance.readonly = 'true';
+            StepViewerInstance.readonly = true;
             break;
           case 3:
             StepViewerInstance.on(Validated, this.handleDataSplitValidation);

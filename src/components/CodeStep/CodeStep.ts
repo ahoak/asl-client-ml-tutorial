@@ -24,7 +24,7 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
       'validation-issues',
       'syntax-issues',
       'validating',
-      'read-only',
+      'readonly',
     ];
   }
 
@@ -32,25 +32,34 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
     super(template);
   }
 
-  /**
-   * The root of the app component
-   */
-  #root: HTMLElement | null = null;
   #nameEle: HTMLElement | null = null;
   #successContainer: HTMLElement | null = null;
   #issueContainer: HTMLElement | null = null;
+  #validatingContainer: HTMLElement | null = null;
+  #validateProgressContainer: HTMLElement | null = null;
   #issueDisplay: CodeIssueDisplayComponent | null = null;
   #codeEditorEle: CodeEditorComponent | null = null;
   #connected = false;
   #syntaxIssues: CodeIssue[] = [];
-  #hasCodeChanged = false;
   #validationIssues: CodeIssue[] = [];
   #firstRender = true;
 
   /**
+   * The root of the app component
+   */
+  #__root: HTMLElement | null = null;
+  get #root(): HTMLElement {
+    if (!this.#__root) {
+      this.#__root = this.templateRoot.querySelector('.root');
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.#__root!;
+  }
+
+  /**
    * Listener for when the attribute changed
    */
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+  attributeChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {
     if (name === 'validation-issues') {
       this.#validationIssues = (
         JSON.parse(this.getAttribute('validation-issues') ?? '[]') as RawValidationIssue[]
@@ -60,38 +69,34 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
       }));
     } else if (name === 'syntax-issues') {
       this.#syntaxIssues = JSON.parse(this.getAttribute('syntax-issues') ?? '[]') as CodeIssue[];
-    } else if (name === 'read-only') {
-      if (this.#codeEditorEle) {
-        if (newValue === null) {
-          this.#codeEditorEle.removeAttribute('read-only');
-        } else {
-          this.#codeEditorEle.setAttribute('read-only', '');
-        }
-      }
+    } else if (name === 'readonly') {
+      this.#codeEditorEle?.toggleAttribute('readonly', newValue === null);
     }
-    this.#render(name, newValue);
+    this.#render(name, newValue ?? '');
   }
 
   /**
    * Listener for when the element is initialized
    */
   connectedCallback() {
-    this.#nameEle = this.#getRoot().querySelector('.name');
-    this.#codeEditorEle = this.#getRoot().querySelector('.code-editor');
-    this.#successContainer = this.#getRoot().querySelector('.validate-success');
-    this.#issueContainer = this.#getRoot().querySelector('.issue-container');
-    this.#issueDisplay = this.#getRoot().querySelector('.issue-display');
+    this.#nameEle = this.#root.querySelector('.name');
+    this.#codeEditorEle = this.#root.querySelector('.code-editor');
+    this.#successContainer = this.#root.querySelector('.validate-success');
+    this.#validatingContainer = this.#root.querySelector('.validate-container');
+    this.#validateProgressContainer = this.#root.querySelector('.validate-progress');
+    this.#issueContainer = this.#root.querySelector('.issue-container');
+    this.#issueDisplay = this.#root.querySelector('.issue-display');
 
     this.#codeEditorEle!.addEventListener('change', (rawEvent: Event) => {
       const event = rawEvent as CustomEvent<CodeEditorChangeEventArgs>;
-      this.#hasCodeChanged = true;
-
-      this.setAttribute('code', event.detail.code);
-      this.setAttribute('transpiledCode', event.detail.transpiledCode);
-
       const issues = (event.detail.issues ?? []).filter(
         (n) => n.type === 'error' || n.type === 'warning',
       );
+
+      this.setAttribute('code', event.detail.code);
+      this.setAttribute('transpiled-code', event.detail.transpiledCode);
+      this.setAttribute('syntax-issues', JSON.stringify(issues ?? []));
+
       this.dispatchEvent(
         new CustomEvent('change', {
           detail: {
@@ -101,7 +106,6 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
         }),
       );
 
-      this.setAttribute('syntax-issues', JSON.stringify(issues ?? []));
       this.#render();
     });
 
@@ -120,21 +124,21 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
   /**
    * Renders this component
    */
-  #render(attribute: string | null = null, attribValue: string | null = null) {
+  #render(attribute: string | null = null, attribValue?: string) {
     if (this.#connected) {
-      if (this.#firstRender || !attribute || attribute === 'style') {
-        attribValue = attribute ? attribValue : this.getAttribute('style');
-        this.#getRoot().style.cssText = attribValue!;
+      if (this.#hasAttributeChanged('style', attribute)) {
+        this.#root.style.cssText = attribValue ?? this.getAttribute('style') ?? '';
       }
-      if (this.#firstRender || !attribute || attribute === 'name') {
-        attribValue = attribute ? attribValue : this.getAttribute('name');
-        this.#nameEle!.innerHTML = attribValue!;
+      if (this.#hasAttributeChanged('name', attribute)) {
+        this.#nameEle!.innerHTML = attribValue ?? this.getAttribute('name') ?? ''!;
+      }
+      if (this.#hasAttributeChanged('validating', attribute)) {
+        const isValidating = this.hasAttribute('validating');
+        this.#validateProgressContainer!.style.display = isValidating ? '' : 'none';
       }
       if (
-        this.#firstRender ||
-        !attribute ||
-        attribute === 'validation-issues' ||
-        attribute === 'syntax-issues'
+        this.#hasAttributeChanged('validation-issues', attribute) ||
+        this.#hasAttributeChanged('syntax-issues', attribute)
       ) {
         this.#issueDisplay!.setAttribute(
           'issues',
@@ -143,19 +147,15 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
           ),
         );
       }
-      if (this.#firstRender || attribute === 'code') {
-        attribValue = (attribute ? attribValue : this.getAttribute('code')) ?? '';
+
+      if (this.#hasAttributeChanged('code', attribute)) {
+        attribValue = attribValue ?? this.getAttribute('code') ?? '';
         if (attribValue !== this.#codeEditorEle!.getAttribute('code')) {
           this.#codeEditorEle!.setAttribute('code', attribValue);
         }
       }
-      if (attribute === 'read-only') {
-        if (attribValue === null) {
-          this.#codeEditorEle!.removeAttribute('read-only');
-        } else {
-          this.#codeEditorEle!.setAttribute('read-only', '');
-        }
-      }
+
+      this.#codeEditorEle?.toggleAttribute('readonly', this.hasAttribute('readonly'));
 
       const hasIssues = this.#syntaxIssues.length > 0 || this.#validationIssues.length > 0;
       this.#issueContainer!.style.display = hasIssues ? 'block' : 'none';
@@ -163,14 +163,8 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
     }
   }
 
-  /**
-   * Gets the root element for the component
-   */
-  #getRoot(): HTMLElement {
-    if (!this.#root) {
-      this.#root = this.templateRoot.querySelector('.root');
-    }
-    return this.#root!;
+  #hasAttributeChanged(attributeName: string, attribute: string | null): boolean {
+    return this.#firstRender || !attribute || attribute === attributeName;
   }
 }
 

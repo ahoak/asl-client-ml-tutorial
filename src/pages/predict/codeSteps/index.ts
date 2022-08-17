@@ -5,13 +5,22 @@ import * as normalizeTensor from './normalizeTensor';
 import * as predict from './predict';
 import * as predictClassification from './predictClassification';
 
-export const codeSteps: Record<
-  string,
-  {
-    template: string;
-    validate?: (impl: (...args: any[]) => any) => Promise<ValidationResult>;
-  }
-> = {
+type Impl = (...args: any[]) => any;
+type StepType = {
+  template: string;
+  validate?: (impl: Impl) => Promise<ValidationResult>;
+};
+
+export type CodeStepName = typeof codeStepNames[number];
+
+export const codeStepNames = [
+  'getFlattenedJointPositions',
+  'normalizeTensor',
+  'predictClassification',
+  'cleanup',
+  'predict',
+] as const;
+export const codeSteps: Record<CodeStepName, StepType> = {
   getFlattenedJointPositions,
   normalizeTensor,
   predictClassification,

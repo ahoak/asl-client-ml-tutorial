@@ -25,7 +25,7 @@ export class CodeIssueDisplayComponent extends BaseComponent<IssueAttributeNames
   /**
    * Listener for when the attribute changed
    */
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+  attributeChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {
     // Make our "style", match the host value
     if (name === 'style') {
       this.#getRoot().style.cssText = newValue ?? '';
@@ -68,7 +68,7 @@ export class CodeIssueDisplayComponent extends BaseComponent<IssueAttributeNames
         errorEle.innerHTML = `
           <div class="issue ${error.type}">
             <div class="issue-type">${this.#getFriendlyIssueType(error.type)}${locationStr}</div>
-            <div class="detail">${error.message}</div>
+            <div class="detail">${error.message ?? error.detail ?? ''}</div>
           </div>
         `;
         root.appendChild(errorEle);

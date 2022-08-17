@@ -53,23 +53,19 @@
     "helperText": "Import a pre-trained model to perform inference with."
   }, {
     "step": 2,
-    "description": "Extract Hand Joint Positions",
+    "description": "Extract and Process Joint Positions",
     "helperText": "Extract the hand joint positions from within an image."
   }, {
     "step": 3,
-    "description": "Normalize",
-    "helperText": "Normalize the joint positions from -1 to 1."
-  }, {
-    "step": 4,
     "description": "Classify",
     "helperText": "Run inference with the normalized joint positions to get a classification (ASL sign)."
   }, {
-    "step": 5,
+    "step": 4,
     "description": "Cleanup",
     "helperText": "Cleanup the tensors used while infering."
   }, {
-    "step": 6,
-    "description": "Predict",
+    "step": 5,
+    "description": "Run",
     "helperText": "Run prediction on the model"
   }]
 }

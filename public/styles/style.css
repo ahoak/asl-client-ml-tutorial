@@ -299,7 +299,10 @@ ul.link-list li a span {
 }
 
 .predict-container {
+  /** start hidden, this is display: flex; **/
   display: none;
+  flex-direction: column;
+  align-self: center;
 }
 
 .predict-container .breadcrumbs .active-step {
@@ -308,11 +311,13 @@ ul.link-list li a span {
 
 .predict-container .steps::part(main) {
   min-width: 500px;
-  width: 50vw;
-  height: 50vh;
-  min-height: 400px;
+  width: 100vw;
   display: flex;
   flex-direction: column;
+}
+
+.predict-container code-step {
+  min-height: 50vh;
 }
 
 step-controller::part(contents) {
@@ -337,9 +342,24 @@ step-controller code-step code-editor {
   height: 100%;
 }
 
-.predict-container.ready {
+.predict-contents {
   display: flex;
+  flex-direction: column;
+}
+
+.predict-contents.ready .initialize-container {
+  display: none;
+}
+
+.predict-contents .initialize-container {
+  display: flex;
+  flex-direction: column;
   align-self: center;
+  align-items: center;
+}
+
+.predict-contents.ready .predict-container {
+  display: flex;
 }
 
 .predict-container step-controller::part(contents) {
@@ -347,15 +367,40 @@ step-controller code-step code-editor {
   justify-content: center;
 }
 
+.predict-container step-controller::part(next_button) {
+  --accent-fill-rest: var(--glitch-pink);
+}
+
+.predict-container step-controller::part(next_button disabled) {
+  display: none;
+}
+
 .predict-container [name="importModel"] {
   justify-self: center;
 }
 
-.predict-container .step-status {
+.breadcrumbs .step-status {
   padding-left: 5px;
 }
 
-.predict-container .step-status .valid {
+.breadcrumbs .step-status .valid,
+.breadcrumbs .step-status .invalid {
+  display: none;
+}
+
+.breadcrumbs fluent-breadcrumb-item.valid .step-status .valid {
+  display: block;
+}
+
+.breadcrumbs fluent-breadcrumb-item.invalid .step-status .invalid {
+  display: block;
+}
+
+.predict-container .predict-button:not(.active-step) {
+  display: none;
+}
+
+.predict-container .predict-button:not(.active-step) {
   display: none;
 }
 

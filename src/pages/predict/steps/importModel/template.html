@@ -1,0 +1,23 @@
+<style>
+	[slot="success"] {
+		font-weight: bold;
+	}
+
+	step-container::part(main) {
+		width: 500px;
+	}
+</style>
+<div class="root">
+	<step-container class="step-container">
+		<div slot="name">Import Model</div>
+		<label class="model-import-container">
+			Select the model.zip file that you saved in the previous step.
+			<div>
+				<input title="Model file to import" class="model-import-file" type="file" accept="application/zip">
+			</div>
+		</label>
+		<div slot="success">
+			<div>The model that you selected looks good! 👍</div>
+		</div>
+	</step-container>
+</div>

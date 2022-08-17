@@ -6,7 +6,7 @@ export class StepControllerComponent extends BaseComponent {
    * The list of observed attributes
    */
   static get observedAttributes() {
-    return ['style', 'class', 'step'];
+    return ['style', 'class', 'step', 'max-step'];
   }
 
   /**
@@ -15,9 +15,19 @@ export class StepControllerComponent extends BaseComponent {
   #root: HTMLElement | null = null;
 
   /**
+   * The next button of the component
+   */
+  #nextButton: HTMLElement | null = null;
+
+  /**
    * The current step
    */
   #step: number | null = null;
+
+  /**
+   * The max step
+   */
+  #maxStep: number | null = null;
 
   /**
    * The slot where child steps are placed
@@ -25,9 +35,9 @@ export class StepControllerComponent extends BaseComponent {
   #stepSlot: HTMLSlotElement | null = null;
 
   /**
-   * The header container element
+   * The slot where child steps are placed
    */
-  #headerContainer: HTMLSlotElement | null = null;
+  #buttonsSlot: HTMLSlotElement | null = null;
 
   /**
    * The slot where header is placed
@@ -56,16 +66,43 @@ export class StepControllerComponent extends BaseComponent {
   }
 
   /**
+   * Gets the max step
+   */
+  get maxStep(): number {
+    return this.#maxStep ?? 0;
+  }
+
+  /**
+   * Sets the max step
+   */
+  set maxStep(value: number) {
+    if (value > 0 && value !== this.maxStep) {
+      this.setAttribute('max-step', `${value ?? '0'}`);
+    } else {
+      throw new Error('max-step must be an integer greater than 0');
+    }
+  }
+
+  /**
    * Listener for when the attribute changed
    */
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+  attributeChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {
     // Make our "style", match the host value
     if (name === 'style') {
       this.#getRoot().style.cssText = newValue ?? '';
     } else if (name === 'step') {
       this.#step = newValue ? parseInt(newValue, 10) : null;
-      this.#render();
+      this.dispatchEvent(
+        new CustomEvent('stepChanged', {
+          detail: {
+            step: this.#step ?? 0,
+          },
+        }),
+      );
+    } else if (name === 'max-step') {
+      this.#maxStep = newValue ? +newValue : 0;
     }
+    this.#render();
   }
 
   /**
@@ -73,14 +110,13 @@ export class StepControllerComponent extends BaseComponent {
    */
   connectedCallback(): void {
     this.#stepSlot = this.#getRoot().querySelector('.contents slot');
-    this.#headerContainer = this.#getRoot().querySelector('.header');
     this.#headerSlot = this.#getRoot().querySelector('.header slot');
-    this.#stepSlot!.addEventListener('slotchange', () => {
-      this.#render();
-    });
-    this.#headerSlot!.addEventListener('slotchange', () => {
-      this.#render();
-    });
+    this.#buttonsSlot = this.#getRoot().querySelector('.buttons slot');
+    this.#nextButton = this.#getRoot().querySelector('.next-button');
+    this.#nextButton?.addEventListener('click', () => (this.step = (this.step ?? 0) + 1));
+    this.#stepSlot?.addEventListener('slotchange', () => this.#render());
+    this.#headerSlot?.addEventListener('slotchange', () => this.#render());
+    this.#buttonsSlot?.addEventListener('slotchange', () => this.#render());
     this.#render();
   }
 
@@ -90,18 +126,32 @@ export class StepControllerComponent extends BaseComponent {
   #render() {
     const strStep = `${this.#step ?? 'none'}`;
     if (this.#stepSlot) {
-      const stepNodes = this.#getStepNodes(this.#stepSlot.assignedElements());
-      for (const node of stepNodes) {
-        const isActive = node.getAttribute('step') === strStep;
-        node.classList.toggle('active-step', isActive);
-      }
+      this.#updateSlotClasses(this.#stepSlot, strStep);
     }
-    if (this.#headerSlot && this.#headerContainer) {
-      const stepNodes = this.#getStepNodes(this.#headerSlot.assignedElements());
-      for (const node of stepNodes) {
-        const isActive = node.getAttribute('step') === strStep;
-        node.classList.toggle('active-step', isActive);
-      }
+    if (this.#headerSlot) {
+      this.#updateSlotClasses(this.#headerSlot, strStep);
+    }
+    if (this.#buttonsSlot) {
+      this.#updateSlotClasses(this.#buttonsSlot, strStep);
+    }
+
+    if (this.#nextButton) {
+      const hasNext = (this.step ?? 0) < this.maxStep;
+      this.#nextButton.toggleAttribute('disabled', !hasNext);
+      this.#nextButton.part.toggle('disabled', !hasNext);
+    }
+  }
+
+  /**
+   * Updates the classes on the slot elements
+   * @param slot The slot to update the step classes for
+   * @param strStep The string value of the step
+   */
+  #updateSlotClasses(slot: HTMLSlotElement, strStep: string) {
+    const stepNodes = this.#getStepNodes(slot.assignedElements());
+    for (const node of stepNodes) {
+      const isActive = node.getAttribute('step') === strStep;
+      node.classList.toggle('active-step', isActive);
     }
   }
 

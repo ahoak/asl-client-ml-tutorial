@@ -1,0 +1,19 @@
+<div class="predict-container">
+  <step-controller class="steps" step="2">
+    {{> breadcrumbs breadcrumbs=settings.predictSteps}}
+    <div name="importModel" step="1">
+      <div>
+        Select the model.zip file that you saved in the previous step.
+      </div>
+      <label>
+        <input type="file" accept="application/zip">
+      </label>
+    </div>
+    <code-step name="getFlattenedJointPositions" step="2" code="function step2() {}"></code-step>
+    <code-step name="normalizeTensor" step="3" code="function step3() {}"></code-step>
+    <code-step name="predictClassification" step="4" code="function step4() {}"></code-step>
+    <code-step name="cleanup" step="5" code="function step5() {}"></code-step>
+    <code-step name="predict" step="6" code="function step5() {}"></code-step>
+  </step-controller>
+</div>
+

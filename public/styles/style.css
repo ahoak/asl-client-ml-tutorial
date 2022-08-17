@@ -298,6 +298,66 @@ ul.link-list li a span {
   display: none;
 }
 
+.predict-container {
+  display: none;
+}
+
+.predict-container .breadcrumbs .active-step {
+  font-weight: bold;
+}
+
+.predict-container .steps::part(main) {
+  min-width: 500px;
+  width: 50vw;
+  height: 50vh;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+step-controller::part(contents) {
+  display: flex;
+  flex: 1;
+}
+
+step-controller code-step {
+  flex: 1;
+}
+step-controller code-step::part(name-header) {
+  display: none;
+}
+
+step-controller code-step::part(main) {
+  overflow: hidden;
+  height: 100%;
+}
+
+step-controller code-step code-editor {
+  overflow: hidden;
+  height: 100%;
+}
+
+.predict-container.ready {
+  display: flex;
+  align-self: center;
+}
+
+.predict-container step-controller::part(contents) {
+  margin-top: 10px;
+  justify-content: center;
+}
+
+.predict-container [name="importModel"] {
+  justify-self: center;
+}
+
+.predict-container .step-status {
+  padding-left: 5px;
+}
+
+.predict-container .step-status .valid {
+  display: none;
+}
 
 fluent-button {
   --accent-fill-rest: var(--glitch-pink);

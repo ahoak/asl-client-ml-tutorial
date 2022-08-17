@@ -62,7 +62,11 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
       this.#syntaxIssues = JSON.parse(this.getAttribute('syntax-issues') ?? '[]') as CodeIssue[];
     } else if (name === 'read-only') {
       if (this.#codeEditorEle) {
-        this.#codeEditorEle.readOnly = newValue ?? 'false';
+        if (newValue === null) {
+          this.#codeEditorEle.removeAttribute('read-only');
+        } else {
+          this.#codeEditorEle.setAttribute('read-only', '');
+        }
       }
     }
     this.#render(name, newValue);
@@ -81,6 +85,9 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
     this.#codeEditorEle!.addEventListener('change', (rawEvent: Event) => {
       const event = rawEvent as CustomEvent<CodeEditorChangeEventArgs>;
       this.#hasCodeChanged = true;
+
+      this.setAttribute('code', event.detail.code);
+      this.setAttribute('transpiledCode', event.detail.transpiledCode);
 
       const issues = (event.detail.issues ?? []).filter(
         (n) => n.type === 'error' || n.type === 'warning',
@@ -138,16 +145,21 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
       }
       if (this.#firstRender || attribute === 'code') {
         attribValue = (attribute ? attribValue : this.getAttribute('code')) ?? '';
-        this.#codeEditorEle!.setAttribute('placeholder', attribValue);
+        if (attribValue !== this.#codeEditorEle!.getAttribute('code')) {
+          this.#codeEditorEle!.setAttribute('code', attribValue);
+        }
       }
       if (attribute === 'read-only') {
-        this.#codeEditorEle!.setAttribute('read-only', attribValue ?? '');
-        this.#codeEditorEle!.readOnly = attribValue === 'true';
+        if (attribValue === null) {
+          this.#codeEditorEle!.removeAttribute('read-only');
+        } else {
+          this.#codeEditorEle!.setAttribute('read-only', '');
+        }
       }
 
       const hasIssues = this.#syntaxIssues.length > 0 || this.#validationIssues.length > 0;
       this.#issueContainer!.style.display = hasIssues ? 'block' : 'none';
-      this.#successContainer!.style.display = this.#hasCodeChanged && !hasIssues ? 'block' : 'none';
+      this.#successContainer!.style.display = !hasIssues ? 'block' : 'none';
     }
   }
 

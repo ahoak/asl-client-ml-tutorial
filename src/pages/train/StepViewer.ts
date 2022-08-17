@@ -67,7 +67,11 @@ export class StepViewer {
   }
 
   set readonly(value: string) {
-    this.#element.setAttribute('read-only', value);
+    if (value) {
+      this.#element.setAttribute('read-only', '');
+    } else {
+      this.#element.removeAttribute('read-only');
+    }
   }
 
   get solutionElement() {

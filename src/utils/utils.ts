@@ -1,11 +1,14 @@
 import * as tf from '@tensorflow/tfjs';
+import type { ModelJSON } from '@tensorflow/tfjs-core/dist/io/types.js';
 import type JSZip from 'jszip';
 import { loadAsync } from 'jszip';
 
-import type { TensorData, ValidationResult } from '../types/index.js';
-import { ValidationErrorType } from '../types/index.js';
+import type { TensorData, ValidationResult } from '../types';
+import { ValidationErrorType } from '../types';
 import { assetURL, classes } from './constants.js';
 import { npyJsParser } from './NpyJsParser.js';
+import type { RawFiles } from './tfArrayBufferLoaderSaver.js';
+import { ArrayBufferModelLoader } from './tfArrayBufferLoaderSaver.js';
 
 export function millisToMinutesAndSeconds(millis: number): [string, boolean] {
   const minutes: number = Math.floor(millis / 60000);
@@ -218,6 +221,42 @@ export function fastDebounce<T extends (...args: any[]) => any>(callback: T, del
   } as any;
 }
 
+/**
+ * Loads the default inference model
+ */
+export async function loadDefaultModel() {
+  const resp = await fetch('data/model.zip');
+  if (resp.ok) {
+    return loadModelFromZip(await resp.arrayBuffer());
+  } else {
+    throw new Error('could not find the default model.zip!');
+  }
+}
+
+/**
+ * Loads a model from a zipped archive
+ * @param {ArrayBuffer} zippedModelBuffer The zipped model file
+ */
+export async function loadModelFromZip(zippedModelBuffer: ArrayBuffer): Promise<LayersModel> {
+  const modelZip = await loadAsync(zippedModelBuffer);
+  const fileNames = Object.keys(modelZip.files);
+  const modelPath = fileNames.find((n) => n.indexOf('.json') >= 0) as string;
+  const jsonStr = await modelZip.file(modelPath)!.async('string');
+  const modelData = JSON.parse(jsonStr) as ModelJSON;
+
+  const loaderData: RawFiles = {
+    [modelPath]: JSON.stringify(modelData),
+  };
+  const weightsManifest = modelData.weightsManifest || [];
+  for (const manifest of weightsManifest) {
+    for (const path of manifest.paths) {
+      loaderData[path] = await modelZip.file(path)!.async('arraybuffer');
+    }
+  }
+
+  const modelLoader = new ArrayBufferModelLoader(loaderData);
+  return tf.loadLayersModel(modelLoader) as unknown as LayersModel;
+}
 // function shuffleTest() {
 // const counts = classes.reduce((acc, item) => {
 //   acc[item] = 0;

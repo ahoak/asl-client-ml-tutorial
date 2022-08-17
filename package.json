@@ -3,8 +3,6 @@
   "version": "0.0.1",
   "description": "asl fingerspelling client ml tutorial",
   "scripts": {
-    "wasm": "cp node_modules/@tensorflow/tfjs-backend-wasm/dist/tfjs-backend-wasm.wasm ./public",
-    "start:wasm": "yarn wasm && vite",
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
@@ -26,7 +24,9 @@
     "vite": "^3.0.4",
     "vite-plugin-handlebars": "^1.6.0",
     "vite-plugin-mpa": "^1.1.4",
-    "vite-plugin-string": "^1.1.2"
+    "vite-plugin-string": "^1.1.2",
+    "vite-plugin-top-level-await": "^1.1.1",
+    "vite-plugin-wasm": "^2.1.0"
   },
   "browserslist": [
     ">0.2%",
@@ -34,14 +34,6 @@
   ],
   "engines": {
     "node": ">=14.x"
-  },
-  "staticFiles": {
-    "staticPath": [
-      "./node_modules/@tensorflow/tfjs-backend-wasm/dist"
-    ],
-    "excludeGlob": [
-      "**/!(*.wasm)"
-    ]
   },
   "dependencies": {
     "@fluentui/web-components": "^2.5.3",

@@ -32,6 +32,7 @@ declare interface Tensor {
   dataSync(): number[];
   expandDims(dims: number): Tensor;
   size: number;
+  slice(startIndex: number[], axis?: number): Tensor;
 }
 declare type ActivationIdentifier =
   | 'elu'
@@ -93,14 +94,19 @@ declare interface SequentialArgs {
   name?: string;
 }
 
+declare interface UtilFunc {
+  shuffleCombo(x: number[][], y: number[]): void;
+}
+
 interface tfjs {
-  tensor1d(arr: number[]): Tensor1D;
-  oneHot(): any;
+  tensor1d(arr: number[], dataType?: string): Tensor1D;
+  oneHot(tensor: Tensor1D, classCount: number): any;
   sequential(config: SequentialArgs);
   setBackend(option: string);
   tensor(arr: number[][]): Tensor;
   train;
   layers: LayerFunc;
+  util: UtilFunc;
 }
 
 declare const tf: tfjs;

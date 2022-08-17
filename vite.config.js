@@ -3,6 +3,8 @@ import { defineConfig } from 'vite';
 import handlebarsPlugin from 'vite-plugin-handlebars';
 import mpa from 'vite-plugin-mpa';
 import vitePluginString from 'vite-plugin-string';
+import topLevelAwait from 'vite-plugin-top-level-await';
+import wasm from 'vite-plugin-wasm';
 
 const Settings = require('./settings.json');
 
@@ -15,6 +17,8 @@ export default defineConfig(async () => {
       },
     },
     plugins: [
+      wasm(),
+      topLevelAwait(),
       mpa(),
       handlebarsPlugin({
         // eslint-disable-next-line no-undef

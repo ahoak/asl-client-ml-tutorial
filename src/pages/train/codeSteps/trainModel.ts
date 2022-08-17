@@ -6,35 +6,58 @@ import { ValidationErrorType } from '../../../types';
 import { createIncompleteImplValidationError } from '../../../utils/utils';
 import { getCallbacks } from '../train';
 
-export const template = `
-async function trainModel(
-    model: LayersModel,
-    X_train: number[][],
-    X_val: number[][],
-    y_train: number[][],
-    y_val: number[][],
-    numEpochs: number,
-    cbs: {
-      onBatchEnd: (epoch: number, batch: number, logs?: Logs) => void;
-      onEpochEnd: (epoch: number) => void;
-    },
-    getCallbacks: (epoch: number, cbs: {
-      onBatchEnd: (epoch: number, batch: number, logs?: Logs) => void;
-      onEpochEnd: (epoch: number) => void;
-    }) => void
-  ): Promise<void> {
-    const epoch = 0;
-    const callbacks = getCallbacks(epoch, cbs);
-  
-    // Transform X_train, y_train, X_val, y_val to tensors
- 
-  
-    // call model.fit( )
-   
-    // Free up memory resources
-  
-  }
-`;
+// export const template = `
+// async function trainModel(
+//     model: LayersModel,
+//     X_train: number[][],
+//     X_val: number[][],
+//     y_train: number[][],
+//     y_val: number[][],
+//     numEpochs: number,
+//     cbs: {
+//       onBatchEnd: (epoch: number, batch: number, logs?: Logs) => void;
+//       onEpochEnd: (epoch: number) => void;
+//     },
+//     getCallbacks: (epoch: number, cbs: {
+//       onBatchEnd: (epoch: number, batch: number, logs?: Logs) => void;
+//       onEpochEnd: (epoch: number) => void;
+//     }) => void
+//   ): Promise<void> {
+//     const epoch = 0;
+//     const callbacks = getCallbacks(epoch, cbs);
+
+//     // Transform X_train, y_train, X_val, y_val to tensors
+
+//     // call model.fit( )
+
+//     // Free up memory resources
+
+//   }
+// `;
+
+export async function trainTestModel(
+  model: LayersModel,
+  data: [Tensor, Tensor, Tensor, Tensor],
+  numEpochs = 2,
+): Promise<void> {
+  const xTensor = data[0];
+  const yTensor = data[1];
+  const xValidateTensor = data[2];
+  const yValidateTensor = data[3];
+
+  await model.fit(xTensor, yTensor, {
+    epochs: numEpochs,
+    batchSize: 128,
+    verbose: 1,
+    validationData: [xValidateTensor, yValidateTensor],
+  });
+  // Free up memory resources
+
+  xTensor.dispose();
+  yTensor.dispose();
+  xValidateTensor.dispose();
+  yValidateTensor.dispose();
+}
 
 export const solution = `
 async function trainModelSolution(

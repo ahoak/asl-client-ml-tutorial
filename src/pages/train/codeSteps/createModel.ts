@@ -8,8 +8,20 @@ import { createIncompleteImplValidationError } from '../../../utils/utils';
 export const template = `
 // Create a feed-forward model using the tf.sequential (https://js.tensorflow.org/api/latest/#sequential)
 function createModel(classes: string[]):LayersModel {
-  // Create a feed-forward model using tf.sequential
- 
+
+  // Create a feed-forward model using tf.sequential api
+  // The input layer is connected to 63 nuerons and has an input of 63 input feature values
+  // The second dense layer is connectected to 512 nuerons
+  // The third dense layer is connectected to 256 nuerons
+  // After this layer add a dropout to avoid overfitting and improve generalization 
+  // Add a fourth dense layer connected to 128 nuerons
+  // Add a final dense layer wtih number of nuerons equal to classes (i.e classes.length )
+
+
+
+
+  // Uncomment below statement to check the output. 
+  // console.log(model.summary())
   // return model;
 }`;
 

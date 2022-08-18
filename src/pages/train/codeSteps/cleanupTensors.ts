@@ -7,12 +7,17 @@ import { ValidationErrorType } from '../../../types';
 
 export const template = `
 
-async function trainModel(
+function cleanupTensors(
   data: [Tensor, Tensor, Tensor, Tensor]
 ): void {
+  console.log("Data", data)
   const [xTensor, yTensor, xValidateTensor, yValidateTensor] = data
 
   // Free up memory resources by cleaning up intermediate tensors (i.e the tensors above)
+  xTensor.dispose();
+  yTensor.dispose();
+  xValidateTensor.dispose();
+  yValidateTensor.dispose();
     
 
 }`;
@@ -22,7 +27,7 @@ async function trainModel(
 // Free up memory resources
 
 export const solution = `
- async function trainModelSolution(
+ function cleanupTensorsSolution(
   data: [Tensor, Tensor, Tensor, Tensor],
 
 ): void {
@@ -45,16 +50,15 @@ export function implementation<T = (...args: any[]) => any>(
   return wrapper(data, tf, tf) as T;
 }
 
-type trainModel = (model: LayersModel, data: [Tensor, Tensor, Tensor, Tensor]) => Promise<void>;
+type trainModel = (data: [Tensor, Tensor, Tensor, Tensor]) => void;
 
 export async function validate(
   impl: trainModel,
-  model: LayersModel,
   data: [Tensor, Tensor, Tensor, Tensor],
 ): Promise<ValidationResult> {
   try {
     // eslint-disable-next-line @typescript-eslint/await-thenable
-    await impl(model, data);
+    await impl(data);
     //TODO: Add validation method here??
 
     // if (!backendInUse) {

@@ -123,20 +123,20 @@ export class ModelBuilder {
           solutionElement: element,
         });
 
-        this.#stepMap[step] = StepViewerInstance;
-        switch (+step) {
-          case 1:
+        this.#stepMap[name] = StepViewerInstance;
+        switch (name) {
+          case 'loadData':
             StepViewerInstance.funcInput = [loadTensors, assetURL];
             StepViewerInstance.on(Validated, this.handleDataValidation);
             break;
-          case 3:
+          case 'encodeAndSplitData':
             StepViewerInstance.on(Validated, this.handleDataSplitValidation);
             break;
-          case 4:
+          case 'createModel':
             StepViewerInstance.funcInput = [tf, classes];
             StepViewerInstance.on(Validated, this.handleModelCreation);
             break;
-          case 5:
+          case 'configureModel':
             StepViewerInstance.on(Validated, this.handleConfigureModel);
             break;
           default:
@@ -169,7 +169,7 @@ export class ModelBuilder {
         if (step === 2) {
           backendInUse = tf.getBackend();
         }
-        successStatement = getSuccessStatement(step, backendInUse);
+        successStatement = getSuccessStatement(name, backendInUse);
       }
       if (name === 'trainModel' && this.#trainingComplete) {
         handleValidationgComplete(step, passedValidation, successStatement);
@@ -180,8 +180,8 @@ export class ModelBuilder {
   };
 
   handleResetButtonClick = () => {
-    const step = this.#currentStep?.step ?? 1;
-    const currentInstance = this.#stepMap[step];
+    const name = this.#currentStep?.name ?? '';
+    const currentInstance = this.#stepMap[name];
     currentInstance.resetCodeToDefault();
   };
 
@@ -265,16 +265,18 @@ export class ModelBuilder {
   };
 
   handleNextButtonClick = () => {
+    const name = this.#currentStep?.name ?? '';
     const step = this.#currentStep?.step ?? 1;
-    const currentInstance = this.#stepMap[step];
+    const currentInstance = this.#stepMap[name];
     if (this.#isSolutionVisble) {
-      this.toggleSolution(false, step);
+      this.toggleSolution(false, name);
     }
     currentInstance.show = false;
     const nextStep = step + 1;
     if (this.#trainingComplete) {
       this.#stopTrainingButton.style.display = 'none';
       this.#startTrainingButton.style.display = 'none';
+      this.#trainingStatusElement.style.display = 'none';
     }
     clearValidationFeedback();
     this.setCurrentStep(nextStep);
@@ -282,18 +284,18 @@ export class ModelBuilder {
 
   handleSolutionButtonClick = () => {
     const state = !this.#isSolutionVisble;
-    const step = this.#currentStep?.step ?? 1;
-    this.toggleSolution(state, step);
+    const name = this.#currentStep?.name ?? '';
+    this.toggleSolution(state, name);
   };
 
-  toggleSolution(isVisible: boolean, step: number) {
+  toggleSolution(isVisible: boolean, name: string) {
     this.#isSolutionVisble = isVisible;
-    const currentInstance = this.#stepMap[step];
+    const currentInstance = this.#stepMap[name];
     currentInstance.showSolution(isVisible);
   }
 
   handlestartTrainingClick = async () => {
-    const instance = this.#stepMap[6];
+    const instance = this.#stepMap['trainModel'];
     if (this.#aslModel && instance) {
       this.#aslModel.stopTraining = false;
       this.#trainingEnabled = true;
@@ -304,20 +306,23 @@ export class ModelBuilder {
     }
   };
 
-  handleStepChange(currentStep: number, readOnly = 'false') {
-    const instance = this.#stepMap[currentStep];
+  handleStepChange(name: string, readOnly = 'false') {
+    const instance = this.#stepMap[name];
     if (instance) {
       instance.setCodeFromCacheOrDefault();
       if (readOnly) {
         instance.readonly = readOnly;
       }
-      if ((currentStep === 3 || currentStep === 7) && this.#inputData) {
+      if (name === 'encodeAndSplitData' && this.#inputData) {
         instance.funcInput = [this.#inputData];
       }
-      if ((currentStep === 5 || currentStep === 8) && this.#aslModel) {
+      if (name === 'cleanupTensors') {
+        instance.funcInput = [this.#dataTensors];
+      }
+      if ((name === 'configureModel' || name === 'exportModel') && this.#aslModel) {
         instance.funcInput = [this.#aslModel, tf];
       }
-      if (currentStep === 6 && this.#aslModel) {
+      if (name === 'trainModel' && this.#aslModel) {
         instance.funcInput = [
           this.#aslModel,
           this.#dataTensors,
@@ -335,7 +340,7 @@ export class ModelBuilder {
 
       instance.show = true;
     } else {
-      console.error(`Instance of StepViewer for ${currentStep} is not found`);
+      console.error(`Instance of StepViewer for ${name} is not found`);
     }
   }
 
@@ -349,7 +354,7 @@ export class ModelBuilder {
       highlightNavStep(this.#currentStep.step);
       unhighlightNavStep(this.#currentStep.step - 1);
       this.#mainEle.innerHTML = `${this.#currentStep.step}. ${this.#currentStep.description} `;
-      this.handleStepChange(this.#currentStep.step, this.#currentStep.readOnly);
+      this.handleStepChange(this.#currentStep.name, this.#currentStep.readOnly);
     }
   }
 }

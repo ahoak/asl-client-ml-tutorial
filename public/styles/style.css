@@ -381,7 +381,7 @@ fluent-button {
   display: none;
 }
 .training-controls {
-  display: inline-block;
+  display: block;
   margin-top: 1rem;
 }
 /******************************************************************************

@@ -5,9 +5,8 @@
   "theme": "",
   "avatarImage": "",
   "social": {
-    "glitch": "https://glitch.com/",
-    "github": "https://github.com/glitchdotcom",
-    "twitter": "https://twitter.com/glitch"
+    "github": "https://github.com/ahoak/asl-client-ml-tutorial",
+    "twitter": "https://twitter.com/amber_hoak"
   },
   "showDataVideo": false,
   "trainTutorialSteps": [

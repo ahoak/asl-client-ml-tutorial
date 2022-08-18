@@ -44,20 +44,21 @@ export function clearValidationFeedback() {
 }
 
 const stepSuccessStatements = new Map([
-  [1, `✔️ Data loaded 😀`],
-  [3, ' ✔️ Great job! Training data is ready'],
-  [4, '✔️ Yay! Model created! 🎉'],
-  [5, '✔️ Look at you go! Model is configured.'],
-  [6, '✔️ Training complete!'],
-  [7, '✔️ Downloaded'],
-]) as Map<number, string>;
+  ['loadData', `✔️ Data loaded 💾`],
+  ['encodeAndSplitData', ' ✔️ Great job! Training data is ready'],
+  ['createModel', '✔️ Yay! Model created! 🎉'],
+  ['configureModel', '✔️ Look at you go! Model is configured.'],
+  ['trainModel', '✔️ Training complete!👟'],
+  ['cleanupTensors', '✔️ Goodbye tensors!👋'],
+  ['exportModel', '✔️ Downloaded'],
+]) as Map<string, string>;
 
-export function getSuccessStatement(step: number, backendInUse?: string) {
+export function getSuccessStatement(name: string, backendInUse?: string) {
   let response = '';
-  if (step === 2 && backendInUse) {
+  if (name === 'setTensorFlowBackend' && backendInUse) {
     response = `✔️ Nice work! You are using ${backendInUse}.`;
   } else {
-    response = stepSuccessStatements.get(step) ?? '';
+    response = stepSuccessStatements.get(name) ?? '';
   }
   return response;
 }

@@ -55,6 +55,11 @@ export class ModelBuilder {
   #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;
   #solutionButton = getOrCreateElement('.view-solution-button') as HTMLButtonElement;
   #resetButton = getOrCreateElement('.reset-button') as HTMLButtonElement;
+  #stopTrainingButton = getOrCreateElement('.training-stop-button') as HTMLButtonElement;
+  #startTrainingButton = getOrCreateElement('.training-start-button') as HTMLButtonElement;
+
+  #trainingEnabled = true;
+  #trainingComplete = false;
 
   #dataTensors = [Tensor, Tensor, Tensor, Tensor];
 
@@ -66,13 +71,15 @@ export class ModelBuilder {
     this.#epochs = options?.epochs ?? DefaultEpoch;
   }
 
-  async init() {
+  init() {
     this.#actionButton.disabled = true;
     this.#actionButton.onclick = this.handleNextButtonClick;
     this.#solutionButton.onclick = this.handleSolutionButtonClick;
     this.#resetButton.onclick = this.handleResetButtonClick;
+    this.#stopTrainingButton.onclick = this.handleStopTrainingClick;
+    this.#startTrainingButton.onclick = this.handlestartTrainingClick;
     this.mapCodeSteps();
-    await this.setCurrentStep(1);
+    this.setCurrentStep(1);
   }
 
   mapCodeSteps() {
@@ -117,12 +124,10 @@ export class ModelBuilder {
         });
 
         this.#stepMap[step] = StepViewerInstance;
-        StepViewerInstance.setCodeFromCacheOrDefault();
         switch (+step) {
           case 1:
             StepViewerInstance.funcInput = [loadTensors, assetURL];
             StepViewerInstance.on(Validated, this.handleDataValidation);
-            StepViewerInstance.readonly = 'true';
             break;
           case 3:
             StepViewerInstance.on(Validated, this.handleDataSplitValidation);
@@ -150,6 +155,9 @@ export class ModelBuilder {
   handleValidationStarted = (name: string, step: number) => {
     if (this.#currentStep?.step === step) {
       handleValidatingStep();
+      if (name === 'trainModel') {
+        this.#stopTrainingButton.style.display = 'inline-flex';
+      }
     }
   };
 
@@ -163,7 +171,11 @@ export class ModelBuilder {
         }
         successStatement = getSuccessStatement(step, backendInUse);
       }
-      handleValidationgComplete(step, passedValidation, successStatement);
+      if (name === 'trainModel' && this.#trainingComplete) {
+        handleValidationgComplete(step, passedValidation, successStatement);
+      } else {
+        handleValidationgComplete(step, passedValidation, successStatement);
+      }
     }
   };
 
@@ -173,11 +185,18 @@ export class ModelBuilder {
     currentInstance.resetCodeToDefault();
   };
 
+  handleStopTrainingClick = () => {
+    this.#trainingEnabled = false;
+    this.#startTrainingButton.disabled = false;
+  };
+
   onBatchEnd = (batch: number, logs?: Logs) => {
-    console.log('onBatchEnd', batch);
     if (!this.#initTime) {
       this.#initTime = true;
       this.#trainingStatusElement.style.display = 'inline-block';
+    }
+    if (!this.#trainingEnabled && this.#aslModel) {
+      this.#aslModel.stopTraining = true;
     }
 
     const currentIncrement = this.#currentEpochCount * this.#batchSize + (batch + 1);
@@ -196,16 +215,18 @@ export class ModelBuilder {
   };
 
   onEpochEnd = (epoch: number) => {
-    console.log('onEpochEnd', epoch);
-
+    console.log('epoch', epoch);
     const batchDuration = Date.now() - this.#startBatchTime;
-    this.#currentEpochCount = epoch;
+    this.#currentEpochCount = epoch + 1;
     const remainingIncrements = this.#epochs - epoch;
     const msRemaining = batchDuration * remainingIncrements;
     const [time, hasMinutes] = millisToMinutesAndSeconds(msRemaining);
 
     this.#timeElement.innerHTML = `${time} ${hasMinutes ? 'minutes' : 'seconds'} remaining`;
     this.#startBatchTime = Date.now();
+    if (epoch === this.#epochs - 1) {
+      this.#trainingComplete = true;
+    }
   };
 
   handleConfigureModel = (result: ValidationResult) => {
@@ -243,7 +264,7 @@ export class ModelBuilder {
     }
   };
 
-  handleNextButtonClick = async () => {
+  handleNextButtonClick = () => {
     const step = this.#currentStep?.step ?? 1;
     const currentInstance = this.#stepMap[step];
     if (this.#isSolutionVisble) {
@@ -251,8 +272,12 @@ export class ModelBuilder {
     }
     currentInstance.show = false;
     const nextStep = step + 1;
+    if (this.#trainingComplete) {
+      this.#stopTrainingButton.style.display = 'none';
+      this.#startTrainingButton.style.display = 'none';
+    }
     clearValidationFeedback();
-    await this.setCurrentStep(nextStep);
+    this.setCurrentStep(nextStep);
   };
 
   handleSolutionButtonClick = () => {
@@ -267,16 +292,32 @@ export class ModelBuilder {
     currentInstance.showSolution(isVisible);
   }
 
-  async handleStepChange(currentStep: number) {
+  handlestartTrainingClick = async () => {
+    const instance = this.#stepMap[6];
+    if (this.#aslModel && instance) {
+      this.#aslModel.stopTraining = false;
+      this.#trainingEnabled = true;
+      this.#startTrainingButton.disabled = true;
+      this.#trainingComplete = false;
+      this.#actionButton.disabled = true;
+      await instance.runCachedCode();
+    }
+  };
+
+  handleStepChange(currentStep: number, readOnly = 'false') {
     const instance = this.#stepMap[currentStep];
     if (instance) {
-      if (currentStep === 3 && this.#inputData) {
+      instance.setCodeFromCacheOrDefault();
+      if (readOnly) {
+        instance.readonly = readOnly;
+      }
+      if ((currentStep === 3 || currentStep === 7) && this.#inputData) {
         instance.funcInput = [this.#inputData];
       }
-      if ((currentStep === 5 || currentStep === 7) && this.#aslModel) {
+      if ((currentStep === 5 || currentStep === 8) && this.#aslModel) {
         instance.funcInput = [this.#aslModel, tf];
       }
-      if (currentStep === 6 && this.#aslModel)
+      if (currentStep === 6 && this.#aslModel) {
         instance.funcInput = [
           this.#aslModel,
           this.#dataTensors,
@@ -287,14 +328,18 @@ export class ModelBuilder {
           },
           this.#epochs,
         ];
+        instance.overrideEventListener = true;
+        this.#startTrainingButton.style.display = 'inline-flex';
+        this.#stopTrainingButton.style.display = 'inline-flex';
+      }
+
       instance.show = true;
-      await instance.runCachedCode();
     } else {
       console.error(`Instance of StepViewer for ${currentStep} is not found`);
     }
   }
 
-  async setCurrentStep(stepcount: number) {
+  setCurrentStep(stepcount: number) {
     const step = ProjectSettingsConfig.trainTutorialSteps.find(
       (tutorialStep) => tutorialStep.step === stepcount,
     );
@@ -304,7 +349,7 @@ export class ModelBuilder {
       highlightNavStep(this.#currentStep.step);
       unhighlightNavStep(this.#currentStep.step - 1);
       this.#mainEle.innerHTML = `${this.#currentStep.step}. ${this.#currentStep.description} `;
-      await this.handleStepChange(this.#currentStep.step);
+      this.handleStepChange(this.#currentStep.step, this.#currentStep.readOnly);
     }
   }
 }

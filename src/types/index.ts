@@ -17,7 +17,8 @@ export interface TrainTutorialSteps {
   step: number;
   description: string;
   helperText: string;
-  codeBlock?: string;
+  name: string;
+  readOnly?: string;
 }
 
 export interface ProjectSettings {

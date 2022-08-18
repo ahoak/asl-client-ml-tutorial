@@ -16,20 +16,33 @@ async function trainModel(
   },
   numEpochs = 2
 ): Promise<void> {
-  const xTensor = data[0];
-  const yTensor = data[1];
-  const xValidateTensor = data[2];
-  const yValidateTensor = data[3];
+  const [xTensor, yTensor, xValidateTensor, yValidateTensor] = data
+
 
   //Implement model.fit to train the model a given number of epochs
   // https://js.tensorflow.org/api/latest/#tf.LayersModel.fit
 
 
-  // Free up memory resources by cleaning up intermediate tensors (i.e the tensors above)
+  // await model.fit(xTensor, yTensor, {
+  //   epochs: numEpochs,
+  //   batchSize: 128,
+  //   verbose: 1,
+  //   validationData: [xValidateTensor, yValidateTensor],
+  //   callbacks: callbacks
+  // });
+
 
 
 }`;
+// Free up memory resources
+// Free up memory resources by cleaning up intermediate tensors (i.e the tensors above)
 
+// Free up memory resources
+
+// xTensor.dispose();
+// yTensor.dispose();
+// xValidateTensor.dispose();
+// yValidateTensor.dispose();
 export const solution = `
  async function trainModelSolution(
   model: LayersModel,
@@ -40,10 +53,7 @@ export const solution = `
   },
   numEpochs = 2,
 ): Promise<void> {
-  const xTensor = data[0];
-  const yTensor = data[1];
-  const xValidateTensor = data[2];
-  const yValidateTensor = data[3];
+  const [xTensor, yTensor, xValidateTensor, yValidateTensor] = data
 
   await model.fit(xTensor, yTensor, {
     epochs: numEpochs,
@@ -52,12 +62,7 @@ export const solution = `
     validationData: [xValidateTensor, yValidateTensor],
     callbacks: callbacks
   });
-  // Free up memory resources
 
-  // xTensor.dispose();
-  // yTensor.dispose();
-  // xValidateTensor.dispose();
-  // yValidateTensor.dispose();
 }`;
 
 // eslint-disable-next-line @typescript-eslint/ban-types

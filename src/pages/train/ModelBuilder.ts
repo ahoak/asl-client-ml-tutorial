@@ -1,6 +1,7 @@
 import '../../utils/fluentBootstrap';
 
 import type { LayersModel } from '@tensorflow/tfjs';
+import { Tensor } from '@tensorflow/tfjs';
 import * as tf from '@tensorflow/tfjs';
 
 import Settings from '../../../settings.json';
@@ -34,9 +35,10 @@ export interface StepImplementationRecord extends CodeStepRecord {
 }
 type StepImplementation = Record<keyof typeof codeSteps, StepImplementationRecord>;
 
-const DefaultEpoch = 5;
+const DefaultEpoch = 2;
 export class ModelBuilder {
   #epochs = DefaultEpoch;
+  #currentEpochCount = 0;
   #batchSize = 405 * 2;
   #startBatchTime = 0;
 
@@ -54,10 +56,7 @@ export class ModelBuilder {
   #solutionButton = getOrCreateElement('.view-solution-button') as HTMLButtonElement;
   #resetButton = getOrCreateElement('.reset-button') as HTMLButtonElement;
 
-  x_train: number[][] = [[]];
-  y_train: number[][] = [[]];
-  x_val: number[][] = [[]];
-  y_val: number[][] = [[]];
+  #dataTensors = [Tensor, Tensor, Tensor, Tensor];
 
   #aslModel: LayersModel | undefined;
   #inputData: TensorData | undefined;
@@ -174,19 +173,20 @@ export class ModelBuilder {
     currentInstance.resetCodeToDefault();
   };
 
-  onBatchEnd = (epoch: number, batch: number, logs?: Logs) => {
+  onBatchEnd = (batch: number, logs?: Logs) => {
+    console.log('onBatchEnd', batch);
     if (!this.#initTime) {
       this.#initTime = true;
       this.#trainingStatusElement.style.display = 'inline-block';
     }
 
-    const currentIncrement = epoch * this.#batchSize + (batch + 1);
+    const currentIncrement = this.#currentEpochCount * this.#batchSize + (batch + 1);
 
     const totalIncrements = this.#epochs * this.#batchSize;
     const progressValue = (currentIncrement / totalIncrements) * 100;
     this.#progressBarElement.value = progressValue;
     this.#trainingStatusElement.innerHTML = `
-      Epoch: ${epoch} Batch: ${batch}
+      Epoch: ${this.#currentEpochCount} Batch: ${batch}
       <br>
       Loss: ${logs?.loss.toFixed(3) ?? ''}
       <br>
@@ -196,7 +196,10 @@ export class ModelBuilder {
   };
 
   onEpochEnd = (epoch: number) => {
+    console.log('onEpochEnd', epoch);
+
     const batchDuration = Date.now() - this.#startBatchTime;
+    this.#currentEpochCount = epoch;
     const remainingIncrements = this.#epochs - epoch;
     const msRemaining = batchDuration * remainingIncrements;
     const [time, hasMinutes] = millisToMinutesAndSeconds(msRemaining);
@@ -222,12 +225,9 @@ export class ModelBuilder {
   };
 
   handleDataSplitValidation = (result: ValidationResult) => {
-    // console.log('encode and split data validation complete', result);
     if (result.valid && result.data && result.data.length > 0) {
-      this.x_train = result.data[0] as unknown as number[][];
-      this.x_val = result.data[1] as unknown as number[][];
-      this.y_train = result.data[2] as unknown as number[][];
-      this.y_val = result.data[3] as unknown as number[][];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      this.#dataTensors = result.data;
     } else {
       console.log('no data provided to ModelBuilder, please retry load data function');
     }
@@ -279,17 +279,13 @@ export class ModelBuilder {
       if (currentStep === 6 && this.#aslModel)
         instance.funcInput = [
           this.#aslModel,
-          this.x_train,
-          this.x_val,
-          this.y_train,
-          this.y_val,
-          this.#epochs,
+          this.#dataTensors,
           // callbacks
           {
             onBatchEnd: this.onBatchEnd,
             onEpochEnd: this.onEpochEnd,
           },
-          // getCallback
+          this.#epochs,
         ];
       instance.show = true;
       await instance.runCachedCode();

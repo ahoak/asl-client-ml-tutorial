@@ -97,50 +97,6 @@ export function trainTestSplit(
   return [x, xVal, y, yVal];
 }
 
-// https://towardsdatascience.com/how-to-split-a-tensorflow-dataset-into-train-validation-and-test-sets-526c8dd29438
-export async function getDatasetPartitions(
-  X: number[][],
-  Y: number[],
-  train_split = 0.8,
-  val_split = 0.1,
-  test_split = 0.1,
-  shuffle = true,
-): Promise<[number[][], number[], number[][], number[], number[][], number[]]> {
-  if (train_split + test_split + val_split !== 1) {
-    throw Error('train_split + test_split + val_split must equal 1');
-  }
-
-  if (shuffle) {
-    tf.util.shuffleCombo(X, Y);
-  }
-
-  const oneHotOutputs = tf.oneHot(tf.tensor1d(Y, 'int32'), classes.length);
-  const YValues = Array.from(oneHotOutputs.dataSync());
-
-  const trainSize = Math.floor(train_split * X.length);
-  const valSize = Math.floor(val_split * X.length);
-  const testSize = Math.floor(test_split * X.length);
-  const trainX = await tf.data.array(X).take(trainSize).toArray();
-  const trainY = await tf.data.array(YValues).take(trainSize).toArray();
-
-  const validationX = await tf.data.array(X).skip(trainSize).take(valSize).toArray();
-  const validationY = await tf.data.array(YValues).skip(trainSize).take(valSize).toArray();
-
-  const testX = await tf.data
-    .array(X)
-    .skip(trainSize + valSize)
-    .take(testSize)
-    .toArray();
-
-  const testY = await tf.data
-    .array(YValues)
-    .skip(trainSize + valSize)
-    .take(testSize)
-    .toArray();
-
-  return [trainX, trainY, validationX, validationY, testX, testY];
-}
-
 function shuffle(items: number[][] | number[], seed = null, rand: () => number) {
   rand = rand ?? randomGenerator(seed);
   const copy = items.slice(0);

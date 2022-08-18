@@ -1,12 +1,11 @@
-import '@tensorflow/tfjs-backend-wasm';
-
 import * as tf from '@tensorflow/tfjs';
+import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
 
 import type { ValidationResult } from '../../../types';
 import { ValidationErrorType } from '../../../types';
 import { createIncompleteImplValidationError } from '../../../utils/utils';
 
-// setWasmPaths('/');
+setWasmPaths('/node_modules/@tensorflow/tfjs-backend-wasm/dist/');
 export const template = `
 /*
 Sets Tensorflow backend to use either webgl, cpu or wasm

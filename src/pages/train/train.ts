@@ -1,9 +1,53 @@
-import type { CustomCallbackArgs, LayersModel, Logs } from '@tensorflow/tfjs';
+import type { CustomCallbackArgs, LayersModel, Logs, Tensor } from '@tensorflow/tfjs';
 import * as tf from '@tensorflow/tfjs';
+import * as jszip from 'jszip';
 
 import type { Callbacks, TensorData } from '../../types';
-import { classes } from '../../utils/constants.js';
-import { trainTestSplit } from '../../utils/utils.js';
+import { assetURL, classes } from '../../utils/constants.js';
+import { loadTensors, trainTestSplit } from '../../utils/utils.js';
+
+export async function testFullPipeline() {
+  const data = await loadTensorDataSolution();
+  console.log('data', data);
+  await setTensorFlowBackend();
+  const [trainX, trainY, validationX, validationY, testX, testY] = encodeAndSplitData(data);
+  const model = createModel();
+  configureModel(model);
+  await trainTestModel(model, [trainX, trainY, validationX, validationY], 2);
+}
+
+export async function trainTestModel(
+  model: LayersModel,
+  data: [Tensor, Tensor, Tensor, Tensor],
+  numEpochs = 2,
+): Promise<void> {
+  const xTensor = data[0];
+  const yTensor = data[1];
+  const xValidateTensor = data[2];
+  const yValidateTensor = data[3];
+
+  await model.fit(xTensor, yTensor, {
+    epochs: numEpochs,
+    batchSize: 128,
+    verbose: 1,
+    validationData: [xValidateTensor, yValidateTensor],
+  });
+  // Free up memory resources
+
+  xTensor.dispose();
+  yTensor.dispose();
+  xValidateTensor.dispose();
+  yValidateTensor.dispose();
+}
+
+async function loadTensorDataSolution(): Promise<{ [key: string]: number[][] }> {
+  const zippedModelBuffer = await (await fetch(assetURL)).arrayBuffer();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const zipFolder = await jszip.loadAsync(zippedModelBuffer);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const output = await loadTensors(zipFolder);
+  return output;
+}
 
 /*
   Modify below to build model
@@ -26,41 +70,59 @@ export async function setTensorFlowBackend() {
   Encodes data useing one hot encoding and splits data into training and test set
   returns array of values [X_train, X_val, y_train, y_val];
 */
+// export function encodeAndSplitData(
+//   data: TensorData,
+//   applyOneHotEncoding: (data: TensorData) => { X: number[][]; Y: number[][] },
+//   splitTrainingData: (
+//     X: number[][],
+//     Y: number[][],
+//   ) => [number[][], number[][], number[][], number[][]],
+// ) {
+//   // apply one-hot encoding function below
+//   const { X, Y } = applyOneHotEncoding(data);
+//   // take the results from one-hot encoding and split data
+//   return splitTrainingData(X, Y);
+// }
+// : Promise<[number[][], number[], number[][], number[], number[][], number[]]>
+// TFJS IMPLENTATION IN QUESTION
 export function encodeAndSplitData(
   data: TensorData,
-  applyOneHotEncoding: (data: TensorData) => { X: number[][]; Y: number[][] },
-  splitTrainingData: (
-    X: number[][],
-    Y: number[][],
-  ) => [number[][], number[][], number[][], number[][]],
-) {
-  // apply one-hot encoding function below
-  const { X, Y } = applyOneHotEncoding(data);
-  // take the results from one-hot encoding and split data
-  return splitTrainingData(X, Y);
+  trainSplit = 0.8,
+  valSplit = 0.1,
+  testSplit = 0.1,
+): [Tensor, Tensor, Tensor, Tensor, Tensor, Tensor] {
+  const X: number[][] = [];
+  const Y: number[] = [];
+
+  Object.keys(data).forEach((cls, index) => {
+    const clsData = data[cls];
+
+    clsData.forEach((item) => {
+      X.push(item);
+      Y.push(index);
+    });
+  });
+  tf.util.shuffleCombo(X, Y);
+  // tensor shape [60581, 63]
+  const xTensor = tf.tensor(X);
+  console.log('xTensor', xTensor);
+  // const result = applyOneHotEncoding(data);
+  // tensor shape [60581, 26]
+  const oneHotOutputs = tf.oneHot(tf.tensor1d(Y, 'int32'), classes.length);
+
+  const trainSize = Math.floor(trainSplit * X.length);
+  const valSize = Math.floor(valSplit * X.length);
+  const testSize = Math.floor(testSplit * X.length);
+  const trainY = oneHotOutputs.slice([0], trainSize);
+  const validationY = oneHotOutputs.slice([trainSize], valSize);
+  const testY = oneHotOutputs.slice([X.length - testSize], testSize);
+
+  const trainX = xTensor.slice([0], trainSize);
+  const validationX = xTensor.slice([trainSize], valSize);
+  const testX = xTensor.slice([X.length - testSize], testSize);
+
+  return [trainX, trainY, validationX, validationY, testX, testY];
 }
-
-// TFJS IMPLENTATION IN QUESTION
-// export async function encodeAndSplitData(data: TensorData) : Promise<[number[][], number[], number[][], number[], number[][], number[]]>{
-//   const X: number[][] = [];
-//   const Y: number[] = []
-
-//   Object.keys(data).forEach((cls, index) => {
-//     const clsData = data[cls];
-
-//     // const yVal = oneHotClasses[cls];
-//     clsData.forEach((item) => {
-//       X.push(item);
-//       // Y.push(yVal);
-//       Y.push(index)
-//     });
-//   });
-
-// const [trainX, trainY, validationX, validationY, testX, testY] = await getDatasetPartitions(X,Y, 0.8, 0.1, 0.1, true)
-
-// return [trainX, trainY, validationX, validationY, testX, testY]
-
-// }
 
 export function applyOneHotEncoding(data: TensorData): { X: number[][]; Y: number[][] } {
   const X: number[][] = [];

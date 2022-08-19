@@ -9,8 +9,8 @@ async function exportModel(model: LayersModel): Promise<void> {
     // checkout https://www.tensorflow.org/js/guide/save_load\
     // save to localstorage 
     // optional: save to downloads
-    await model.save('localstorage://model');
-    await model.save('downloads://model')
+    // await model.save('localstorage://model');
+    // await model.save('downloads://model')
 }
 `;
 

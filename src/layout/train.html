@@ -3,7 +3,9 @@
   <fluent-breadcrumb>
     {{#each settings.trainTutorialSteps}}
     <fluent-breadcrumb-item id="tutorial-step{{this.step}}">
-      {{this.description}}</fluent-breadcrumb-item>
+      <!-- <a href="#step{{this.step}}">{{this.description}}</a> -->
+      {{this.description}}
+    </fluent-breadcrumb-item>
     {{/each}}
   </fluent-breadcrumb>
   {{/if}}
@@ -26,13 +28,13 @@
   </div>
   <p id="validation-status"></p>
   <div class="training-feedback-container">
-    <fluent-card class="custom-card">
+    <!-- <fluent-card class="custom-card">
       <p class="training-feedback"></p>
       <div class="progress-bar-container">
         <fluent-progress class="training-progress-bar"></fluent-progress>
         <p class="time-remaining"></p>
       </div>
-    </fluent-card>
+    </fluent-card> -->
   </div>
   {{#if settings.trainTutorialSteps}}
   {{#each settings.trainTutorialSteps}}

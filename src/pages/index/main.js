@@ -1,1 +1,1 @@
-console.log(`home page js loaded`);
+// console.log(`home page js loaded`);

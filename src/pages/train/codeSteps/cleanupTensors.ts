@@ -10,7 +10,6 @@ export const template = `
 function cleanupTensors(
   data: [Tensor, Tensor, Tensor, Tensor]
 ): void {
-  console.log("Data", data)
   const [xTensor, yTensor, xValidateTensor, yValidateTensor] = data
 
   // Free up memory resources by cleaning up intermediate tensors (i.e the tensors above)
@@ -21,10 +20,6 @@ function cleanupTensors(
     
 
 }`;
-// Free up memory resources
-// Free up memory resources by cleaning up intermediate tensors (i.e the tensors above)
-
-// Free up memory resources
 
 export const solution = `
  function cleanupTensorsSolution(
@@ -60,12 +55,6 @@ export async function validate(
     // eslint-disable-next-line @typescript-eslint/await-thenable
     await impl(data);
     //TODO: Add validation method here??
-
-    // if (!backendInUse) {
-    //   return createIncompleteImplValidationError(`
-    //   Hmm no backend detected. Please check solution.'
-    //   `);
-    // }
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     const error = `${e}`;

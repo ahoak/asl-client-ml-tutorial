@@ -151,7 +151,6 @@ export class StepViewer {
       try {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         const results = await this.#stepRecord.validate(implementation, ...this.#args);
-        console.log('results', results);
         this.#element.setAttribute(
           'validation-issues',
           JSON.stringify(results.valid ? [] : results.errors),

@@ -15,7 +15,7 @@ async function trainModel(
     onEpochEnd: (epoch: number) => void;
   },
   numEpochs = 2
-): Promise<void> {
+): Promise<History> {
   const [xTensor, yTensor, xValidateTensor, yValidateTensor] = data
 
 
@@ -23,11 +23,11 @@ async function trainModel(
   // https://js.tensorflow.org/api/latest/#tf.LayersModel.fit
 
 
-  // await model.fit(xTensor, yTensor, {
-  //   epochs: numEpochs,
-  //   batchSize: 128,
+  // await model.fit( <value>, <value>, {
+  //   epochs: <value>,
+  //   batchSize: <value>,
   //   verbose: 1,
-  //   validationData: [xValidateTensor, yValidateTensor],
+  //   validationData: [<value>, <value>],
   //   callbacks: callbacks
   // });
 
@@ -52,10 +52,10 @@ export const solution = `
     onEpochEnd: (epoch: number) => void;
   },
   numEpochs = 2,
-): Promise<void> {
+): Promise<History> {
   const [xTensor, yTensor, xValidateTensor, yValidateTensor] = data
 
-  await model.fit(xTensor, yTensor, {
+  return await model.fit(xTensor, yTensor, {
     epochs: numEpochs,
     batchSize: 128,
     verbose: 1,
@@ -97,7 +97,7 @@ type trainModel = (
     onEpochEnd: (epoch: number) => void;
   },
   numEpochs?: number,
-) => Promise<void>;
+) => Promise<History>;
 
 export async function validate(
   impl: trainModel,
@@ -111,14 +111,19 @@ export async function validate(
 ): Promise<ValidationResult> {
   try {
     // eslint-disable-next-line @typescript-eslint/await-thenable
-    await impl(model, data, callbacks, numEpochs);
+    const history = await impl(model, data, callbacks, numEpochs);
+
     //TODO: Add validation method here??
 
-    // if (!backendInUse) {
-    //   return createIncompleteImplValidationError(`
-    //   Hmm no backend detected. Please check solution.'
-    //   `);
-    // }
+    if (!history) {
+      return createIncompleteImplValidationError(`
+      Looks like you didn't return anything. Please return value from model.fit()'
+      `);
+    } else if (!history.params) {
+      return createIncompleteImplValidationError(`
+      Looks like you didn't put any parameters in your fit function'
+      `);
+    }
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     const error = `${e}`;

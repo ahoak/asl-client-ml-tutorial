@@ -3,7 +3,7 @@
  */
 declare interface LayersModel {
   predict(tensor: Tensor): Tensor;
-  fit(x: Tensor | Tensor[], y: Tensor | Tensor[], ModelFitArgs): Promise<void>;
+  fit(x: Tensor | Tensor[], y: Tensor | Tensor[], ModelFitArgs): Promise<History>;
   compile(arg0: {
     // Adam changes the learning rate over time which is useful.
     // optimizer: 'adam',
@@ -25,6 +25,22 @@ interface ModelConfig {
   optimizer: any;
   loss: string;
   metrics: string[];
+}
+
+declare interface History {
+  epoch: number[];
+  history: {
+    [key: string]: Array<number | Tensor>;
+  };
+  onTrainBegin(logs?: Logs): Promise<void>;
+  onEpochEnd(epoch: number, logs?: Logs): Promise<void>;
+  /**
+   * Await the values of all losses and metrics.
+   */
+  syncData(): Promise<void>;
+  params?: {
+    samples?: number;
+  };
 }
 
 declare interface Tensor {

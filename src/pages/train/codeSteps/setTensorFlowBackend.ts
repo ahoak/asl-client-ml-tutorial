@@ -41,9 +41,8 @@ export async function validate(impl: setTensorFlowBackend): Promise<ValidationRe
   try {
     // eslint-disable-next-line @typescript-eslint/await-thenable
     await impl();
-    console.log('line 44');
+
     backendInUse = tf.getBackend();
-    console.log('backendInUse', backendInUse);
     if (!backendInUse) {
       return createIncompleteImplValidationError(`
       Hmm no backend detected. Please check solution.'

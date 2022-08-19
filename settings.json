@@ -35,7 +35,8 @@
       "step": 4,
       "description": "Create Model",
       "helperText": "creating a feed-forward model. We will use 5 layers with relu activation function. Function must return the model.",
-      "name": "createModel"
+      "name": "createModel",
+      "readOnly": "false"
     },
     {
       "step": 5,
@@ -51,8 +52,6 @@
       "helperText": " edit function trainModel() by using the Tf.fit API. Set the following parameters: epochs, batchSize,validationData, callbacks. Hint, you may need to transform your data into tensors ",
       "name" : "trainModel",
       "readOnly": "false"
-
-
     },
     {
       "step": 7,
@@ -66,7 +65,7 @@
       "description": "Download model files",
       "helperText": "Click the button to download your shiney new model. We will use this in our webapp.",
       "name" : "exportModel",
-      "readOnly": "true"
+      "readOnly": "false"
     }
   ],
   "predictSteps": [{

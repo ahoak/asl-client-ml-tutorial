@@ -66,6 +66,7 @@ export class ModelBuilder {
   #aslModel: LayersModel | undefined;
   #inputData: TensorData | undefined;
   #stepMap: Record<string, StepViewer> = {};
+  #stepMapRef: Record<string, string> = {};
 
   constructor(options?: ModelBuilderOptions) {
     this.#epochs = options?.epochs ?? DefaultEpoch;
@@ -79,7 +80,7 @@ export class ModelBuilder {
     this.#stopTrainingButton.onclick = this.handleStopTrainingClick;
     this.#startTrainingButton.onclick = this.handlestartTrainingClick;
     this.mapCodeSteps();
-    this.setCurrentStep(1);
+    // await this.setCurrentStep(1);
   }
 
   mapCodeSteps() {
@@ -124,6 +125,7 @@ export class ModelBuilder {
         });
 
         this.#stepMap[name] = StepViewerInstance;
+        this.#stepMapRef[step] = name;
         switch (name) {
           case 'loadData':
             StepViewerInstance.funcInput = [loadTensors, assetURL];
@@ -148,8 +150,6 @@ export class ModelBuilder {
         console.error('Expected code-step to have a step attribute!');
       }
     });
-
-    // loadStepFromHash();
   }
 
   handleValidationStarted = (name: string, step: number) => {
@@ -215,7 +215,6 @@ export class ModelBuilder {
   };
 
   onEpochEnd = (epoch: number) => {
-    console.log('epoch', epoch);
     const batchDuration = Date.now() - this.#startBatchTime;
     this.#currentEpochCount = epoch + 1;
     const remainingIncrements = this.#epochs - epoch;
@@ -264,23 +263,26 @@ export class ModelBuilder {
     }
   };
 
-  handleNextButtonClick = () => {
-    const name = this.#currentStep?.name ?? '';
-    const step = this.#currentStep?.step ?? 1;
-    const currentInstance = this.#stepMap[name];
-    if (this.#isSolutionVisble) {
-      this.toggleSolution(false, name);
-    }
-    currentInstance.show = false;
-    const nextStep = step + 1;
-    if (this.#trainingComplete) {
-      this.#stopTrainingButton.style.display = 'none';
-      this.#startTrainingButton.style.display = 'none';
-      this.#trainingStatusElement.style.display = 'none';
-    }
-    clearValidationFeedback();
-    this.setCurrentStep(nextStep);
+  handleNextButtonClick = async () => {
+    const next = this.#currentStep?.step ?? 1;
+    await this.onStepChange(next + 1);
   };
+
+  async onStepChange(nextStep: number) {
+    if (this.#currentStep) {
+      const title = this.#currentStep.name;
+      if (this.#isSolutionVisble) {
+        this.toggleSolution(false, title);
+      }
+      const currentInstance = this.#stepMap[title];
+      currentInstance.show = false;
+    }
+
+    clearValidationFeedback();
+    if (nextStep !== undefined) {
+      await this.setCurrentStep(nextStep);
+    }
+  }
 
   handleSolutionButtonClick = () => {
     const state = !this.#isSolutionVisble;
@@ -299,6 +301,7 @@ export class ModelBuilder {
     if (this.#aslModel && instance) {
       this.#aslModel.stopTraining = false;
       this.#trainingEnabled = true;
+      this.#currentEpochCount = 0;
       this.#startTrainingButton.disabled = true;
       this.#trainingComplete = false;
       this.#actionButton.disabled = true;
@@ -306,7 +309,7 @@ export class ModelBuilder {
     }
   };
 
-  handleStepChange(name: string, readOnly = 'false') {
+  async handleStepChange(name: string, readOnly = 'false') {
     const instance = this.#stepMap[name];
     if (instance) {
       instance.setCodeFromCacheOrDefault();
@@ -336,15 +339,20 @@ export class ModelBuilder {
         instance.overrideEventListener = true;
         this.#startTrainingButton.style.display = 'inline-flex';
         this.#stopTrainingButton.style.display = 'inline-flex';
+      } else {
+        this.#stopTrainingButton.style.display = 'none';
+        this.#startTrainingButton.style.display = 'none';
+        this.#trainingStatusElement.style.display = 'none';
       }
 
       instance.show = true;
+      await instance.runCachedCode();
     } else {
       console.error(`Instance of StepViewer for ${name} is not found`);
     }
   }
 
-  setCurrentStep(stepcount: number) {
+  async setCurrentStep(stepcount: number) {
     const step = ProjectSettingsConfig.trainTutorialSteps.find(
       (tutorialStep) => tutorialStep.step === stepcount,
     );
@@ -354,7 +362,7 @@ export class ModelBuilder {
       highlightNavStep(this.#currentStep.step);
       unhighlightNavStep(this.#currentStep.step - 1);
       this.#mainEle.innerHTML = `${this.#currentStep.step}. ${this.#currentStep.description} `;
-      this.handleStepChange(this.#currentStep.name, this.#currentStep.readOnly);
+      await this.handleStepChange(this.#currentStep.name, this.#currentStep.readOnly);
     }
   }
 }
@@ -374,11 +382,3 @@ function unhighlightNavStep(step: number): void {
     step1Element.style.fontWeight = 'revert';
   }
 }
-
-// function loadStepFromHash() {
-//     const hash = window.location.hash ?? null;
-//     const step = hash.replace('#step', '');
-//     stepController?.setAttribute('step', step ? step : '1');
-//   }
-
-//   addEventListener('hashchange', loadStepFromHash);

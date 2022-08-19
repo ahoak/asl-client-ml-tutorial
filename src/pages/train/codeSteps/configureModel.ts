@@ -61,7 +61,6 @@ export async function validate(
     result = await impl(model);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const output = model.evaluate(tf.truncatedNormal([1, 63]), tf.truncatedNormal([1, 26]));
-    console.log('compiledModel', result);
     if (!output) {
       return createIncompleteImplValidationError(`
       The model does not seemed to be compiled or compiled correctly'

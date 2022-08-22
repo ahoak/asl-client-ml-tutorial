@@ -60,3 +60,11 @@ export interface CodeStepState<DataType = unknown, T = (...args: any[]) => any>
 export interface PredictPipelineState {
   steps: Record<PredictStepName, StepState>;
 }
+
+/**
+ * Represents an element which displays a step
+ */
+export interface StepDisplayElement extends HTMLElement {
+  stepState: StepState<unknown>;
+  pipelineState?: PredictPipelineState | null;
+}

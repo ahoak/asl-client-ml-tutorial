@@ -3,7 +3,7 @@ import { loadModelFromZip } from '../../../../utils/utils';
 import type { CodeEditorComponent, VideoStreamViewerComponent } from '../../components';
 import { BaseComponent } from '../../components';
 import { createImplForStepCode } from '../helpers/createImplForCode';
-import type { PredictPipelineState, StepState } from '../types';
+import type { PredictPipelineState, StepDisplayElement, StepState } from '../types';
 import { code } from './code';
 import template from './template.html';
 
@@ -16,7 +16,7 @@ type PredictFn = (
   classification: string;
   confidence: number;
 } | null>;
-export class RunStep extends BaseComponent {
+export class RunStep extends BaseComponent implements StepDisplayElement {
   #videoStreamViewer: VideoStreamViewerComponent | null = null;
   #startButton: HTMLElement | null = null;
   #codeEditor: CodeEditorComponent | null = null;

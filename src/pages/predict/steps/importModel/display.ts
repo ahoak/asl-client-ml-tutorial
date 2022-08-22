@@ -6,14 +6,15 @@ import {
   createUnknownValidationError,
 } from '../../../../utils/utils';
 import type { StepContainerComponent } from '../../components/StepContainer';
+import type { StepDisplayElement } from '../types';
 import { defaultState } from './state';
 import template from './template.html';
-import type { ImportModelZip, ImportStepState } from './types';
+import type { ImportStepState } from './types';
 import { validate } from './validate';
 
 export const elementName = 'import-model-step';
 
-export class ImportModelStep extends BaseComponent {
+export class ImportModelStep extends BaseComponent implements StepDisplayElement {
   /**
    * The list of observed attributes
    */

@@ -36,9 +36,10 @@ class HandPoseExtractor {
 
   /**
    * Warms up the hand position model
+   * @param imageSource The optional image source to warmup with
    */
-  async warmup() {
-    await this.extract(emptyImage, false);
+  async warmup(imageSource: HTMLVideoElement | HTMLImageElement | HTMLCanvasElement = emptyImage) {
+    await this.extract(imageSource, false);
   }
 
   async extract(
@@ -70,8 +71,10 @@ const extractor = new HandPoseExtractor();
 /**
  * Warms up the hand pose model
  */
-export function warmup(): Promise<void> {
-  return extractor.warmup();
+export function warmup(
+  imageSource?: HTMLVideoElement | HTMLImageElement | HTMLCanvasElement,
+): Promise<void> {
+  return extractor.warmup(imageSource);
 }
 
 /**

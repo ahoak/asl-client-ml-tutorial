@@ -1,8 +1,8 @@
 import '../../utils/fluentBootstrap';
 import './components';
 
-import { warmup } from './codeSteps/helpers/extractAllJointPositions';
 import * as stepDefs from './steps';
+import { warmup } from './steps/helpers/extractAllJointPositions';
 import type { PredictPipelineState, PredictStepName, StepState } from './steps/types';
 
 const predictionContents = document.querySelector('.predict-contents');

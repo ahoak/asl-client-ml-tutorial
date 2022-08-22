@@ -1,8 +1,10 @@
+import { code } from './code';
 import type { RunStepState } from './types';
 
 export const defaultState: RunStepState = {
   valid: false,
   validationIssues: [],
+  code: code,
 };
 
 /**

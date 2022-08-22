@@ -7,8 +7,8 @@ import {
 } from '../../../../utils/utils';
 import type { ExtractAndProcessJointPositionsStepState } from './types';
 
-const testImageSource = document.createElement('img');
-testImageSource.setAttribute('crossorigin', 'anonymous');
+export const validateImageSource = document.createElement('img');
+validateImageSource.setAttribute('crossorigin', 'anonymous');
 
 const correctTensorLength = 63;
 
@@ -18,18 +18,18 @@ export async function validate(
   if (state.instance) {
     // Wait for the image to load
     const ready = new Promise((resolve, reject) => {
-      testImageSource.onload = resolve;
-      testImageSource.onerror = reject;
+      validateImageSource.onload = resolve;
+      validateImageSource.onerror = reject;
     });
 
-    testImageSource.src = 'data/testImage.jpg';
+    validateImageSource.src = 'data/testImage.jpg';
 
     await ready;
     let data: any[] | null = null;
 
     try {
       const positions = await (state.instance as typeof extractAndProcessJointPositions)(
-        testImageSource,
+        validateImageSource,
         false,
       );
       if (

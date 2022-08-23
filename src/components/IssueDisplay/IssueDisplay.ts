@@ -1,6 +1,6 @@
 import BaseComponent from '../BaseComponent';
 import type { CodeIssue, CodeIssueType } from '../CodeEditor';
-import template from './template.html';
+import template from './template.html?raw';
 
 const attributes = ['issues'];
 type IssueAttributeNames = typeof attributes[number];

@@ -5,7 +5,7 @@ import { BaseComponent } from '../../components';
 import { createImplForStepCode } from '../helpers/createImplForCode';
 import type { PredictPipelineState, StepDisplayElement, StepState } from '../types';
 import { code } from './code';
-import template from './template.html';
+import template from './template.html?raw';
 
 type PredictFn = (
   model: LayersModel,

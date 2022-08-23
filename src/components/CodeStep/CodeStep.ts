@@ -3,7 +3,7 @@ import '../IssueDisplay';
 import BaseComponent from '../BaseComponent';
 import type { CodeEditorChangeEventArgs, CodeEditorComponent, CodeIssue } from '../CodeEditor';
 import type { CodeIssueDisplayComponent } from '../IssueDisplay';
-import template from './template.html';
+import template from './template.html?raw';
 import type { RawValidationIssue } from './types';
 
 export type CodeStepChangeEventArgs = CodeEditorChangeEventArgs & {

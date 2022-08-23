@@ -3,7 +3,7 @@ import '../IssueDisplay';
 import { MarkerSeverity } from 'monaco-editor';
 
 import BaseComponent from '../BaseComponent';
-import template from './template.html';
+import template from './template.html?raw';
 import type { CodeEditorChangeEventArgs, CodeIssue, CodeIssueType } from './types';
 import type { IModel, IStandaloneCodeEditor, Monaco } from './utils/monaco';
 import { getTypescriptWorker, loadMonaco } from './utils/monaco';

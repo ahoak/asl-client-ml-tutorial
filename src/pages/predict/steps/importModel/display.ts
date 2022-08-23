@@ -8,7 +8,7 @@ import {
 import type { StepContainerComponent } from '../../components/StepContainer';
 import type { StepDisplayElement } from '../types';
 import { defaultState } from './state';
-import template from './template.html';
+import template from './template.html?raw';
 import type { ImportStepState } from './types';
 import { validate } from './validate';
 

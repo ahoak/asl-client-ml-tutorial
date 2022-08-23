@@ -1,5 +1,5 @@
 import BaseComponent from '../../../../components/BaseComponent';
-import template from './template.html';
+import template from './template.html?raw';
 
 export class StepControllerComponent extends BaseComponent {
   /**

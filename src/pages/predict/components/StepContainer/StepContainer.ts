@@ -3,7 +3,7 @@ import '../../../../components/IssueDisplay';
 import BaseComponent from '../../../../components/BaseComponent';
 import type { CodeIssueDisplayComponent } from '../../../../components/IssueDisplay';
 import type { CodeIssue } from '..';
-import template from './template.html';
+import template from './template.html?raw';
 
 const attributes = ['style', 'name', 'step-issues', 'valid', 'validating'] as const;
 type AttributeName = typeof attributes[number];

@@ -1,5 +1,5 @@
 import BaseComponent from '../BaseComponent';
-import template from './template.html';
+import template from './template.html?raw';
 
 export class VideoStreamViewerComponent extends BaseComponent {
   /**

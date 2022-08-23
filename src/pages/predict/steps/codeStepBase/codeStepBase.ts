@@ -11,7 +11,7 @@ import type {
 import { BaseComponent } from '../../components';
 import { createImplForStepCode } from '../helpers/createImplForCode';
 import type { CodeStepState, PredictPipelineState, StepState } from '../types';
-import defaultTemplate from './template.html';
+import defaultTemplate from './template.html?raw';
 
 type ValidationFunction<StateType extends StepState> = (
   state: StateType,

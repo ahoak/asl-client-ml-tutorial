@@ -419,6 +419,27 @@ fluent-button {
 .next-button-container {
   margin-top: 1rem;
 }
+.training-stop-button {
+  display: none;
+}
+.training-start-button {
+  display: none;
+}
+.training-controls {
+  display: block;
+  margin-top: 1rem;
+}
+.download-button {
+  display: none;
+}
+.download-controls {
+  display: block;
+  margin-top: 1rem;
+}
+
+h2.name {
+  display: none;
+}
 /******************************************************************************
 END default theme
 ******************************************************************************/

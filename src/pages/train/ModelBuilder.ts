@@ -6,12 +6,7 @@ import * as tf from '@tensorflow/tfjs';
 
 import Settings from '../../../settings.json';
 import type { CodeStepComponent } from '../../components';
-import type {
-  ProjectSettings,
-  TensorData,
-  TrainTutorialSteps,
-  ValidationResult,
-} from '../../types';
+import type { ProjectSettings, TrainTutorialSteps, ValidationResult } from '../../types';
 import { assetURL, classes } from '../../utils/constants';
 import { getOrCreateElement, loadTensors, millisToMinutesAndSeconds } from '../../utils/utils';
 import type { CodeStepRecord } from './codeSteps';
@@ -38,7 +33,7 @@ type StepImplementation = Record<keyof typeof codeSteps, StepImplementationRecor
 const DefaultEpoch = 2;
 export class ModelBuilder {
   #epochs = DefaultEpoch;
-  #currentEpochCount = 0;
+  #currentEpochCount = 1;
   #batchSize = 405 * 2;
   #startBatchTime = 0;
 
@@ -55,24 +50,33 @@ export class ModelBuilder {
   #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;
   #solutionButton = getOrCreateElement('.view-solution-button') as HTMLButtonElement;
   #resetButton = getOrCreateElement('.reset-button') as HTMLButtonElement;
+  #stopTrainingButton = getOrCreateElement('.training-stop-button') as HTMLButtonElement;
+  #startTrainingButton = getOrCreateElement('.training-start-button') as HTMLButtonElement;
+  #downloadButton = getOrCreateElement('.download-button') as HTMLButtonElement;
+
+  #trainingEnabled = true;
+  #trainingComplete = false;
 
   #dataTensors = [Tensor, Tensor, Tensor, Tensor];
 
   #aslModel: LayersModel | undefined;
-  #inputData: TensorData | undefined;
   #stepMap: Record<string, StepViewer> = {};
+  #stepMapRef: Record<string, string> = {};
 
   constructor(options?: ModelBuilderOptions) {
     this.#epochs = options?.epochs ?? DefaultEpoch;
   }
 
-  async init() {
+  init() {
     this.#actionButton.disabled = true;
     this.#actionButton.onclick = this.handleNextButtonClick;
     this.#solutionButton.onclick = this.handleSolutionButtonClick;
     this.#resetButton.onclick = this.handleResetButtonClick;
+    this.#stopTrainingButton.onclick = this.handleStopTrainingClick;
+    this.#startTrainingButton.onclick = this.handlestartTrainingClick;
+    this.#downloadButton.onclick = this.handleDownloadClick;
     this.mapCodeSteps();
-    await this.setCurrentStep(1);
+    // await this.setCurrentStep(1);
   }
 
   mapCodeSteps() {
@@ -116,40 +120,39 @@ export class ModelBuilder {
           solutionElement: element,
         });
 
-        this.#stepMap[step] = StepViewerInstance;
-        StepViewerInstance.setCodeFromCacheOrDefault();
-        switch (+step) {
-          case 1:
-            StepViewerInstance.funcInput = [loadTensors, assetURL];
-            StepViewerInstance.on(Validated, this.handleDataValidation);
-            StepViewerInstance.readonly = true;
-            break;
-          case 3:
+        this.#stepMap[name] = StepViewerInstance;
+        this.#stepMapRef[step] = name;
+        switch (name) {
+          case 'loadData':
+            StepViewerInstance.funcInput = [loadTensors, assetURL, classes];
             StepViewerInstance.on(Validated, this.handleDataSplitValidation);
             break;
-          case 4:
+          case 'createModel':
             StepViewerInstance.funcInput = [tf, classes];
             StepViewerInstance.on(Validated, this.handleModelCreation);
             break;
-          case 5:
+          case 'configureModel':
             StepViewerInstance.on(Validated, this.handleConfigureModel);
             break;
           default:
             break;
         }
-        StepViewerInstance.on('validationInProgress', this.handleValidationStarted);
-        StepViewerInstance.on('validationComplete', this.handleValidationComplete);
+        if (name !== 'exportModel') {
+          StepViewerInstance.on('validationInProgress', this.handleValidationStarted);
+          StepViewerInstance.on('validationComplete', this.handleValidationComplete);
+        }
       } else {
         console.error('Expected code-step to have a step attribute!');
       }
     });
-
-    // loadStepFromHash();
   }
 
   handleValidationStarted = (name: string, step: number) => {
     if (this.#currentStep?.step === step) {
       handleValidatingStep();
+      if (name === 'trainModel') {
+        this.#stopTrainingButton.style.display = 'inline-flex';
+      }
     }
   };
 
@@ -161,23 +164,34 @@ export class ModelBuilder {
         if (step === 2) {
           backendInUse = tf.getBackend();
         }
-        successStatement = getSuccessStatement(step, backendInUse);
+        successStatement = getSuccessStatement(name, backendInUse);
       }
-      handleValidationgComplete(step, passedValidation, successStatement);
+      if (name === 'trainModel' && this.#trainingComplete) {
+        handleValidationgComplete(step, passedValidation, successStatement);
+      } else {
+        handleValidationgComplete(step, passedValidation, successStatement);
+      }
     }
   };
 
   handleResetButtonClick = () => {
-    const step = this.#currentStep?.step ?? 1;
-    const currentInstance = this.#stepMap[step];
+    const name = this.#currentStep?.name ?? '';
+    const currentInstance = this.#stepMap[name];
     currentInstance.resetCodeToDefault();
   };
 
+  handleStopTrainingClick = () => {
+    this.#trainingEnabled = false;
+    this.#startTrainingButton.disabled = false;
+  };
+
   onBatchEnd = (batch: number, logs?: Logs) => {
-    console.log('onBatchEnd', batch);
     if (!this.#initTime) {
       this.#initTime = true;
       this.#trainingStatusElement.style.display = 'inline-block';
+    }
+    if (!this.#trainingEnabled && this.#aslModel) {
+      this.#aslModel.stopTraining = true;
     }
 
     const currentIncrement = this.#currentEpochCount * this.#batchSize + (batch + 1);
@@ -196,16 +210,17 @@ export class ModelBuilder {
   };
 
   onEpochEnd = (epoch: number) => {
-    console.log('onEpochEnd', epoch);
-
     const batchDuration = Date.now() - this.#startBatchTime;
-    this.#currentEpochCount = epoch;
+    this.#currentEpochCount = epoch + 1;
     const remainingIncrements = this.#epochs - epoch;
     const msRemaining = batchDuration * remainingIncrements;
     const [time, hasMinutes] = millisToMinutesAndSeconds(msRemaining);
 
     this.#timeElement.innerHTML = `${time} ${hasMinutes ? 'minutes' : 'seconds'} remaining`;
     this.#startBatchTime = Date.now();
+    if (epoch === this.#epochs - 1) {
+      this.#trainingComplete = true;
+    }
   };
 
   handleConfigureModel = (result: ValidationResult) => {
@@ -227,59 +242,87 @@ export class ModelBuilder {
   handleDataSplitValidation = (result: ValidationResult) => {
     if (result.valid && result.data && result.data.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      this.#dataTensors = result.data;
+      this.#dataTensors = result.data[0];
     } else {
       console.log('no data provided to ModelBuilder, please retry load data function');
     }
   };
 
-  handleDataValidation = (result: ValidationResult) => {
-    // console.log('data load validation complete', result);
-    if (result.valid && result.data && result.data.length > 0) {
-      const data = result.data[0] as TensorData;
-      this.#inputData = data;
-    } else {
-      console.log('no data provided to ModelBuilder, please retry load data function');
-    }
+  handleNextButtonClick = () => {
+    const next = this.#currentStep?.step ?? 1;
+    this.onStepChange(next + 1);
   };
 
-  handleNextButtonClick = async () => {
-    const step = this.#currentStep?.step ?? 1;
-    const currentInstance = this.#stepMap[step];
-    if (this.#isSolutionVisble) {
-      this.toggleSolution(false, step);
+  onStepChange(nextStep: number) {
+    if (this.#currentStep) {
+      const title = this.#currentStep.name;
+      if (this.#isSolutionVisble) {
+        this.toggleSolution(false, title);
+      }
+      const currentInstance = this.#stepMap[title];
+      currentInstance.show = false;
     }
-    currentInstance.show = false;
-    const nextStep = step + 1;
+
     clearValidationFeedback();
-    await this.setCurrentStep(nextStep);
-  };
+    if (nextStep !== undefined) {
+      this.setCurrentStep(nextStep);
+    }
+  }
 
   handleSolutionButtonClick = () => {
     const state = !this.#isSolutionVisble;
-    const step = this.#currentStep?.step ?? 1;
-    this.toggleSolution(state, step);
+    const name = this.#currentStep?.name ?? '';
+    this.toggleSolution(state, name);
   };
 
-  toggleSolution(isVisible: boolean, step: number) {
+  toggleSolution(isVisible: boolean, name: string) {
     this.#isSolutionVisble = isVisible;
-    const currentInstance = this.#stepMap[step];
+    const currentInstance = this.#stepMap[name];
     currentInstance.showSolution(isVisible);
   }
 
-  async handleStepChange(currentStep: number) {
-    const instance = this.#stepMap[currentStep];
+  handlestartTrainingClick = async () => {
+    const instance = this.#stepMap['trainModel'];
+    if (this.#aslModel && instance) {
+      this.#aslModel.stopTraining = false;
+      this.#trainingEnabled = true;
+      this.#currentEpochCount = 0;
+      this.#startTrainingButton.disabled = true;
+      this.#trainingComplete = false;
+      this.#actionButton.disabled = true;
+      await instance.runCachedCode();
+    }
+  };
+
+  handleDownloadClick = async () => {
+    const instance = this.#stepMap['exportModel'];
+    if (this.#aslModel && instance) {
+      await instance.runCachedCode();
+    }
+  };
+
+  handleStepChange(name: string, readOnly = 'false') {
+    const instance = this.#stepMap[name];
     if (instance) {
-      if (currentStep === 3 && this.#inputData) {
-        instance.funcInput = [this.#inputData];
+      instance.setCodeFromCacheOrDefault();
+      if (readOnly) {
+        instance.readonly = readOnly === 'true';
       }
-      if ((currentStep === 5 || currentStep === 7) && this.#aslModel) {
+
+      if (name === 'cleanupTensors') {
+        instance.funcInput = [this.#dataTensors];
+      }
+      if ((name === 'configureModel' || name === 'exportModel') && this.#aslModel) {
         instance.funcInput = [this.#aslModel, tf];
       }
-      if (currentStep === 6 && this.#aslModel)
+      if (name === 'trainModel' && this.#aslModel) {
+        console.log('this.#dataTensors', this.#dataTensors);
         instance.funcInput = [
           this.#aslModel,
-          this.#dataTensors,
+          this.#dataTensors[0],
+          this.#dataTensors[1],
+          this.#dataTensors[2],
+          this.#dataTensors[3],
           // callbacks
           {
             onBatchEnd: this.onBatchEnd,
@@ -287,14 +330,35 @@ export class ModelBuilder {
           },
           this.#epochs,
         ];
+        instance.overrideEventListener = true;
+        this.#startTrainingButton.style.display = 'inline-flex';
+        this.#stopTrainingButton.style.display = 'inline-flex';
+      } else {
+        this.#stopTrainingButton.style.display = 'none';
+        this.#startTrainingButton.style.display = 'none';
+        this.#trainingStatusElement.style.display = 'none';
+      }
+      if (name === 'exportModel') {
+        instance.overrideEventListener = true;
+        this.#downloadButton.style.display = 'inline-flex';
+        this.#actionButton.style.display = 'none';
+      }
+      if (readOnly === 'true') {
+        // hide solution/reset buttons
+        this.#solutionButton.disabled = true;
+        this.#resetButton.disabled = true;
+      } else {
+        this.#solutionButton.disabled = false;
+        this.#resetButton.disabled = false;
+      }
+
       instance.show = true;
-      await instance.runCachedCode();
     } else {
-      console.error(`Instance of StepViewer for ${currentStep} is not found`);
+      console.error(`Instance of StepViewer for ${name} is not found`);
     }
   }
 
-  async setCurrentStep(stepcount: number) {
+  setCurrentStep(stepcount: number) {
     const step = ProjectSettingsConfig.trainTutorialSteps.find(
       (tutorialStep) => tutorialStep.step === stepcount,
     );
@@ -304,7 +368,7 @@ export class ModelBuilder {
       highlightNavStep(this.#currentStep.step);
       unhighlightNavStep(this.#currentStep.step - 1);
       this.#mainEle.innerHTML = `${this.#currentStep.step}. ${this.#currentStep.description} `;
-      await this.handleStepChange(this.#currentStep.step);
+      this.handleStepChange(this.#currentStep.name, this.#currentStep.readOnly);
     }
   }
 }
@@ -324,11 +388,3 @@ function unhighlightNavStep(step: number): void {
     step1Element.style.fontWeight = 'revert';
   }
 }
-
-// function loadStepFromHash() {
-//     const hash = window.location.hash ?? null;
-//     const step = hash.replace('#step', '');
-//     stepController?.setAttribute('step', step ? step : '1');
-//   }
-
-//   addEventListener('hashchange', loadStepFromHash);

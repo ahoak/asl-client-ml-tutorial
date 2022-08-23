@@ -1,10 +1,26 @@
 <style>
+  /* Fonts */
+  @font-face {
+    font-family: HK Grotesk;
+    src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Regular.otf?v=1603136326027") format("opentype");
+  }
+
+  @font-face {
+    font-family: HK Grotesk;
+    font-weight: bold;
+    src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Bold.otf?v=1603136323437") format("opentype");
+  }
+
   .name {
     font-weight: 200;
   }
 
   :root {
     all: initial;
+    --font-family: "HK Grotesk";
+    --font-family-header: "HK Grotesk";
+    --font-family-list: Menlo, Consolas, Monaco, "Lucida Console", monospace;
+
   }
 
   .root {
@@ -14,13 +30,14 @@
     display: flex;
     flex-direction: column;
   }
-  
+
   .detail {
     margin-top: 1em;
     margin-bottom: 1em;
     font-style: italic;
     font-weight: bold;
   }
+
   .error {
     margin-left: 20px;
   }
@@ -31,19 +48,19 @@
   }
 
   .issue-container {
-		flex: 0.33;
-		overflow: hidden;
-		margin-top: 5px;
-		box-sizing: border-box;
-		border: 1px solid #ccc;
+    flex: 0.33;
+    overflow: hidden;
+    margin-top: 5px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
     padding: 5px;
-		overflow-y: auto;
+    overflow-y: auto;
     display: none;
     background-color: lightcyan;
   }
 
   .validate-success {
-    color: green;
+    color: black;
     text-align: center;
     display: none;
   }
@@ -72,6 +89,7 @@
   .code-editor::part(main) {
     height: 100%;
   }
+
   .issue-display::part(main) {
     height: 100%;
   }
@@ -82,7 +100,7 @@
     <code-editor hide-issues class="code-editor"></code-editor>
   </div>
   <div class="issue-container">
-		<code-issue-display class="issue-display"></code-issue-display>
+    <code-issue-display class="issue-display"></code-issue-display>
   </div>
   <div class="validate-container">
     <div class="validate-progress" name="progress" style="display: none;">

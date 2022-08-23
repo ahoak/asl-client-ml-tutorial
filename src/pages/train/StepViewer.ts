@@ -22,9 +22,9 @@ export class StepViewer {
   #isValid = false;
   #args = [] as any[];
   #emitter: Emitter<Events>;
-  #isLoading?: boolean;
   #transpiledCode: string | null;
   #solutionElement?: CodeStepComponent;
+  #overrideEventListener?: boolean;
 
   constructor(props: {
     stepRecord: StepImplementationRecord;
@@ -46,18 +46,19 @@ export class StepViewer {
 
   set show(state: boolean) {
     if (state) {
-      this.#element.setAttribute('style', 'display: flex;width: 100%;height:calc(100vw / 3)');
+      this.#element.setAttribute('style', 'display: flex;width: 100%;height:calc(100vw / 2)');
     } else {
       this.#element.setAttribute('style', 'display:none;');
     }
   }
+
   // TODO: Add stying for "read-only" components
   showSolution(state: boolean) {
     if (this.#solutionElement) {
       if (state) {
         this.#solutionElement.setAttribute(
           'style',
-          'display: flex;width: 100%;height:calc(100vw / 3)',
+          'display: flex;width: 100%;height:calc(100vw / 2)',
         );
       } else {
         this.#solutionElement.setAttribute('style', 'display:none;');
@@ -83,7 +84,6 @@ export class StepViewer {
     localStorage.removeItem(`build-ts:${this.#name}`);
     this.#transpiledCode = null;
     this.#isValid = false;
-    this.#isLoading = false;
   }
 
   on<E extends keyof Events>(
@@ -94,20 +94,24 @@ export class StepViewer {
     return this.#emitter.on(event, callback);
   }
 
+  set overrideEventListener(state: boolean) {
+    this.#overrideEventListener = state;
+  }
+
   setEventListener() {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.#element.addEventListener('change', async (event: Event) => {
       const ce = event as CodeStepChangeEvent;
       const noSyntaxErrors = !ce.detail.hasSyntaxErrors;
+      const code = ce.detail.transpiledCode;
       // Save if no errors?
       if (noSyntaxErrors) {
         localStorage.setItem(`build-ts:${this.#name}`, ce.detail.transpiledCode);
         localStorage.setItem(`build:${this.#name}`, ce.detail.code);
         this.#transpiledCode = ce.detail.transpiledCode;
-      }
-      const code = ce.detail.transpiledCode;
-      if (noSyntaxErrors && !this.#isLoading) {
-        await this.handleEvalInput(code);
+        if (!this.#overrideEventListener) {
+          await this.handleEvalInput(code);
+        }
       }
     });
   }
@@ -133,7 +137,6 @@ export class StepViewer {
   async handleEvalInput(transpiledCode?: string) {
     this.#emitter.emit(ValidationInProgress, this.#name, this.#stepCount);
     const code = transpiledCode ?? this.#element.getAttribute('code') ?? '';
-    this.#isLoading = true;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const implementation = this.#stepRecord.implementation(
       code,
@@ -142,21 +145,24 @@ export class StepViewer {
     );
 
     if (this.#stepRecord.validate) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      const results = await this.#stepRecord.validate(implementation, ...this.#args);
-      this.#element.setAttribute(
-        'validation-issues',
-        JSON.stringify(results.valid ? [] : results.errors),
-      );
-      this.#isValid = results.valid;
-      if (this.#isValid) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        this.#emitter.emit(Validated, results);
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        const results = await this.#stepRecord.validate(implementation, ...this.#args);
+        this.#element.setAttribute(
+          'validation-issues',
+          JSON.stringify(results.valid ? [] : results.errors),
+        );
+        this.#isValid = results.valid;
+        if (this.#isValid) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+          this.#emitter.emit(Validated, results);
+        }
+      } catch (err) {
+        console.log(err);
       }
     }
 
     this.#emitter.emit(ValidationComplete, this.#name, this.#stepCount, this.#isValid);
-    this.#isLoading = false;
   }
 
   get isValid(): boolean {

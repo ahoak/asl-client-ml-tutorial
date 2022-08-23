@@ -41,6 +41,7 @@ export async function validate(impl: setTensorFlowBackend): Promise<ValidationRe
   try {
     // eslint-disable-next-line @typescript-eslint/await-thenable
     await impl();
+
     backendInUse = tf.getBackend();
     if (!backendInUse) {
       return createIncompleteImplValidationError(`
@@ -50,6 +51,7 @@ export async function validate(impl: setTensorFlowBackend): Promise<ValidationRe
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     const error = `${e}`;
+    console.log('error', error);
     return {
       valid: false,
       errors: [

@@ -1,19 +1,21 @@
 import type { CustomCallbackArgs, LayersModel, Logs, Tensor } from '@tensorflow/tfjs';
 import * as tf from '@tensorflow/tfjs';
 import * as jszip from 'jszip';
+import JSZip from 'jszip';
 
 import type { Callbacks, TensorData } from '../../types';
 import { assetURL, classes } from '../../utils/constants.js';
+import { ArrayBufferModelSaver } from '../../utils/tfArrayBufferLoaderSaver';
 import { loadTensors, trainTestSplit } from '../../utils/utils.js';
 
 export async function testFullPipeline() {
   const data = await loadTensorDataSolution();
-  console.log('data', data);
-  await setTensorFlowBackend();
+  // await setTensorFlowBackend();
   const [trainX, trainY, validationX, validationY, testX, testY] = encodeAndSplitData(data);
   const model = createModel();
   configureModel(model);
-  await trainTestModel(model, [trainX, trainY, validationX, validationY], 2);
+  await trainTestModel(model, [trainX, trainY, validationX, validationY], 1);
+  await exportModel(model);
 }
 
 export async function trainTestModel(
@@ -21,6 +23,7 @@ export async function trainTestModel(
   data: [Tensor, Tensor, Tensor, Tensor],
   numEpochs = 2,
 ): Promise<void> {
+  console.log('testing...');
   const xTensor = data[0];
   const yTensor = data[1];
   const xValidateTensor = data[2];
@@ -63,28 +66,6 @@ export async function setTensorFlowBackend() {
   await tf.setBackend('webgl');
 }
 
-// Step 3: Use One Hot Encoding to convert letters (i.e "A", "B", "C") to binary vector
-// Split Training data
-// use pre-built functions below to complete
-/*
-  Encodes data useing one hot encoding and splits data into training and test set
-  returns array of values [X_train, X_val, y_train, y_val];
-*/
-// export function encodeAndSplitData(
-//   data: TensorData,
-//   applyOneHotEncoding: (data: TensorData) => { X: number[][]; Y: number[][] },
-//   splitTrainingData: (
-//     X: number[][],
-//     Y: number[][],
-//   ) => [number[][], number[][], number[][], number[][]],
-// ) {
-//   // apply one-hot encoding function below
-//   const { X, Y } = applyOneHotEncoding(data);
-//   // take the results from one-hot encoding and split data
-//   return splitTrainingData(X, Y);
-// }
-// : Promise<[number[][], number[], number[][], number[], number[][], number[]]>
-// TFJS IMPLENTATION IN QUESTION
 export function encodeAndSplitData(
   data: TensorData,
   trainSplit = 0.8,
@@ -105,7 +86,7 @@ export function encodeAndSplitData(
   tf.util.shuffleCombo(X, Y);
   // tensor shape [60581, 63]
   const xTensor = tf.tensor(X);
-  console.log('xTensor', xTensor);
+
   // const result = applyOneHotEncoding(data);
   // tensor shape [60581, 26]
   const oneHotOutputs = tf.oneHot(tf.tensor1d(Y, 'int32'), classes.length);
@@ -240,7 +221,37 @@ export async function trainModel(
   yValidateTensor.dispose();
 }
 
+export function download(filename: string, data: string) {
+  const element = document.createElement('a');
+  element.setAttribute('href', 'data:application/zip;base64,' + data);
+  element.setAttribute('download', filename);
+
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  element.click();
+
+  document.body.removeChild(element);
+}
+
 export async function exportModel(model: LayersModel): Promise<void> {
-  // checkout https://www.tensorflow.org/js/guide/save_load
-  await model.save('localstorage://model');
+  const zip = new JSZip();
+  const files = await model.save(new ArrayBufferModelSaver());
+  const f = files as unknown as { data: { [key: string]: ArrayBuffer } };
+
+  Object.keys(f.data).forEach((fileName, index) => {
+    if (index === 0) {
+      zip.file(fileName, JSON.stringify(f.data[fileName]));
+    } else {
+      zip.file(fileName, f.data[fileName]);
+    }
+  });
+  await zip.generateAsync({ type: 'base64' }).then(
+    function (base64) {
+      download('model.zip', base64);
+    },
+    function (error) {
+      console.warn(error);
+    },
+  );
 }

@@ -27,11 +27,6 @@ export class ImportModelStep extends BaseComponent implements StepDisplayElement
   }
 
   /**
-   * True if the element is connected to the document
-   */
-  #connected = false;
-
-  /**
    * The model import file element
    */
   #modelImportFileEle: HTMLInputElement | null = null;
@@ -114,7 +109,6 @@ export class ImportModelStep extends BaseComponent implements StepDisplayElement
    * Listener for when the element is initialized
    */
   connectedCallback() {
-    this.#connected = true;
     this.#stepContainerEle = this.#root.querySelector('.step-container');
     this.#modelImportContainer = this.#root.querySelector('.model-import-container');
     this.#modelResetButton = this.#root.querySelector('.model-reset-button');
@@ -133,13 +127,6 @@ export class ImportModelStep extends BaseComponent implements StepDisplayElement
     );
 
     void this.#loadStateFromFileElement();
-  }
-
-  /**
-   * Listener for when the element is removed from the dom
-   */
-  disconnectedCallback() {
-    this.#connected = false;
   }
 
   /**

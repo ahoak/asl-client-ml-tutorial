@@ -20,7 +20,6 @@ export class CodeIssueDisplayComponent extends BaseComponent<IssueAttributeNames
    * The root of the app component
    */
   #root: HTMLElement | null = null;
-  #connected = false;
 
   /**
    * Listener for when the attribute changed
@@ -38,15 +37,7 @@ export class CodeIssueDisplayComponent extends BaseComponent<IssueAttributeNames
    * Listener for when the element is initialized
    */
   connectedCallback() {
-    this.#connected = true;
     this.#render();
-  }
-
-  /**
-   * Listener for when the element is removed from the dom
-   */
-  disconnectedCallback() {
-    this.#connected = false;
   }
 
   /**

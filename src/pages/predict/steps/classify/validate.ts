@@ -10,7 +10,7 @@ import type { ClassifyStepState } from './types';
 
 const correctTensorLength = 63;
 const fakeNormalizedTensor = tensor1d(
-  Array.from({ length: correctTensorLength }).map((n) => Math.random() * 2 - 1),
+  Array.from({ length: correctTensorLength }).map(() => Math.random() * 2 - 1),
 ).expandDims(0) as Tensor1D;
 type classifyFn = (
   model: LayersModel,

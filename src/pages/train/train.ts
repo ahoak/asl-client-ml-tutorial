@@ -11,7 +11,7 @@ import { loadTensors, trainTestSplit } from '../../utils/utils.js';
 export async function testFullPipeline() {
   const data = await loadTensorDataSolution();
   // await setTensorFlowBackend();
-  const [trainX, trainY, validationX, validationY, testX, testY] = encodeAndSplitData(data);
+  const [trainX, trainY, validationX, validationY] = encodeAndSplitData(data);
   const model = createModel();
   configureModel(model);
   await trainTestModel(model, [trainX, trainY, validationX, validationY], 1);

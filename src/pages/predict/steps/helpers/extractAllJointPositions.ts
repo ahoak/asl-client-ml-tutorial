@@ -15,11 +15,12 @@ class HandPoseExtractor {
     this.#init();
   }
 
-  #init(empty = false) {
+  #init() {
     if (!this.#hands) {
       console.log('loading hand model...');
 
-      this.#hands = new Hands({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      this.#hands = new (Hands || (window as any)['Hands'])({
         locateFile: (file) => {
           return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
         },

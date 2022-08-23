@@ -33,26 +33,33 @@ export default class BaseComponent<AttributeNames extends string = any> extends 
    * This will happen each time the node is moved, and may happen before the element's contents have been fully parsed.
    */
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  connectedCallback() {}
+  connectedCallback() {
+    // placeholder
+  }
 
   /**
    * Invoked each time the custom element is disconnected from the document's DOM.
    */
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  disconnectedCallback() {}
+  disconnectedCallback() {
+    // placeholder
+  }
 
   /**
    * Invoked each time the custom element is moved to a new document.
    */
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  adoptedCallback() {}
+  adoptedCallback() {
+    // placeholder
+  }
 
   /**
    * Invoked each time one of the custom element's attributes is added, removed, or changed.
    * Which attributes to notice change for is specified in a static get _observedAttributes_ method
    */
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  attributeChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {}
+  attributeChangedCallback(_name: string, _oldValue: string | null, _newValue: string | null) {
+    // placeholder
+  }
 
   /**
    * Initializes this element

@@ -35,7 +35,6 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
   #nameEle: HTMLElement | null = null;
   #successContainer: HTMLElement | null = null;
   #issueContainer: HTMLElement | null = null;
-  #validatingContainer: HTMLElement | null = null;
   #validateProgressContainer: HTMLElement | null = null;
   #issueDisplay: CodeIssueDisplayComponent | null = null;
   #codeEditorEle: CodeEditorComponent | null = null;
@@ -82,7 +81,6 @@ export class CodeStepComponent extends BaseComponent<typeof attributes[number]> 
     this.#nameEle = this.#root.querySelector('.name');
     this.#codeEditorEle = this.#root.querySelector('.code-editor');
     this.#successContainer = this.#root.querySelector('.validate-success');
-    this.#validatingContainer = this.#root.querySelector('.validate-container');
     this.#validateProgressContainer = this.#root.querySelector('.validate-progress');
     this.#issueContainer = this.#root.querySelector('.issue-container');
     this.#issueDisplay = this.#root.querySelector('.issue-display');

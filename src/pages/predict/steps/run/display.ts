@@ -96,7 +96,6 @@ export class RunStep extends BaseComponent implements StepDisplayElement {
   /**
    * Runs prediction on the current source & streams
    */
-  // eslint-disable-next-line @typescript-eslint/require-await
   async predict() {
     if (this.#stream && this.#predictImpl && this.#__pipelineState && this.#model) {
       const imageSource = this.#videoStreamViewer!.imageSource;

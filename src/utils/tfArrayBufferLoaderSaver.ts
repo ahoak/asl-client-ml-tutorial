@@ -35,7 +35,6 @@ export type RawFiles = Record<
 // Adapted from https://github.com/tensorflow/tfjs/blob/master/tfjs-core/src/io/browser_files.ts
 export class ArrayBufferModelLoader implements IOHandler {
   #modelJsonFileName: string;
-  #files = null;
   #initPromise: Promise<any>;
   weightsFiles: Map<string, ArrayBuffer> = new Map();
   jsonFile!: tf.io.ModelJSON;
@@ -129,9 +128,7 @@ export class ArrayBufferModelLoader implements IOHandler {
       group.paths.forEach((path: string) => {
         const pathBasename = basename(path);
         if (basenames.indexOf(pathBasename) !== -1) {
-          throw new Error(
-            `Duplicate file basename found in weights manifest: ` + `'${pathBasename}'`,
-          );
+          throw new Error(`Duplicate file basename found in weights manifest: '${pathBasename}'`);
         }
         basenames.push(pathBasename);
         if (fileNames.indexOf(pathBasename) === -1) {

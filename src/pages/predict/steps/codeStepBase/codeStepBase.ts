@@ -27,11 +27,6 @@ export abstract class CodeStepBaseComponent<StateType extends CodeStepState> ext
   }
 
   /**
-   * The root of the app component
-   */
-  #connected = false;
-
-  /**
    * The code editor
    */
   #codeEditor: CodeEditorComponent | null = null;
@@ -186,7 +181,6 @@ export abstract class CodeStepBaseComponent<StateType extends CodeStepState> ext
    * Listener for when the element is initialized
    */
   connectedCallback() {
-    this.#connected = true;
     this.#codeEditor = this.root.querySelector('.code-editor');
     this.#stepContainerEle = this.root.querySelector('.step-container');
     this.#solutionEditorEle = this.root.querySelector('.solution-editor');
@@ -259,12 +253,5 @@ export abstract class CodeStepBaseComponent<StateType extends CodeStepState> ext
     }
 
     this.stepState = Object.freeze(state);
-  }
-
-  /**
-   * Listener for when the element is removed from the dom
-   */
-  disconnectedCallback() {
-    this.#connected = false;
   }
 }

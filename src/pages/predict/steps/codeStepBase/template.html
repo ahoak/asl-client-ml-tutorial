@@ -1,0 +1,51 @@
+<style>
+	[slot="success"] {
+		font-weight: bold;
+	}
+
+	.editor-container {
+		width: 100%;
+		height: 600px;
+	}
+
+	step-container::part(main) {
+		/* max-width: 500px; */
+		width: 80vw;
+	}
+
+	.editor-container code-editor::part(main) {
+		/* fills editor-container */
+		height: 100%;
+	}
+
+	.solution-editor::part(main) {
+		margin-top: 5px;
+	}
+
+	.solution-container code-editor::part(main) {
+		/* fills editor-container */
+		height: 600px;
+	}
+
+	.solution-editor::part(main) {
+		margin-top: 5px;
+	}
+
+</style>
+<div class="root">
+	<step-container class="step-container">
+		<div slot="name"></div>
+		<div class="editor-container">
+			<code-editor hide-issues class="code-editor"></code-editor>
+		</div>
+		<slot slot="success" name="success">
+			<div class="success-message">Great job! Looks Good 👍.</div>
+		</slot>
+		<div slot="buttons-bottom" class="solution-container">
+			<div class="bottom-button-container">
+				<fluent-button class="toggle-solution-button">Toggle Solution</fluent-button>
+			</div>
+			<code-editor style="display: none;" code="function test() {}" readonly hide-issues class="solution-editor"></code-editor>
+		</div>
+	</step-container>
+</div>

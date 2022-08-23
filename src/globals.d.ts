@@ -11,3 +11,8 @@ declare module '*.html' {
   const contents: string;
   export default contents;
 }
+
+declare module '*.html?raw' {
+  const contents: string;
+  export default contents;
+}

@@ -5,12 +5,24 @@
 	.contents slot::slotted(.active-step) {
 		display: unset;
 	}
+	
+	.buttons {
+		margin-top: 10px;
+	}
 </style>
 <div class="root" part="main">
 	<div class="header" part="header">
 		<slot name="header"></slot>
 	</div>
+	<div class="buttons buttons-top" part="buttons-top">
+	  <slot name="buttons-top">
+		<fluent-button part="next_button" class="next-button" appearance="accent">Next</fluent-button>
+	  </slot>
+	</div>
 	<div class="contents" part="contents">
 		<slot></slot>
+	</div>
+	<div class="buttons buttons-bottom" part="buttons-bottom">
+	  <slot name="buttons-bottom"></slot>
 	</div>
 </div>

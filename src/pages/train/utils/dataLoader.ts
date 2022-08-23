@@ -2,6 +2,7 @@ import type { BreadcrumbItem } from '@fluentui/web-components';
 
 import Settings from '../../../../settings.json';
 import { getOrCreateElement } from '../../../utils/utils';
+
 const loadingstring = '.loading-element';
 const actionButtonQuery = '.train-button';
 const outputContainerQuery = '.output-container';

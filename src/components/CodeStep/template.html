@@ -54,8 +54,7 @@
   }
 
   .validate-progress {
-    /* display: flex; */
-    display: none;
+    display: flex;
     flex-direction: row;
     justify-content: center;
     height: 40px;
@@ -86,12 +85,17 @@
 		<code-issue-display class="issue-display"></code-issue-display>
   </div>
   <div class="validate-container">
-    <div class="validate-progress">
-      <fluent-progress-ring class="validate-progress"></fluent-progress-ring>
-      <span class="validate-label">...Verifying Solution</span>
+    <div class="validate-progress" name="progress" style="display: none;">
+      <fluent-progress-ring></fluent-progress-ring>
+      <span class="validate-label">...Validating</span>
     </div>
-    <div class="validate-success">
-      👍Looks Good!
+    <div class="validate-success" style="display: none;">
+      <slot name="success">
+        👍Looks Good!
+      </slot>
     </div>
-  </div>
+  </div>  
+  <!-- <div class="solution-editor-container" part="solution-editor-container">
+    <code-editor hide-issues class="solution-code-editor"></code-editor>
+  </div> -->
 </div>

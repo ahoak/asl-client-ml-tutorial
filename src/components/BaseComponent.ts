@@ -52,7 +52,7 @@ export default class BaseComponent<AttributeNames extends string = any> extends 
    * Which attributes to notice change for is specified in a static get _observedAttributes_ method
    */
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {}
+  attributeChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {}
 
   /**
    * Initializes this element

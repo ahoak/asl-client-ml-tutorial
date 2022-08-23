@@ -1,23 +1,26 @@
 import '../IssueDisplay';
 
+import { MarkerSeverity } from 'monaco-editor';
+
 import BaseComponent from '../BaseComponent';
-import template from './template.html';
+import template from './template.html?raw';
 import type { CodeEditorChangeEventArgs, CodeIssue, CodeIssueType } from './types';
 import type { IModel, IStandaloneCodeEditor, Monaco } from './utils/monaco';
-import { getTSProxy, loadMonaco } from './utils/monaco';
-
-// TODO: We can probably just import that enum
-// https://microsoft.github.io/monaco-editor/api/enums/monaco.MarkerSeverity.html
-const INFO_SEVERITY = 2;
-const WARNING_SEVERITY = 4;
-const ERROR_SEVERITY = 8;
+import { getTypescriptWorker, loadMonaco } from './utils/monaco';
 
 export class CodeEditorComponent extends BaseComponent {
   /**
    * The list of observed attributes
    */
   static get observedAttributes() {
-    return ['style', 'placeholder', 'code', 'hide-issues', 'read-only'];
+    return [
+      'style',
+      'placeholder',
+      'code',
+      'hide-issues',
+      'readonly',
+      'allow-background-execution',
+    ];
   }
 
   constructor() {
@@ -27,7 +30,6 @@ export class CodeEditorComponent extends BaseComponent {
   /**
    * The root of the app component
    */
-  #root: HTMLElement | null = null;
   #placeholder: string | null = null;
   #editor: IStandaloneCodeEditor | null = null;
   #monaco: Monaco | null = null;
@@ -36,6 +38,20 @@ export class CodeEditorComponent extends BaseComponent {
   #issueContainerEle: HTMLElement | null = null;
   #codeEditorEle: HTMLElement | null = null;
   #resizeObserver: ResizeObserver | null = null;
+  #visibilityObserver: IntersectionObserver | null = null;
+  #currentCode: string | null = null;
+  #allowBackgroundExecution = false;
+
+  /**
+   * The root of the app component
+   */
+  #__root: HTMLElement | null = null;
+  get #root(): HTMLElement {
+    if (!this.#__root) {
+      this.#__root = this.templateRoot.querySelector('.root');
+    }
+    return this.#__root!;
+  }
 
   /**
    * Gets whether or not issues are hidden
@@ -47,55 +63,43 @@ export class CodeEditorComponent extends BaseComponent {
   /**
    * Hides or shows the issues display
    */
-  set hideIssues(value) {
-    if (value) {
-      this.setAttribute('hide-issues', '');
-    } else {
-      this.removeAttribute('hide-issues');
-    }
+  set hideIssues(value: boolean) {
+    this.toggleAttribute('hide-issues', value);
   }
+
   /**
-   * Gets whether or not issues are hidden
+   * Gets whether or not the editor is read only
    */
   get readOnly(): boolean {
-    return this.hasAttribute('read-only');
+    return this.hasAttribute('readonly');
   }
 
   /**
-   * Sets to read-only mode
+   * Sets to readonly mode
    */
   set readOnly(value: boolean) {
-    if (value) {
-      this.setAttribute('read-only', '');
-    } else {
-      this.removeAttribute('read-only');
-    }
+    this.toggleAttribute('readonly', value);
   }
 
   /**
-   * Listener for when the attribute changed
+   * Gets if the element is visible on the screen
    */
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
-    // Make our "style", match the host value
-    if (name === 'style') {
-      this.#getRoot().style.cssText = newValue ?? '';
-    } else if (name === 'placeholder' || name === 'code') {
-      this.#placeholder =
-        this.getAttribute('code') ??
-        this.getAttribute('placeholder') ??
-        'function placeholder() {\n}';
+  #__isVisibleOnScreen = true;
+  get #isVisibleOnScreen(): boolean {
+    return this.#__isVisibleOnScreen!;
+  }
 
-      // Make sure the model code matches the new code passed in
-      if (this.#model && this.#model.getValue() !== this.#placeholder) {
-        this.#model.setValue(this.#placeholder);
-      }
-    } else if (name === 'hide-issues') {
-      if (this.#issueContainerEle) {
-        this.#issueContainerEle.style.display = 'none';
-      }
-    } else if (name === 'read-only') {
-      if (this.#editor) {
-        this.#editor?.updateOptions({ readOnly: this.readOnly, domReadOnly: this.readOnly });
+  /**
+   * Sets if the element is visible on the screen
+   */
+  set #isVisibleOnScreen(value: boolean) {
+    if (this.#__isVisibleOnScreen !== value) {
+      this.#__isVisibleOnScreen = value;
+      this.#editor?.updateOptions({ readOnly: this.readOnly, domReadOnly: this.readOnly });
+      if (value) {
+        this.#model?.setValue(this.#placeholder ?? '');
+      } else {
+        this.#model?.setValue('');
       }
     }
   }
@@ -103,48 +107,122 @@ export class CodeEditorComponent extends BaseComponent {
   /**
    * @inheritDoc
    */
+  attributeChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {
+    // Make our "style", match the host value
+    if (name === 'style') {
+      this.#root.style.cssText = newValue ?? '';
+    } else if (name === 'placeholder' || name === 'code') {
+      this.#placeholder =
+        this.getAttribute('code') ??
+        this.getAttribute('placeholder') ??
+        'function placeholder() {\n}';
+
+      // Make sure the model code matches the new code passed in
+      if (this.#model && this.#currentCode !== this.#placeholder) {
+        this.#model.setValue(this.#placeholder);
+      }
+    } else if (name === 'hide-issues') {
+      if (this.#issueContainerEle) {
+        this.#issueContainerEle.style.display = 'none';
+      }
+    } else if (name === 'readonly') {
+      this.#editor?.updateOptions({ readOnly: this.readOnly, domReadOnly: this.readOnly });
+    } else if (name === 'allow-background-execution') {
+      this.#allowBackgroundExecution = newValue !== null;
+    }
+  }
+
+  /**
+   * @inheritDoc
+   */
   async connectedCallback() {
-    this.#issueDisplayEle = this.#getRoot().querySelector('.issue-display');
-    this.#issueContainerEle = this.#getRoot().querySelector('.issue-container');
-    this.#codeEditorEle = this.#getRoot().querySelector('.editor-container');
+    this.#issueDisplayEle = this.#root.querySelector('.issue-display');
+    this.#issueContainerEle = this.#root.querySelector('.issue-container');
+    this.#codeEditorEle = this.#root.querySelector('.editor-container');
     this.#monaco = await loadMonaco(this.#codeEditorEle!);
     this.#editor = this.#monaco!.editor.create(this.#codeEditorEle!, {
       value: this.#placeholder ?? '',
+      readOnly: this.readOnly,
+      domReadOnly: this.readOnly,
       language: 'typescript',
       minimap: {
         enabled: false,
       },
     });
 
-    this.#resizeObserver = new ResizeObserver(() => {
-      this.#layoutEditor();
+    this.#resizeObserver = new ResizeObserver(() => this.#layoutEditor());
+    this.#resizeObserver.observe(this.#root);
+    this.#visibilityObserver = new IntersectionObserver((entries) => {
+      this.#isVisibleOnScreen = entries.some((entry) => entry.isIntersecting);
     });
-    this.#resizeObserver.observe(this.#getRoot());
+    this.#visibilityObserver.observe(this.#root);
 
     this.#model = this.#editor.getModel();
-    const tsProxy = await getTSProxy(this.#monaco!, this.#model!);
+    const tsWorker = await getTypescriptWorker(this.#monaco!, this.#model!);
+    let lastCode: string | null = null;
+    let lastTranspiledCode: string | null = null;
+    let lastMarkerKey: string | null = null;
     this.#model!.onDidChangeDecorations(async () => {
-      const markers = this.#monaco!.editor.getModelMarkers({
-        resource: this.#model!.uri,
-      });
-      const code = this.#model!.getValue() ?? '';
-      const transpiledCode = (await tsProxy.getEmitOutput(`${this.#model!.uri.toString()}`))
-        .outputFiles[0].text;
+      if (this.#isVisibleOnScreen || this.#allowBackgroundExecution) {
+        const markers = this.#monaco!.editor.getModelMarkers({
+          resource: this.#model!.uri,
+        });
+        const code = this.#model!.getValue() ?? '';
+        const newMarkerKey = markers
+          .map(
+            (n) => `${n.severity}:${n.resource.toString()}:${n.startLineNumber}:${n.startColumn}`,
+          )
+          .join(',');
+        const transpiledCode = (await tsWorker.getEmitOutput(`${this.#model!.uri.toString()}`))
+          .outputFiles[0].text;
+        if (
+          code !== lastCode ||
+          newMarkerKey !== lastMarkerKey ||
+          transpiledCode !== lastTranspiledCode
+        ) {
+          lastMarkerKey = newMarkerKey;
+          lastCode = code;
+          lastTranspiledCode = transpiledCode;
 
-      this.setAttribute('code', code);
-      this.setAttribute('transpiled-code', transpiledCode);
+          this.#currentCode = code;
 
-      const issues = markers.map((n) => ({
-        type: this.#getIssueTypeFromSeverity(n.severity)!,
-        startLineNumber: n.startLineNumber,
-        startColumn: n.startColumn,
-        message: n.message,
-      }));
-      this.#emitChangeEvent(code, transpiledCode, issues);
+          // Update our code attributes to match the newest code in the editors
+          this.setAttribute('code', code);
+          this.setAttribute('transpiled-code', transpiledCode);
+
+          // Grab the issues from the editor
+          const issues = markers.map((n) => ({
+            type: this.#getIssueTypeFromSeverity(n.severity)!,
+            startLineNumber: n.startLineNumber,
+            startColumn: n.startColumn,
+            message: n.message,
+          }));
+          this.#emitChangeEvent(code, transpiledCode, issues);
+        }
+      }
     });
 
     // Update the model with the current code
-    this.#model!.setValue(this.#placeholder ?? 'function placeholder() {}');
+    this.#model!.setValue(
+      this.#isVisibleOnScreen || this.#allowBackgroundExecution
+        ? this.#placeholder ?? 'function placeholder() {}'
+        : '',
+    );
+  }
+
+  /**
+   * Listener for when the element is removed from the dom
+   */
+  disconnectedCallback() {
+    if (this.#resizeObserver) {
+      this.#resizeObserver.disconnect();
+      this.#resizeObserver = null;
+    }
+
+    if (this.#visibilityObserver) {
+      this.#visibilityObserver.disconnect();
+      this.#visibilityObserver = null;
+    }
   }
 
   /**
@@ -164,11 +242,9 @@ export class CodeEditorComponent extends BaseComponent {
       }),
     );
 
-    this.#editor?.updateOptions({ readOnly: this.readOnly, domReadOnly: this.readOnly });
-
     if (!this.hideIssues) {
       const issuesToDisplay = issues.filter((n) => n.type === 'error' || n.type === 'warning');
-      this.#issueDisplayEle!.setAttribute('issues', JSON.stringify(issuesToDisplay));
+      this.#issueDisplayEle!.setAttribute('issues', JSON.stringify(issues));
 
       const oldDisplay = this.#issueContainerEle!.style.display;
       const newDisplay = issuesToDisplay.length > 0 ? 'block' : 'none';
@@ -187,11 +263,11 @@ export class CodeEditorComponent extends BaseComponent {
    */
   #getIssueTypeFromSeverity(severity: number): CodeIssueType | null {
     if (severity != null) {
-      if (severity === ERROR_SEVERITY) {
+      if (severity === MarkerSeverity.Error) {
         return 'error';
-      } else if (severity === WARNING_SEVERITY) {
+      } else if (severity === MarkerSeverity.Warning) {
         return 'warning';
-      } else if (severity === INFO_SEVERITY) {
+      } else if (severity === MarkerSeverity.Info) {
         return 'info';
       } else {
         return 'hint';
@@ -201,32 +277,12 @@ export class CodeEditorComponent extends BaseComponent {
   }
 
   /**
-   * Listener for when the element is removed from the dom
-   */
-  disconnectedCallback() {
-    if (this.#resizeObserver) {
-      this.#resizeObserver.disconnect();
-      this.#resizeObserver = null;
-    }
-  }
-
-  /**
    * Forces an editor layout
    */
   #layoutEditor() {
     if (this.#editor) {
       this.#editor.layout();
     }
-  }
-
-  /**
-   * Gets the root element for the component
-   */
-  #getRoot(): HTMLElement {
-    if (!this.#root) {
-      this.#root = this.templateRoot.querySelector('.root');
-    }
-    return this.#root!;
   }
 }
 

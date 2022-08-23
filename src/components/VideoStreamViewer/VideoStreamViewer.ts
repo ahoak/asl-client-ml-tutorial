@@ -1,5 +1,5 @@
 import BaseComponent from '../BaseComponent';
-import template from './template.html';
+import template from './template.html?raw';
 
 export class VideoStreamViewerComponent extends BaseComponent {
   /**
@@ -60,7 +60,7 @@ export class VideoStreamViewerComponent extends BaseComponent {
   /**
    * Listener for when the attribute changed
    */
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+  attributeChangedCallback(name: string, _oldValue: string | null, newValue: string | null) {
     // Make our "style", match the host value
     if (name === 'style') {
       this.#getRoot().style.cssText = newValue ?? '';

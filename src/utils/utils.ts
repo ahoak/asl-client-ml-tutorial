@@ -10,6 +10,9 @@ import { npyJsParser } from './NpyJsParser.js';
 import type { RawFiles } from './tfArrayBufferLoaderSaver.js';
 import { ArrayBufferModelLoader } from './tfArrayBufferLoaderSaver.js';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const DEFAULT_MODEL_URL = `${import.meta.env.BASE_URL}data/model.zip`;
+
 export function millisToMinutesAndSeconds(millis: number): [string, boolean] {
   const minutes: number = Math.floor(millis / 60000);
   const seconds: number = +((millis % 60000) / 1000).toFixed(0);
@@ -181,7 +184,7 @@ export function fastDebounce<T extends (...args: any[]) => any>(callback: T, del
  * Loads the default inference model
  */
 export async function loadDefaultModel() {
-  const resp = await fetch('data/model.zip');
+  const resp = await fetch(DEFAULT_MODEL_URL);
   if (resp.ok) {
     return loadModelFromZip(await resp.arrayBuffer());
   } else {

@@ -1,4 +1,5 @@
-export const assetURL = './data/alphabet_tensors.zip';
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+export const assetURL = `${import.meta.env.BASE_URL}data/alphabet_tensors.zip`;
 export const classes: string[] = [
   'A',
   'B',

@@ -7,6 +7,9 @@ import {
 } from '../../../../utils/utils';
 import type { ExtractAndProcessJointPositionsStepState } from './types';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const testImageUrl = `${import.meta.env.BASE_URL}data/testImage.jpg`;
+
 export const validateImageSource = document.createElement('img');
 validateImageSource.setAttribute('crossorigin', 'anonymous');
 
@@ -22,7 +25,7 @@ export async function validate(
       validateImageSource.onerror = reject;
     });
 
-    validateImageSource.src = 'data/testImage.jpg';
+    validateImageSource.src = testImageUrl;
 
     await ready;
     let data: any[] | null = null;

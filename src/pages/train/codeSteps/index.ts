@@ -2,10 +2,8 @@ import type { ValidationResult } from '../../../types';
 import * as cleanupTensors from './cleanupTensors';
 import * as configureModel from './configureModel';
 import * as createModel from './createModel';
-import * as encodeAndSplitData from './encodeAndSplitData';
 import * as exportModel from './exportModel';
 import * as loadData from './loadData';
-import * as setTensorFlowBackend from './setTensorFlowBackend';
 import * as trainModel from './trainModel';
 
 export type CodeStepRecord = {
@@ -20,9 +18,7 @@ export const codeSteps: CodeStep = {
   configureModel,
   createModel,
   cleanupTensors,
-  encodeAndSplitData,
   exportModel,
-  setTensorFlowBackend,
   trainModel,
   loadData,
 };

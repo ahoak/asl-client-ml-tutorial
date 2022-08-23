@@ -14,6 +14,7 @@
   "devDependencies": {
     "@essex/eslint-config": "^20.3.5",
     "@essex/eslint-plugin": "^20.3.8",
+    "@types/file-saver": "^2.0.5",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
     "eslint": "^8.21.0",

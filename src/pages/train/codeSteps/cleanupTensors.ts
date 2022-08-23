@@ -6,7 +6,7 @@ import { ValidationErrorType } from '../../../types';
 // import { createIncompleteImplValidationError } from '../../../utils/utils';
 
 export const template = `
-
+// READ-ONLY
 function cleanupTensors(
   data: [Tensor, Tensor, Tensor, Tensor]
 ): void {

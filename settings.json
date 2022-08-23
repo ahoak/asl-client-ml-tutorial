@@ -1,7 +1,7 @@
 {
   "metaTitle": "ASL Fingerspelling Model Tutorial",
   "metaDescription": "Train ASL Fingerspelling ML Model using Tensorflowjs",
-  "name": "ASL Fingerspelling Model Tutorial 👋",
+  "name": "ASL Fingerspelling Tutorial 👋",
   "theme": "",
   "avatarImage": "",
   "social": {
@@ -17,29 +17,17 @@
       "name" : "loadData",
       "readOnly": "true"
     },
+   
+ 
     {
       "step": 2,
-      "description": "Set TF Backend",
-      "helperText": "edit function `setTensorFlowBackend()` so that we set tensorflow backend to use webGL (or WASM or CPU).",
-      "name" : "setTensorFlowBackend",
-      "readOnly": "false"
-    },
-    {
-      "step": 3,
-      "description": "Encode and Split Data",
-      "helperText": " use pre-built functions to encode data using one-hot encoder and then split data into training and test set.",
-      "name": "encodeAndSplitData",
-      "readOnly": "true"
-    },
-    {
-      "step": 4,
       "description": "Create Model",
       "helperText": "creating a feed-forward model. We will use 5 layers with relu activation function. Function must return the model.",
       "name": "createModel",
       "readOnly": "false"
     },
     {
-      "step": 5,
+      "step": 3,
       "description": "Configure Model",
       "helperText": "edit function configureModel() by using the Tf.compile API. We will use an adam optimizer, and add correct loss function.",
       "name" : "configureModel",
@@ -47,25 +35,25 @@
 
     },
     {
-      "step": 6,
+      "step": 4,
       "description": "Train Model",
-      "helperText": " edit function trainModel() by using the Tf.fit API. Set the following parameters: epochs, batchSize,validationData, callbacks. Hint, you may need to transform your data into tensors ",
+      "helperText": "edit function trainModel() by using the Tf.fit API. Set the following parameters: epochs, batchSize,validationData, callbacks. Hint, you may need to transform your data into tensors ",
       "name" : "trainModel",
       "readOnly": "false"
     },
     {
-      "step": 7,
+      "step": 5,
       "description": "Cleanup",
       "helperText": "Remove tensors used for model training ",
       "name" : "cleanupTensors",
       "readOnly": "true"
     },
       {
-      "step": 8,
-      "description": "Download model files",
+      "step": 6,
+      "description": "Download Model Files",
       "helperText": "Click the button to download your shiney new model. We will use this in our webapp.",
       "name" : "exportModel",
-      "readOnly": "false"
+      "readOnly": "true"
     }
   ],
   "predictSteps": [{

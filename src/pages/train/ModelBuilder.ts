@@ -6,12 +6,7 @@ import * as tf from '@tensorflow/tfjs';
 
 import Settings from '../../../settings.json';
 import type { CodeStepComponent } from '../../components';
-import type {
-  ProjectSettings,
-  TensorData,
-  TrainTutorialSteps,
-  ValidationResult,
-} from '../../types';
+import type { ProjectSettings, TrainTutorialSteps, ValidationResult } from '../../types';
 import { assetURL, classes } from '../../utils/constants';
 import { getOrCreateElement, loadTensors, millisToMinutesAndSeconds } from '../../utils/utils';
 import type { CodeStepRecord } from './codeSteps';
@@ -38,7 +33,7 @@ type StepImplementation = Record<keyof typeof codeSteps, StepImplementationRecor
 const DefaultEpoch = 2;
 export class ModelBuilder {
   #epochs = DefaultEpoch;
-  #currentEpochCount = 0;
+  #currentEpochCount = 1;
   #batchSize = 405 * 2;
   #startBatchTime = 0;
 
@@ -57,6 +52,7 @@ export class ModelBuilder {
   #resetButton = getOrCreateElement('.reset-button') as HTMLButtonElement;
   #stopTrainingButton = getOrCreateElement('.training-stop-button') as HTMLButtonElement;
   #startTrainingButton = getOrCreateElement('.training-start-button') as HTMLButtonElement;
+  #downloadButton = getOrCreateElement('.download-button') as HTMLButtonElement;
 
   #trainingEnabled = true;
   #trainingComplete = false;
@@ -64,7 +60,6 @@ export class ModelBuilder {
   #dataTensors = [Tensor, Tensor, Tensor, Tensor];
 
   #aslModel: LayersModel | undefined;
-  #inputData: TensorData | undefined;
   #stepMap: Record<string, StepViewer> = {};
   #stepMapRef: Record<string, string> = {};
 
@@ -79,6 +74,7 @@ export class ModelBuilder {
     this.#resetButton.onclick = this.handleResetButtonClick;
     this.#stopTrainingButton.onclick = this.handleStopTrainingClick;
     this.#startTrainingButton.onclick = this.handlestartTrainingClick;
+    this.#downloadButton.onclick = this.handleDownloadClick;
     this.mapCodeSteps();
     // await this.setCurrentStep(1);
   }
@@ -128,10 +124,7 @@ export class ModelBuilder {
         this.#stepMapRef[step] = name;
         switch (name) {
           case 'loadData':
-            StepViewerInstance.funcInput = [loadTensors, assetURL];
-            StepViewerInstance.on(Validated, this.handleDataValidation);
-            break;
-          case 'encodeAndSplitData':
+            StepViewerInstance.funcInput = [loadTensors, assetURL, classes];
             StepViewerInstance.on(Validated, this.handleDataSplitValidation);
             break;
           case 'createModel':
@@ -144,8 +137,10 @@ export class ModelBuilder {
           default:
             break;
         }
-        StepViewerInstance.on('validationInProgress', this.handleValidationStarted);
-        StepViewerInstance.on('validationComplete', this.handleValidationComplete);
+        if (name !== 'exportModel') {
+          StepViewerInstance.on('validationInProgress', this.handleValidationStarted);
+          StepViewerInstance.on('validationComplete', this.handleValidationComplete);
+        }
       } else {
         console.error('Expected code-step to have a step attribute!');
       }
@@ -247,28 +242,18 @@ export class ModelBuilder {
   handleDataSplitValidation = (result: ValidationResult) => {
     if (result.valid && result.data && result.data.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      this.#dataTensors = result.data;
+      this.#dataTensors = result.data[0];
     } else {
       console.log('no data provided to ModelBuilder, please retry load data function');
     }
   };
 
-  handleDataValidation = (result: ValidationResult) => {
-    // console.log('data load validation complete', result);
-    if (result.valid && result.data && result.data.length > 0) {
-      const data = result.data[0] as TensorData;
-      this.#inputData = data;
-    } else {
-      console.log('no data provided to ModelBuilder, please retry load data function');
-    }
-  };
-
-  handleNextButtonClick = async () => {
+  handleNextButtonClick = () => {
     const next = this.#currentStep?.step ?? 1;
-    await this.onStepChange(next + 1);
+    this.onStepChange(next + 1);
   };
 
-  async onStepChange(nextStep: number) {
+  onStepChange(nextStep: number) {
     if (this.#currentStep) {
       const title = this.#currentStep.name;
       if (this.#isSolutionVisble) {
@@ -280,7 +265,7 @@ export class ModelBuilder {
 
     clearValidationFeedback();
     if (nextStep !== undefined) {
-      await this.setCurrentStep(nextStep);
+      this.setCurrentStep(nextStep);
     }
   }
 
@@ -309,16 +294,21 @@ export class ModelBuilder {
     }
   };
 
-  async handleStepChange(name: string, readOnly = 'false') {
+  handleDownloadClick = async () => {
+    const instance = this.#stepMap['exportModel'];
+    if (this.#aslModel && instance) {
+      await instance.runCachedCode();
+    }
+  };
+
+  handleStepChange(name: string, readOnly = 'false') {
     const instance = this.#stepMap[name];
     if (instance) {
       instance.setCodeFromCacheOrDefault();
       if (readOnly) {
         instance.readonly = readOnly;
       }
-      if (name === 'encodeAndSplitData' && this.#inputData) {
-        instance.funcInput = [this.#inputData];
-      }
+
       if (name === 'cleanupTensors') {
         instance.funcInput = [this.#dataTensors];
       }
@@ -326,9 +316,13 @@ export class ModelBuilder {
         instance.funcInput = [this.#aslModel, tf];
       }
       if (name === 'trainModel' && this.#aslModel) {
+        console.log('this.#dataTensors', this.#dataTensors);
         instance.funcInput = [
           this.#aslModel,
-          this.#dataTensors,
+          this.#dataTensors[0],
+          this.#dataTensors[1],
+          this.#dataTensors[2],
+          this.#dataTensors[3],
           // callbacks
           {
             onBatchEnd: this.onBatchEnd,
@@ -344,15 +338,27 @@ export class ModelBuilder {
         this.#startTrainingButton.style.display = 'none';
         this.#trainingStatusElement.style.display = 'none';
       }
+      if (name === 'exportModel') {
+        instance.overrideEventListener = true;
+        this.#downloadButton.style.display = 'inline-flex';
+        this.#actionButton.style.display = 'none';
+      }
+      if (readOnly === 'true') {
+        // hide solution/reset buttons
+        this.#solutionButton.disabled = true;
+        this.#resetButton.disabled = true;
+      } else {
+        this.#solutionButton.disabled = false;
+        this.#resetButton.disabled = false;
+      }
 
       instance.show = true;
-      await instance.runCachedCode();
     } else {
       console.error(`Instance of StepViewer for ${name} is not found`);
     }
   }
 
-  async setCurrentStep(stepcount: number) {
+  setCurrentStep(stepcount: number) {
     const step = ProjectSettingsConfig.trainTutorialSteps.find(
       (tutorialStep) => tutorialStep.step === stepcount,
     );
@@ -362,7 +368,7 @@ export class ModelBuilder {
       highlightNavStep(this.#currentStep.step);
       unhighlightNavStep(this.#currentStep.step - 1);
       this.#mainEle.innerHTML = `${this.#currentStep.step}. ${this.#currentStep.description} `;
-      await this.handleStepChange(this.#currentStep.name, this.#currentStep.readOnly);
+      this.handleStepChange(this.#currentStep.name, this.#currentStep.readOnly);
     }
   }
 }

@@ -4,7 +4,7 @@
   "description": "asl fingerspelling client ml tutorial",
   "scripts": {
     "start": "vite",
-    "build": "tsc && vite build && cp dist/index/index.html dist/index.html",
+    "build": "tsc && vite build",
     "serve": "vite preview",
     "prepare": "husky install",
     "prettify": "prettier \"src/**/*.{ts, json, js}\" --write --config ./.prettierrc",

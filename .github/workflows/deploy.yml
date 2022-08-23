@@ -37,7 +37,12 @@ jobs:
       
       # Build the project
       - name: Build
-        run: yarn build
+        run: yarn build --base "/asl-client-ml-tutorial/"
+      
+      # Copy files
+      - name: Copy Files
+        run: |
+          cp "${GITHUB_WORKSPACE}/dist/index/index.html" "${GITHUB_WORKSPACE}/dist/index.html"
 
       # deploy to gh-pages
       - name: Deploy

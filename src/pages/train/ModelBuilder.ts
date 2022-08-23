@@ -17,7 +17,7 @@ import {
   getSuccessStatement,
   handleValidatingStep,
   handleValidationgComplete,
-} from './utils/DataLoader';
+} from './utils/dataLoader';
 
 const ProjectSettingsConfig = Settings as unknown as ProjectSettings;
 

@@ -14,10 +14,7 @@
       "noUnusedLocals": true,
       "noUnusedParameters": true,
       "noImplicitReturns": true,
-      "skipLibCheck": true,
-      "paths": {
-        "*": ["./src/*.d.ts"]
-      }
+      "skipLibCheck": true
     },
     "include": ["src"]
   }

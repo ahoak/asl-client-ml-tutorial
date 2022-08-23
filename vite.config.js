@@ -2,7 +2,6 @@ import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import handlebarsPlugin from 'vite-plugin-handlebars';
 import mpa from 'vite-plugin-mpa';
-import vitePluginString from 'vite-plugin-string';
 import topLevelAwait from 'vite-plugin-top-level-await';
 import wasm from 'vite-plugin-wasm';
 
@@ -30,15 +29,6 @@ export default defineConfig(async () => {
         },
 
         reloadOnPartialChange: true,
-      }),
-      vitePluginString({
-        include: ['**/*.html'],
-        exclude: 'node_modules/**',
-        compress: false,
-      }),
-      vitePluginString({
-        include: ['**/*.d.ts'],
-        compress: false,
       }),
     ],
     optimizeDeps: {

@@ -44,6 +44,11 @@ declare interface History {
 }
 
 declare interface Tensor {
+  max(): Tensor;
+  min(): Tensor;
+  sub(tensor: Tensor | number): Tensor;
+  mul(tensor: Tensor | number): Tensor;
+  div(tensor: Tensor | number): Tensor;
   dispose();
   dataSync(): number[];
   expandDims(dims: number): Tensor;

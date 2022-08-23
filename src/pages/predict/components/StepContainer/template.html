@@ -1,0 +1,93 @@
+<style>
+  .root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80vw;
+  }
+
+  .step-contents {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .buttons {
+    width: 100%;
+    margin-top: 5px;
+  }
+
+  .issue-container {
+    flex: 0.33;
+    overflow: hidden;
+    margin-top: 5px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    padding: 5px;
+    overflow-y: auto;
+    display: none;
+    background-color: lightcyan;
+  }
+
+  .validate-success {
+    color: green;
+    text-align: center;
+    display: none;
+  }
+
+  .validate-container {
+    font-size: 25px;
+  }
+
+  .validate-progress {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 40px;
+  }
+
+  .validate-progress .validate-label {
+    align-self: center;
+    margin-left: 10px;
+  }
+
+  .validate-progress fluent-progress-ring {
+    align-self: center;
+  }
+  .issue-display::part(main) {
+    height: 100%;
+    text-align: left;
+    width: 100%;
+  }
+
+  .issue-container {
+    width: 100%;
+    margin-top: 5px;
+  }
+
+</style>
+<div class="root" part="main">
+  <div class="name" part="name">
+    <slot name="name"></slot>
+  </div>
+  <div class="buttons buttons-top" part="buttons-top">
+    <slot name="buttons-top"></slot>
+  </div>
+  <div class="validate-container">
+    <div class="validate-progress" name="progress" style="display: none">
+      <fluent-progress-ring></fluent-progress-ring>
+      <span class="validate-label">...Validating</span>
+    </div>
+    <div class="validate-success" part="validate-success" style="display: none">
+      <slot name="success"> 👍Looks Good! </slot>
+    </div>
+  </div>
+  <div class="step-contents" part="contents">
+    <slot></slot>
+  </div>
+  <div class="issue-container" part="issues">
+    <code-issue-display class="issue-display"></code-issue-display>
+  </div>
+  <div class="buttons buttons-bottom" part="buttons-bottom">
+    <slot name="buttons-bottom"></slot>
+  </div>
+</div>

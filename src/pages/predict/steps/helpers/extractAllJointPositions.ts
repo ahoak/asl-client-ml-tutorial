@@ -5,6 +5,7 @@ import { drawImage } from './misc';
 
 const predictionCanvas = document.createElement('canvas');
 const predictionCanvasCtx = predictionCanvas.getContext('2d');
+const emptyImage = document.createElement('canvas');
 
 class HandPoseExtractor {
   #hands: Hands | null = null;
@@ -33,8 +34,16 @@ class HandPoseExtractor {
     }
   }
 
+  /**
+   * Warms up the hand position model
+   * @param imageSource The optional image source to warmup with
+   */
+  async warmup(imageSource: HTMLVideoElement | HTMLImageElement | HTMLCanvasElement = emptyImage) {
+    await this.extract(imageSource, false);
+  }
+
   async extract(
-    imageSource: HTMLVideoElement | HTMLImageElement,
+    imageSource: HTMLVideoElement | HTMLImageElement | HTMLCanvasElement,
     mirrored: boolean,
   ): Promise<Point3D[][]> {
     return new Promise((resolve) => {
@@ -58,6 +67,15 @@ class HandPoseExtractor {
 }
 
 const extractor = new HandPoseExtractor();
+
+/**
+ * Warms up the hand pose model
+ */
+export function warmup(
+  imageSource?: HTMLVideoElement | HTMLImageElement | HTMLCanvasElement,
+): Promise<void> {
+  return extractor.warmup(imageSource);
+}
 
 /**
  * Extracts hand poses from the given image source

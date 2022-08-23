@@ -47,3 +47,7 @@ export enum ValidationErrorType {
   IncompleteImplementation,
   Unknown,
 }
+
+export type StepIssue = {
+  message: string;
+};

@@ -1,33 +1,41 @@
 import loader from '@monaco-editor/loader';
 import type * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
-import templateTypesDeclaration from '../../../tensorflow.types.d.ts?raw';
+import jszipTypes from './codeEditorTypes/jszip.d.ts?raw';
+import mainTypes from './codeEditorTypes/main.d.ts?raw';
+import tensorFlowTypes from './codeEditorTypes/tensorflow.d.ts?raw';
+
+export type ITypescriptWorker = monacoEditor.languages.typescript.TypeScriptWorker;
 export type IStandaloneCodeEditor = monacoEditor.editor.IStandaloneCodeEditor;
 export type IModel = monacoEditor.editor.IModel;
 export type Monaco = typeof monacoEditor;
 
-const tfLibs = [
+/**
+ * The type declarations for the monaco editor
+ */
+const editorDeclarations = [
   {
-    declaration: templateTypesDeclaration,
-    uri: `types/template.types.d.ts`,
+    declaration: jszipTypes,
+    uri: `types/jszip.d.ts`,
   },
   {
-    declaration: `
-      declare type Point3D = { x: number; y: number; z: number };
-      declare function extractAllJointPositions(imageSource: CanvasImageSource, loadMirrored: boolean): Promise<Point3D[][]>;
-      declare const defaultModelClasses: string[];
-      declare function argMax(values: number[]): number;
-      declare function normalize(values: number[]): number[];
-    `,
-    uri: `main.d.ts`,
+    declaration: tensorFlowTypes,
+    uri: `types/tensorflow.d.ts`,
+  },
+  {
+    declaration: mainTypes,
+    uri: `types/main.d.ts`,
   },
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises, no-async-promise-executor
+/**
+ * A promise which returns an initialized monaco instance
+ */
+// eslint-disable-next-line no-async-promise-executor
 const initMonaco = new Promise(async (resolve) => {
   const monaco = await loader.init();
   // monaco.languages.typescript.javascriptDefaults.addExtraLib(tfLib, 'tensorflow/tfjs/dist/index.d.ts');
-  for (const { declaration, uri } of tfLibs) {
+  for (const { declaration, uri } of editorDeclarations) {
     monaco.languages.typescript.typescriptDefaults.addExtraLib(declaration, uri);
     monaco.languages.typescript.javascriptDefaults.addExtraLib(declaration, uri);
   }
@@ -46,6 +54,11 @@ const initMonaco = new Promise(async (resolve) => {
   resolve(monaco);
 });
 
+/**
+ * Loads the monaco instance into the given element
+ * @param element The parent element of the monaco instance
+ * @returns The monaco instance
+ */
 export async function loadMonaco(element: HTMLElement): Promise<Monaco> {
   const monaco = await initMonaco;
   const documentLinks = Array.prototype.slice
@@ -62,7 +75,16 @@ export async function loadMonaco(element: HTMLElement): Promise<Monaco> {
   return monaco as Monaco;
 }
 
-export async function getTSProxy(monaco: Monaco, model: IModel) {
+/**
+ * Gets the typescript worker for the given monaco instance and model
+ * @param monaco The monaco instance
+ * @param model The model to get the TS proxy for
+ * @returns The TS Proxy
+ */
+export async function getTypescriptWorker(
+  monaco: Monaco,
+  model: IModel,
+): Promise<ITypescriptWorker> {
   const worker = await monaco.languages.typescript.getTypeScriptWorker();
   return worker(model.uri);
 }

@@ -25,7 +25,6 @@ export class StepViewer {
   #transpiledCode: string | null;
   #solutionElement?: CodeStepComponent;
   #overrideEventListener?: boolean;
-  #readOnly: string;
 
   constructor(props: {
     stepRecord: StepImplementationRecord;
@@ -33,7 +32,6 @@ export class StepViewer {
     name: string;
     stepCount?: number;
     solutionElement?: CodeStepComponent;
-    readOnly?: string;
   }) {
     this.#stepCount = props.stepCount ?? 0;
     this.#stepRecord = props.stepRecord;
@@ -41,7 +39,6 @@ export class StepViewer {
     this.#name = props.name;
     this.#transpiledCode = localStorage.getItem(`build-ts:${this.#name}`);
     this.#solutionElement = props.solutionElement;
-    this.#readOnly = props.readOnly ?? 'false';
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     this.#emitter = createNanoEvents<Events>();
     this.setEventListener();
@@ -73,18 +70,8 @@ export class StepViewer {
     this.#element.setAttribute('code', value);
   }
 
-  get readonly() {
-    return this.#readOnly;
-  }
-
-  set readonly(value: string) {
-    if (value === 'true') {
-      this.#readOnly = value;
-      this.#element.setAttribute('read-only', '');
-    } else {
-      this.#readOnly = 'false';
-      this.#element.removeAttribute('read-only');
-    }
+  set readonly(value: boolean) {
+    this.#element.toggleAttribute('readonly', value);
   }
 
   get solutionElement() {

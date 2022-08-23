@@ -10,5 +10,6 @@ export interface CodeIssue {
   type: CodeIssueType;
   startLineNumber?: number;
   startColumn?: number;
-  message: string;
+  message?: string;
+  detail?: string;
 }

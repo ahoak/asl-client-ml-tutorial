@@ -40,16 +40,19 @@
       </div>
     </fluent-card> -->
   </div>
+
   {{#if settings.trainTutorialSteps}}
   {{#each settings.trainTutorialSteps}}
   <code-step name="{{this.name}}" step="{{this.step}}" code="function step{{this.step}}() {}" style="display: none;"
     read-only="{{this.readOnly}}"></code-step>
   {{/each}}
   {{/if}}
+
   <div class="bottom-button-container">
     <fluent-button class="view-solution-button">View solution</fluent-button>
     <fluent-button class="reset-button">Reset</fluent-button>
   </div>
+
   {{#if settings.trainTutorialSteps}}
   {{#each settings.trainTutorialSteps}}
   <code-step name="{{this.name}}-solution" step="{{this.step}}1" code="function step{{this.step}}1() {}"

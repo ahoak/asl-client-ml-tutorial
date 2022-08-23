@@ -110,7 +110,7 @@ export class ModelBuilder {
         if (solutionMap[name]) {
           element = solutionMap[name];
           element.setAttribute('code', stepImpl.solution);
-          element.setAttribute('read-only', 'true');
+          element.toggleAttribute('readonly', true);
         }
         const StepViewerInstance = new StepViewer({
           stepRecord: stepImpl,
@@ -306,7 +306,7 @@ export class ModelBuilder {
     if (instance) {
       instance.setCodeFromCacheOrDefault();
       if (readOnly) {
-        instance.readonly = readOnly;
+        instance.readonly = readOnly === 'true';
       }
 
       if (name === 'cleanupTensors') {

@@ -1,23 +1,28 @@
- {
-    "env": {
-        "browser": true,
-        "es2021": true
-    },
-    "extends": "@essex/eslint-config",
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": "latest",
-        "sourceType": "module"
-    },
-    "plugins": [
-        "@typescript-eslint"
-    ],
-    "rules": {
-        "@typescript-eslint/restrict-template-expressions": 0,
-        "@typescript-eslint/explicit-function-return-type": "off",
-		"@typescript-eslint/no-explicit-any": "off",
-        "no-restricted-globals": ["error", "event", "fdescribe"],
-        "header/header" : 0,
-        "@essex/extensions": 0
-    }
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": "@essex/eslint-config",
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/restrict-template-expressions": 0,
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "simple-import-sort/imports": "warn",
+    "simple-import-sort/exports": "warn",
+    "import/first": "warn",
+    "import/newline-after-import": "warn",
+    "import/no-duplicates": "warn",
+    "@typescript-eslint/no-misused-promises": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "no-restricted-globals": ["error", "event", "fdescribe"],
+    "header/header": 0,
+    "@essex/extensions": 0
+  }
 }

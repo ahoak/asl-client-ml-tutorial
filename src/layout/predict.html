@@ -1,19 +1,23 @@
-<div class="predict-container">
-  <step-controller class="steps" step="2">
-    {{> breadcrumbs breadcrumbs=settings.predictSteps}}
-    <div name="importModel" step="1">
-      <div>
-        Select the model.zip file that you saved in the previous step.
+<div class="predict-contents initializing">
+  <div class="initialize-container">
+    <h3>
+      Initializing...
+    </h3>
+    <fluent-progress-ring></fluent-progress-ring>
+  </div>
+  <div class="predict-container">
+    <step-controller class="steps" max-step="6" step="2">
+      {{> breadcrumbs breadcrumbs=settings.predictSteps}}
+      <import-model-step step="1" name="importModel"></import-model-step>
+      <extract-and-process-joint-positions-step step="2" name="extractAndProcessJointPositions"></extract-and-process-joint-positions-step>
+      <classify-step step="3" name="classify"></classify-step>
+      <cleanup-step step="4" name="cleanup"></cleanup-step>
+      <run-step step="5" name="run"></run-step>
+      <div slot="buttons-top">
+  		  <fluent-button class="next-button" appearance="accent">Next</fluent-button>
+  		  <fluent-button class="reset-button">Reset</fluent-button>
       </div>
-      <label>
-        <input type="file" accept="application/zip">
-      </label>
-    </div>
-    <code-step name="getFlattenedJointPositions" step="2" code="function step2() {}"></code-step>
-    <code-step name="normalizeTensor" step="3" code="function step3() {}"></code-step>
-    <code-step name="predictClassification" step="4" code="function step4() {}"></code-step>
-    <code-step name="cleanup" step="5" code="function step5() {}"></code-step>
-    <code-step name="predict" step="6" code="function step5() {}"></code-step>
-  </step-controller>
+    </step-controller>
+  </div>
 </div>
 

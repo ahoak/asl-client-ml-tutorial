@@ -8,7 +8,7 @@ import * as trainModel from './trainModel';
 
 export type CodeStepRecord = {
   template: string;
-  validate?: (impl: (args: any[]) => any, ...props: any[]) => Promise<ValidationResult>;
+  validate?: (impl: (...args: any[]) => any, ...props: any[]) => Promise<ValidationResult>;
   implementation: <T = (...args: any[]) => any>(code: string, ...args: any) => T;
   solution: string;
 };

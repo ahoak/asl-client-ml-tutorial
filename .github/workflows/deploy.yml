@@ -31,8 +31,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       
+      # Install deps
+      - name: Install Deps
+        run: yarn
+      
       # Build the project
-      - run: yarn build
+      - name: Build
+        run: yarn build
 
       # deploy to gh-pages
       - name: Deploy

@@ -37,7 +37,9 @@ jobs:
       
       # Build the project
       - name: Build
-        run: yarn build --base "/asl-client-ml-tutorial/"
+        env:
+          APP_BASE_URL: /asl-client-ml-tutorial/
+        run: yarn build
       
       # Copy files
       - name: Copy Files

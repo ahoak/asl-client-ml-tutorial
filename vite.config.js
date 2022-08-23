@@ -9,6 +9,7 @@ const Settings = require('./settings.json');
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
+  const base = process.env.APP_BASE_URL || '/'
   return {
     resolve: {
       alias: {
@@ -25,12 +26,13 @@ export default defineConfig(async () => {
 
         // context: { settings: Settings },
         context: (pagePath) => {
-          return { settings: Settings };
+          return { baseUrl: base, settings: Settings };
         },
 
         reloadOnPartialChange: true,
       }),
     ],
+    base,
     optimizeDeps: {
       exclude: ['@tensorflow/tfjs-backend-wasm/dist'],
     },

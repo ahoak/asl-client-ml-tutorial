@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ASL Fingerspelling Model Tutorial</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Train ASL Fingerspelling ML Model using Tensorflowjs" />
+    <meta name="og:description" content="Train ASL Fingerspelling ML Model using Tensorflowjs" />
+    <meta property="og:image" content="" />
+    <meta property="og:title" content="ASL Fingerspelling Model Tutorial" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="stylesheet" type="text/css" href="/styles/style.css" />
+    
+    <meta name="theme-color" content="#9480FF" />
+    
+    <link rel="manifest" href="manifest.json">
+    <script>
+    
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker registered', reg))
+          .catch(err => console.error('Service Worker **not** registered', err));
+      }
+    
+    </script>
+    <div>
+      <a href="/">🏠 Home</a>
+      <a href="/train">🔨Build</a>
+      <a href="/predict">✨Predict</a>
+    
+    </div>
+    <link rel="stylesheet" type="text/css" href="/styles/themes/glitch.css" />
+    <script type="module" crossorigin src="/assets/predict.39f0a344.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/utils.05904ff8.js">
+    <link rel="stylesheet" href="/assets/utils.30d77c87.css">
+  </head>
+
+  <body>
+    <main>
+      <div class="wrapper">
+        <div class="content">
+          <h1>Predict</h1>
+          <div class="predict-contents initializing">
+            <div class="initialize-container">
+              <h3>
+                Initializing...
+              </h3>
+              <fluent-progress-ring></fluent-progress-ring>
+            </div>
+            <div class="predict-container">
+              <step-controller class="steps" max-step="6" step="2">
+                <fluent-breadcrumb slot="header" class="breadcrumbs">
+                  <fluent-breadcrumb-item step="1" id="tutorial-step1">
+                    <a href="#step1">Import Model</a>
+                    <span class="step-status">
+                      <span class="valid">✅</span>
+                      <span class="invalid">✏️</span>
+                    </span>
+                  </fluent-breadcrumb-item>
+                  <fluent-breadcrumb-item step="2" id="tutorial-step2">
+                    <a href="#step2">Extract and Process Joint Positions</a>
+                    <span class="step-status">
+                      <span class="valid">✅</span>
+                      <span class="invalid">✏️</span>
+                    </span>
+                  </fluent-breadcrumb-item>
+                  <fluent-breadcrumb-item step="3" id="tutorial-step3">
+                    <a href="#step3">Classify</a>
+                    <span class="step-status">
+                      <span class="valid">✅</span>
+                      <span class="invalid">✏️</span>
+                    </span>
+                  </fluent-breadcrumb-item>
+                  <fluent-breadcrumb-item step="4" id="tutorial-step4">
+                    <a href="#step4">Cleanup</a>
+                    <span class="step-status">
+                      <span class="valid">✅</span>
+                      <span class="invalid">✏️</span>
+                    </span>
+                  </fluent-breadcrumb-item>
+                  <fluent-breadcrumb-item step="5" id="tutorial-step5">
+                    <a href="#step5">Run</a>
+                    <span class="step-status">
+                      <span class="valid">✅</span>
+                      <span class="invalid">✏️</span>
+                    </span>
+                  </fluent-breadcrumb-item>
+                </fluent-breadcrumb>
+                <import-model-step step="1" name="importModel"></import-model-step>
+                <extract-and-process-joint-positions-step step="2" name="extractAndProcessJointPositions"></extract-and-process-joint-positions-step>
+                <classify-step step="3" name="classify"></classify-step>
+                <cleanup-step step="4" name="cleanup"></cleanup-step>
+                <run-step step="5" name="run"></run-step>
+                <div slot="buttons-top">
+            		  <fluent-button class="next-button" appearance="accent">Next</fluent-button>
+            		  <fluent-button class="reset-button">Reset</fluent-button>
+                </div>
+              </step-controller>
+            </div>
+          </div>
+          
+          
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

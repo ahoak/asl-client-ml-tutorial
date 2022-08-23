@@ -1,0 +1,10 @@
+{
+  "name": "ASL Fingerspelling Model",
+  "short_name": "ASL Fingerspelling Model",
+  "description": "Training model",
+  "icons": [],
+  "display": "standalone",
+  "background_color": "#D7F5EF",
+  "theme_color": "#9480FF",
+  "start_url": "/"
+}

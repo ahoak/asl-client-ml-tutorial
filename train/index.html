@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>ASL Fingerspelling Model Tutorial</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Train ASL Fingerspelling ML Model using Tensorflowjs" />
+    <meta name="og:description" content="Train ASL Fingerspelling ML Model using Tensorflowjs" />
+    <meta property="og:image" content="" />
+    <meta property="og:title" content="ASL Fingerspelling Model Tutorial" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="stylesheet" type="text/css" href="/styles/style.css" />
+    
+    <meta name="theme-color" content="#9480FF" />
+    
+    <link rel="manifest" href="manifest.json">
+    <script>
+    
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('Service Worker registered', reg))
+          .catch(err => console.error('Service Worker **not** registered', err));
+      }
+    
+    </script>
+    <div>
+      <a href="/">🏠 Home</a>
+      <a href="/train">🔨Build</a>
+      <a href="/predict">✨Predict</a>
+    
+    </div>
+    <link rel="stylesheet" type="text/css" href="/styles/themes/glitch.css" />
+  <script type="module" crossorigin src="/assets/train.30073414.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/utils.05904ff8.js">
+  <link rel="stylesheet" href="/assets/utils.30d77c87.css">
+</head>
+
+<body>
+    <main>
+        <div class="wrapper">
+            <div class="content">
+
+                <div>
+                
+                  <h1> ASL Fingerspelling Tutorial 👋 </h1>
+                  
+                
+                
+                </div>                <div class="training-container">
+                  <fluent-breadcrumb>
+                    <fluent-breadcrumb-item id="tutorial-step1">
+                      <!-- <a href="#step1">Load Data</a> -->
+                      Load Data
+                    </fluent-breadcrumb-item>
+                    <fluent-breadcrumb-item id="tutorial-step2">
+                      <!-- <a href="#step2">Create Model</a> -->
+                      Create Model
+                    </fluent-breadcrumb-item>
+                    <fluent-breadcrumb-item id="tutorial-step3">
+                      <!-- <a href="#step3">Configure Model</a> -->
+                      Configure Model
+                    </fluent-breadcrumb-item>
+                    <fluent-breadcrumb-item id="tutorial-step4">
+                      <!-- <a href="#step4">Train Model</a> -->
+                      Train Model
+                    </fluent-breadcrumb-item>
+                    <fluent-breadcrumb-item id="tutorial-step5">
+                      <!-- <a href="#step5">Cleanup</a> -->
+                      Cleanup
+                    </fluent-breadcrumb-item>
+                    <fluent-breadcrumb-item id="tutorial-step6">
+                      <!-- <a href="#step6">Download Model Files</a> -->
+                      Download Model Files
+                    </fluent-breadcrumb-item>
+                  </fluent-breadcrumb>
+                  <div class="next-button-container">
+                    <fluent-button class="train-button" appearance="accent">
+                      Next
+                    </fluent-button>
+                    <div class="training-controls">
+                      <fluent-button class="training-start-button">Start training</fluent-button>
+                
+                      <fluent-button class="training-stop-button">Stop training</fluent-button>
+                    </div>
+                    <div class="download-controls">
+                      <fluent-button class="download-button">Download</fluent-button>
+                
+                    </div>
+                
+                  </div>
+                  <div class="output-container">
+                    <p id="output-element"></p>
+                    <div class="loading-element">
+                      <fluent-progress-ring></fluent-progress-ring>
+                    </div>
+                  </div>
+                  <p id="validation-status"></p>
+                  <div class="training-feedback-container">
+                    <!-- <fluent-card class="custom-card">
+                      <p class="training-feedback"></p>
+                      <div class="progress-bar-container">
+                        <fluent-progress class="training-progress-bar"></fluent-progress>
+                        <p class="time-remaining"></p>
+                      </div>
+                    </fluent-card> -->
+                  </div>
+                
+                  <code-step name="loadData" step="1" code="function step1() {}" style="display: none;"
+                    read-only="true"></code-step>
+                  <code-step name="createModel" step="2" code="function step2() {}" style="display: none;"
+                    read-only="false"></code-step>
+                  <code-step name="configureModel" step="3" code="function step3() {}" style="display: none;"
+                    read-only="false"></code-step>
+                  <code-step name="trainModel" step="4" code="function step4() {}" style="display: none;"
+                    read-only="false"></code-step>
+                  <code-step name="cleanupTensors" step="5" code="function step5() {}" style="display: none;"
+                    read-only="true"></code-step>
+                  <code-step name="exportModel" step="6" code="function step6() {}" style="display: none;"
+                    read-only="true"></code-step>
+                
+                  <div class="bottom-button-container">
+                    <fluent-button class="view-solution-button">View solution</fluent-button>
+                    <fluent-button class="reset-button">Reset</fluent-button>
+                  </div>
+                
+                  <code-step name="loadData-solution" step="11" code="function step11() {}"
+                    style="display: none;" read-only="true"></code-step>
+                  <code-step name="createModel-solution" step="21" code="function step21() {}"
+                    style="display: none;" read-only="true"></code-step>
+                  <code-step name="configureModel-solution" step="31" code="function step31() {}"
+                    style="display: none;" read-only="true"></code-step>
+                  <code-step name="trainModel-solution" step="41" code="function step41() {}"
+                    style="display: none;" read-only="true"></code-step>
+                  <code-step name="cleanupTensors-solution" step="51" code="function step51() {}"
+                    style="display: none;" read-only="true"></code-step>
+                  <code-step name="exportModel-solution" step="61" code="function step61() {}"
+                    style="display: none;" read-only="true"></code-step>
+                
+                
+                  <!--  -->
+                </div>                <div class="content">
+                  <div class="social-icons">
+                
+                
+                    <a aria-label="ASL Fingerspelling Tutorial 👋 on GitHub" href="https://github.com/ahoak/asl-client-ml-tutorial" tabindex="-1">
+                      <svg class="social-profile-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" tabindex="0"
+                        focusable="true">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M10.026 0C4.517 0 0.052002 4.465 0.052002 9.974C0.052002 14.38 2.909 18.119 6.873 19.439C7.372 19.529 7.552 19.222 7.552 18.958C7.552 18.721 7.544 18.093 7.541 17.262C4.766 17.864 4.18 15.924 4.18 15.924C3.728 14.772 3.073 14.465 3.073 14.465C2.168 13.846 3.142 13.86 3.142 13.86C4.144 13.93 4.669 14.888 4.669 14.888C5.559 16.412 7.005 15.972 7.571 15.717C7.662 15.072 7.922 14.632 8.206 14.383C5.992 14.132 3.664 13.276 3.664 9.453C3.664 8.366 4.053 7.474 4.688 6.778C4.587 6.525 4.242 5.51 4.787 4.138C4.787 4.138 5.624 3.869 7.529 5.159C8.327 4.938 9.178 4.827 10.025 4.823C10.874 4.827 11.726 4.938 12.521 5.159C14.427 3.868 15.263 4.138 15.263 4.138C15.808 5.51 15.466 6.525 15.362 6.778C16.002 7.474 16.386 8.365 16.386 9.453C16.386 13.286 14.056 14.128 11.834 14.375C12.189 14.683 12.509 15.291 12.509 16.221C12.509 17.555 12.497 18.631 12.497 18.958C12.497 19.225 12.675 19.535 13.184 19.437C17.146 18.115 20 14.379 20 9.974C20 4.465 15.535 0 10.026 0Z"
+                          fill="#2E3A59" />
+                      </svg>
+                    </a>
+                
+                
+                
+                    <a aria-label="ASL Fingerspelling Tutorial 👋 on Twitter" href="https://twitter.com/amber_hoak" tabindex="-1">
+                      <svg class="social-profile-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" tabindex="0"
+                        focusable="true">
+                        <path
+                          d="M22.162 5.65593C21.3986 5.99362 20.589 6.2154 19.76 6.31393C20.6337 5.79136 21.2877 4.96894 21.6 3.99993C20.78 4.48793 19.881 4.82993 18.944 5.01493C18.3146 4.34151 17.4804 3.89489 16.5709 3.74451C15.6615 3.59413 14.7279 3.74842 13.9153 4.18338C13.1026 4.61834 12.4564 5.30961 12.0771 6.14972C11.6978 6.98983 11.6067 7.93171 11.818 8.82893C10.1551 8.74558 8.52832 8.31345 7.04328 7.56059C5.55823 6.80773 4.24812 5.75097 3.19799 4.45893C2.82628 5.09738 2.63095 5.82315 2.63199 6.56193C2.63199 8.01193 3.36999 9.29293 4.49199 10.0429C3.828 10.022 3.17862 9.84271 2.59799 9.51993V9.57193C2.59819 10.5376 2.93236 11.4735 3.54384 12.221C4.15532 12.9684 5.00647 13.4814 5.95299 13.6729C5.33661 13.84 4.6903 13.8646 4.06299 13.7449C4.32986 14.5762 4.85 15.3031 5.55058 15.824C6.25117 16.3449 7.09712 16.6337 7.96999 16.6499C7.10247 17.3313 6.10917 17.8349 5.04687 18.1321C3.98458 18.4293 2.87412 18.5142 1.77899 18.3819C3.69069 19.6114 5.91609 20.264 8.18899 20.2619C15.882 20.2619 20.089 13.8889 20.089 8.36193C20.089 8.18193 20.084 7.99993 20.076 7.82193C20.8949 7.23009 21.6016 6.49695 22.163 5.65693L22.162 5.65593Z"
+                          fill="black" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>                
+            </div>
+        </div>
+
+    </main>
+
+</body>
+
+</html>

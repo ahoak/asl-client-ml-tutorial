@@ -208,7 +208,9 @@ export async function loadModelFromZip(zippedModelBuffer: ArrayBuffer): Promise<
   };
   const weightsManifest = modelData.weightsManifest || [];
   for (const manifest of weightsManifest) {
-    for (const path of manifest.paths) {
+    for (let path of manifest.paths) {
+      // replace any leading "./" with ""
+      path = path.replace(/^\.\//, '');
       loaderData[path] = await modelZip.file(path)!.async('arraybuffer');
     }
   }

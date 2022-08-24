@@ -182,7 +182,7 @@ export class ArrayBufferModelSaver /*implements IOHandler */ {
        */
       const weightsManifest: WeightsManifestConfig = [
         {
-          paths: ['./' + this.#weightDataFileName],
+          paths: [this.#weightDataFileName],
           weights: modelArtifacts.weightSpecs!,
         },
       ];

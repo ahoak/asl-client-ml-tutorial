@@ -20,6 +20,10 @@ export default class BaseComponent<AttributeNames extends string = any> extends 
     this.#initElement(true, template);
   }
 
+  hasAttribute(qualifiedName: AttributeNames | BaseAttributeNames): boolean {
+    return super.hasAttribute(qualifiedName);
+  }
+
   getAttribute(qualifiedName: AttributeNames | BaseAttributeNames): string | null {
     return super.getAttribute(qualifiedName);
   }

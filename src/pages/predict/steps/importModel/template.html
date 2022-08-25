@@ -6,18 +6,28 @@
 	step-container::part(main) {
 		width: 500px;
 	}
+
 </style>
 <div class="root">
 	<step-container class="step-container">
 		<div slot="name">Import Model</div>
-		<label class="model-import-container">
-			Select the model.zip file that you saved in the previous step.
-			<div>
-				<input title="Model file to import" class="model-import-file" type="file" accept="application/zip">
+		<div class="model-import-container">
+			<div class="localstorage-import">
+				Continue with the model you created from the "Build" tutorial.
+				<div>
+					<fluent-button class="localstorage-import-button" appearance="basic">Load from "Build"</fluent-button>
+				</div>
 			</div>
-		</label>
+			<h3>OR</h3>
+			<div class="zip-file-import">
+				Select a different model.zip file that you downloaded to your machine.
+				<div>
+					<input title="Model file to import" class="model-import-file" type="file" accept="application/zip">
+				</div>
+			</div>
+		</div>
 		<div slot="success">
-			<div>The model that you selected looks good! 👍</div>
+			<div>The model that you selected is valid 👍</div>
 		</div>
 	</step-container>
 </div>

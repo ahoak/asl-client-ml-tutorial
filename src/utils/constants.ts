@@ -37,3 +37,5 @@ export enum BackendOptions {
   'cpu',
   'wasm',
 }
+
+export const localStorageModelPath = 'localstorage://model';

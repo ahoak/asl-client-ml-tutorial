@@ -8,7 +8,6 @@ export type PredictStepName =
   | 'importModel'
   | 'extractAndProcessJointPositions'
   | 'classify'
-  | 'cleanup'
   | 'run';
 
 /**

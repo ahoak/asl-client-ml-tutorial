@@ -1,6 +1,11 @@
 import '../../components/StepContainer';
 
+import { loadLayersModel } from '@tensorflow/tfjs';
+import JSZip from 'jszip';
+
 import BaseComponent from '../../../../components/BaseComponent';
+import { localStorageModelPath } from '../../../../utils/constants';
+import { ArrayBufferModelSaver } from '../../../../utils/tfArrayBufferLoaderSaver';
 import {
   createIncompleteImplValidationError,
   createUnknownValidationError,
@@ -30,6 +35,11 @@ export class ImportModelStep extends BaseComponent implements StepDisplayElement
    * The model import file element
    */
   #modelImportFileEle: HTMLInputElement | null = null;
+
+  /**
+   * THe model import localStorage button
+   */
+  #modelLocalstorageImportButton: HTMLButtonElement | null = null;
 
   /**
    * The model import container element
@@ -111,6 +121,12 @@ export class ImportModelStep extends BaseComponent implements StepDisplayElement
   connectedCallback() {
     this.#stepContainerEle = this.#root.querySelector('.step-container');
     this.#modelImportContainer = this.#root.querySelector('.model-import-container');
+    this.#modelLocalstorageImportButton = this.#root.querySelector('.localstorage-import-button');
+    this.#modelLocalstorageImportButton?.addEventListener(
+      'click',
+      () => void this.#loadStateFromLocalStorage(),
+    );
+
     this.#modelResetButton = this.#root.querySelector('.model-reset-button');
     this.#modelResetButton?.addEventListener('click', () => {
       this.stepState = {
@@ -127,6 +143,41 @@ export class ImportModelStep extends BaseComponent implements StepDisplayElement
     );
 
     void this.#loadStateFromFileElement();
+  }
+
+  /**
+   * Syncronizes the internal state with the elements on the page
+   */
+  async #loadStateFromLocalStorage() {
+    const state: ImportStepState = {
+      valid: false,
+      data: null,
+    };
+    try {
+      const model = await loadLayersModel(localStorageModelPath);
+      const zip = new JSZip();
+      const files = await model.save(new ArrayBufferModelSaver());
+      const f = files as unknown as { data: { [key: string]: ArrayBuffer } };
+
+      Object.keys(f.data).forEach((fileName, index) => {
+        if (index === 0) {
+          zip.file(fileName, JSON.stringify(f.data[fileName]));
+        } else {
+          zip.file(fileName, f.data[fileName]);
+        }
+      });
+
+      const zipData = await zip.generateAsync({ type: 'arraybuffer' });
+      Object.assign(state, await validate(zipData));
+    } catch (e) {
+      state.valid = false;
+      state.validationIssues = createIncompleteImplValidationError(
+        `Could not load model from "Build" step!: ${e}`,
+      ).errors;
+      console.error(e);
+    }
+
+    this.stepState = Object.freeze(state);
   }
 
   /**

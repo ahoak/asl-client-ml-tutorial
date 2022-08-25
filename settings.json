@@ -70,10 +70,6 @@
     "helperText": "Run inference with the normalized joint positions to get a classification (ASL sign)."
   }, {
     "step": 4,
-    "description": "Cleanup",
-    "helperText": "Cleanup the tensors used while infering."
-  }, {
-    "step": 5,
     "description": "Run",
     "helperText": "Run prediction on the model"
   }]

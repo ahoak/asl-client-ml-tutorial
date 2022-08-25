@@ -37,7 +37,7 @@ Promise<{
     );
 
     // Cleanup the tensor that we created
-    await cleanup(jointPositionsFlat);
+    jointPositionsFlat.dispose();
 
     // Were we able to classify at all?
     if (predictionResult != null && predictionResult.classification != null) {

@@ -18,12 +18,17 @@ type ValidationFunction<StateType extends StepState> = (
   pipelineState: PredictPipelineState | null,
 ) => Promise<ValidationResult>;
 
-export abstract class CodeStepBaseComponent<StateType extends CodeStepState> extends BaseComponent {
+export const attributes = ['style'] as const;
+type AttributeName = typeof attributes[number];
+
+export abstract class CodeStepBaseComponent<
+  StateType extends CodeStepState,
+> extends BaseComponent<AttributeName> {
   /**
    * The list of observed attributes
    */
   static get observedAttributes() {
-    return ['style'];
+    return attributes;
   }
 
   /**
@@ -40,6 +45,11 @@ export abstract class CodeStepBaseComponent<StateType extends CodeStepState> ext
    * The toggle solution button
    */
   #toggleSolutionButton: HTMLElement | null = null;
+
+  /**
+   * The toggle code button
+   */
+  #toggleCodeButton: HTMLElement | null = null;
 
   /**
    * The solution container element
@@ -67,6 +77,11 @@ export abstract class CodeStepBaseComponent<StateType extends CodeStepState> ext
   readonly successMessage: string | null;
 
   /**
+   * True if the code toggle button should be visible
+   */
+  readonly showCodeToggleButton: boolean;
+
+  /**
    * The validation function
    */
   readonly validate: ValidationFunction<StateType>;
@@ -81,6 +96,7 @@ export abstract class CodeStepBaseComponent<StateType extends CodeStepState> ext
     defaultState,
     solutionCode,
     readonly,
+    showCodeToggleButton = false,
     validate,
     template = defaultTemplate,
     successMessage,
@@ -88,6 +104,7 @@ export abstract class CodeStepBaseComponent<StateType extends CodeStepState> ext
     defaultCode: string;
     solutionCode?: string | null;
     readonly?: boolean;
+    showCodeToggleButton?: boolean;
     defaultState: StateType;
     validate: ValidationFunction<StateType>;
     template?: string;
@@ -98,11 +115,28 @@ export abstract class CodeStepBaseComponent<StateType extends CodeStepState> ext
     this.defaultCode = defaultCode;
     this.solutionCode = solutionCode ?? null;
     this.successMessage = successMessage ?? null;
+    this.showCodeToggleButton = showCodeToggleButton ?? false;
     this.readonly = readonly ?? false;
     this.validate = validate;
     this.#__stepState = {
       ...defaultState,
     };
+  }
+
+  /**
+   * True if the code is visible
+   */
+  get codeVisible() {
+    return this.#codeEditor?.style.display !== 'none';
+  }
+
+  /**
+   * If true, the code will be visible
+   */
+  set codeVisible(value: boolean) {
+    if (this.#codeEditor) {
+      this.#codeEditor.style.display = value ? '' : 'none';
+    }
   }
 
   /**
@@ -185,6 +219,7 @@ export abstract class CodeStepBaseComponent<StateType extends CodeStepState> ext
     this.#stepContainerEle = this.root.querySelector('.step-container');
     this.#solutionEditorEle = this.root.querySelector('.solution-editor');
     this.#toggleSolutionButton = this.root.querySelector('.toggle-solution-button');
+    this.#toggleCodeButton = this.root.querySelector('.toggle-code-button');
     if (this.solutionCode) {
       this.#solutionEditorEle?.setAttribute('code', this.solutionCode);
       this.#toggleSolutionButton?.addEventListener('click', () => {
@@ -195,6 +230,13 @@ export abstract class CodeStepBaseComponent<StateType extends CodeStepState> ext
       if (this.#toggleSolutionButton) {
         this.#toggleSolutionButton.style.display = 'none';
       }
+    }
+
+    if (this.#toggleCodeButton) {
+      this.#toggleCodeButton.style.display = this.showCodeToggleButton ? '' : 'none';
+      this.#toggleCodeButton.addEventListener('click', () => {
+        this.codeVisible = !this.codeVisible;
+      });
     }
 
     const successMessageEle = this.root.querySelector('.success-message');

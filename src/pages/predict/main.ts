@@ -151,9 +151,6 @@ function createDefaultPipelineState(): PredictPipelineState {
       classify: {
         ...stepDefs.classify.defaultState,
       },
-      cleanup: {
-        ...stepDefs.cleanup.defaultState,
-      },
       run: {
         ...stepDefs.run.defaultState,
       },
@@ -191,7 +188,6 @@ function readStepElements(): StepDisplayElement[] {
       `[name="${stepDefs.extractAndProcessJointPositions.name}"]`,
     ) as StepDisplayElement,
     predictionContents!.querySelector(`[name="${stepDefs.classify.name}"]`) as StepDisplayElement,
-    predictionContents!.querySelector(`[name="${stepDefs.cleanup.name}"]`) as StepDisplayElement,
     predictionContents!.querySelector(`[name="${stepDefs.run.name}"]`) as StepDisplayElement,
   ];
 }

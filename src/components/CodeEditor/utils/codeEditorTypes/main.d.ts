@@ -23,7 +23,6 @@ declare function classify(
   classes: string[],
   tensor: Tensor1D,
 ): ClassificationResult | Promise<ClassificationResult>;
-declare function cleanup(tensor: Tensor): void | Promise<void>;
 
 declare function argMax(values: number[]): number;
 declare function normalize(values: number[]): number[];

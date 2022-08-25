@@ -13,6 +13,7 @@ import type {
 const predictionContents = document.querySelector('.predict-contents');
 const stepController = document.querySelector('step-controller');
 const nextButton = predictionContents!.querySelector('.next-button') as HTMLElement;
+const resetButton = predictionContents!.querySelector('.reset-button') as HTMLElement;
 const breadcrumbContainer = predictionContents!.querySelector('.predict-container .breadcrumbs');
 const steps: StepDisplayElement[] = readStepElements();
 const defaultPipelineState: PredictPipelineState = createDefaultPipelineState();
@@ -40,7 +41,6 @@ async function init() {
     }
   });
 
-  const resetButton = predictionContents!.querySelector('.reset-button');
   resetButton?.addEventListener('click', () => {
     const stepDef = steps[currentStep.stepNum - 1];
     const stepName = stepDef.getAttribute('name')! as PredictStepName;
@@ -94,6 +94,11 @@ async function init() {
 
       // hide it if it is the last step
       nextButton.style.display = stepNum === steps.length ? 'none' : '';
+    }
+
+    if (resetButton) {
+      const userMutable = stepDefs[currentStep.name as PredictStepName].userMutable;
+      resetButton.style.display = userMutable ? '' : 'none';
     }
 
     updateBreadcrumbs(steps, pipelineState);

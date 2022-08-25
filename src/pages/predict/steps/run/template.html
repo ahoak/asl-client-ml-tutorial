@@ -32,25 +32,25 @@
   }
 
   .output-container {
-	display: flex;
-	flex-direction: column;
+    display: flex;
+    flex-direction: column;
   }
-  
+
   .predictions-output {
     text-align: center;
     margin: 10px;
   }
-  
+
   .start-button {
     width: 100px;
     align-self: center;
   }
-  
+
   .options {
     text-align: center;
-/*     margin-top: 10px; */
+    /*     margin-top: 10px; */
   }
-  
+
   .options .model-options h4 {
     margin-top: 0px;
     margin-bottom: 5px;
@@ -59,39 +59,38 @@
     margin-top: 10px;
     margin-bottom: 10px;
   }
-  
+
   fluent-divider {
     margin-top: 10px;
     margin-bottom: 10px;
   }
-  
+
   .import-model-button::part(content)::before {
-    content: "<div>test</div>"
+    content: '<div>test</div>';
   }
 </style>
 <div class="root">
   <step-container class="step-container">
     <div slot="name"></div>
-	<div class="output-container">
-		<h3 class="predictions-output">No Predictions</h3>
-		<video-stream-viewer class="video-stream-viewer"></video-stream-viewer>
-		<fluent-button class="start-button" appearance="accent">Start</fluent-button>
-		<fluent-divider></fluent-divider>
-		<div class="options">
-		<div class="datasource-options">
-			<h4>Datasource</h4>
-			<fluent-select class="datasource-select" title="Select a data source">
-			<fluent-option value="webcam">Webcam</fluent-option>
-			</fluent-select>
-		</div>
-		</div>
-	</div>
+    <div class="output-container">
+      <h3 class="predictions-output">No Predictions</h3>
+      <video-stream-viewer class="video-stream-viewer"></video-stream-viewer>
+      <fluent-button class="start-button" appearance="accent">Start</fluent-button>
+      <fluent-divider></fluent-divider>
+      <div class="options"></div>
+    </div>
     <div slot="buttons-bottom">
       <div class="bottom-button-container">
         <fluent-button class="toggle-code-button">Show Code</fluent-button>
-		<div class="editor-container">
-		  <code-editor style="display: none" readonly hide-issues allow-background-execution class="code-editor"></code-editor>
-		</div>
+        <div class="editor-container">
+          <code-editor
+            style="display: none"
+            readonly
+            hide-issues
+            allow-background-execution
+            class="code-editor"
+          ></code-editor>
+        </div>
       </div>
     </div>
   </step-container>

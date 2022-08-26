@@ -3,7 +3,7 @@ import type { CodeHints } from '../../components';
 const generateCodeBody = (input1: string, input2: string, input3: string) =>
   `
   // This will return an Tensor containing a match confidence (0 - 1) for each sign
-  const predictionTensor = model.predict(${input1});
+  const predictionTensor = model.predict(${input1}).squeeze();
 
   // Copy the prediction tensor into to a javascript array
   const prediction = predictionTensor.dataSync();

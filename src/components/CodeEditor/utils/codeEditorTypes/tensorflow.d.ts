@@ -45,6 +45,7 @@ declare interface History {
 
 declare interface Tensor {
   max(): Tensor;
+  squeeze(): Tensor;
   min(): Tensor;
   argMax(axis?: number): Tensor1D;
   sub(tensor: Tensor | number): Tensor;

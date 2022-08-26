@@ -1,6 +1,6 @@
 import { CodeStepBaseComponent } from '../codeStepBase';
 import type { StepDisplayElement } from '../types';
-import { defaultCode, solutionCode } from './code';
+import { defaultCode, hints, solutionCode } from './code';
 import { defaultState } from './state';
 import type { ClassifyStepState } from './types';
 import { validate } from './validate';
@@ -15,6 +15,7 @@ export class ClassifyStep
       defaultState,
       solutionCode,
       validate,
+      hints,
     });
   }
 }

@@ -48,7 +48,7 @@ const stepSuccessStatements = new Map([
   ['loadData', `✔️ Data loaded 💾`],
   ['createModel', '✔️ Yay! Model created! 🎉'],
   ['trainModel', '✔️ Training complete!👟'],
-  ['exportModel', '✔️ Downloaded 🕺'],
+  ['exportModel', '✔️ Downloaded! Time to make some <a href="/predict#step1">predictions</a> 🕺'],
 ]) as Map<string, string>;
 
 export function getSuccessStatement(name: string) {

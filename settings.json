@@ -19,7 +19,7 @@
     },
     {
       "step": 2,
-      "description": "Create + Configure Model",
+      "description": "Create and Configure Model",
       "helperText": "creating a feed-forward model. We will use 5 layers with relu activation function. Function must return the model.",
       "name": "createModel",
       "readOnly": "false"

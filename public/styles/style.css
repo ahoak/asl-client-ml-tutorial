@@ -147,9 +147,10 @@ h1 {
 }
 ul > li,
 ol > li {
-  margin-bottom: 0.75rem;
+  /* margin-bottom: 0.75rem; */
   line-height: 1.5;
-  font-size: clamp(1rem, 0.625rem + 1.6667vw, 1.5rem);
+  font-size: clamp(1rem, 0.625rem + 1.6667vw, 1rem);
+  text-align: left;
 }
 ul {
   padding: 0 0 0 18px;

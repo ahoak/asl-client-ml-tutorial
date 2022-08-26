@@ -1,7 +1,6 @@
 import '../../utils/fluentBootstrap';
 
 import type { LayersModel } from '@tensorflow/tfjs';
-import { Tensor } from '@tensorflow/tfjs';
 import * as tf from '@tensorflow/tfjs';
 
 import Settings from '../../../settings.json';
@@ -30,7 +29,7 @@ export interface StepImplementationRecord extends CodeStepRecord {
 }
 type StepImplementation = Record<keyof typeof codeSteps, StepImplementationRecord>;
 
-const DefaultEpoch = 2;
+const DefaultEpoch = 3;
 export class ModelBuilder {
   #epochs = DefaultEpoch;
   #currentEpochCount = 1;
@@ -46,6 +45,8 @@ export class ModelBuilder {
   #timeElement = getOrCreateElement('.training-progress-bar') as HTMLElement;
   #codeStepEles = document.querySelectorAll('code-step') as NodeListOf<CodeStepComponent>;
   #progressBarElement = getOrCreateElement('.training-progress-bar') as HTMLProgressElement;
+  #codeContainerElement = getOrCreateElement('.editor-container') as HTMLElement;
+  #loadDataDescElement = getOrCreateElement('.load-data-description') as HTMLElement;
 
   #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;
   #solutionButton = getOrCreateElement('.view-solution-button') as HTMLButtonElement;
@@ -53,6 +54,7 @@ export class ModelBuilder {
   #stopTrainingButton = getOrCreateElement('.training-stop-button') as HTMLButtonElement;
   #startTrainingButton = getOrCreateElement('.training-start-button') as HTMLButtonElement;
   #downloadButton = getOrCreateElement('.download-button') as HTMLButtonElement;
+  #toggleCodeButton = getOrCreateElement('.toggle-code-button') as HTMLButtonElement;
 
   #trainingEnabled = true;
   #trainingComplete = false;
@@ -62,6 +64,7 @@ export class ModelBuilder {
   #aslModel: LayersModel | undefined;
   #stepMap: Record<string, StepViewer> = {};
   #stepMapRef: Record<string, string> = {};
+  #showCode = false;
 
   constructor(options?: ModelBuilderOptions) {
     this.#epochs = options?.epochs ?? DefaultEpoch;
@@ -75,6 +78,7 @@ export class ModelBuilder {
     this.#stopTrainingButton.onclick = this.handleStopTrainingClick;
     this.#startTrainingButton.onclick = this.handlestartTrainingClick;
     this.#downloadButton.onclick = this.handleDownloadClick;
+    this.#toggleCodeButton.onclick = this.handleCodeToggleClick;
     this.mapCodeSteps();
     // await this.setCurrentStep(1);
   }
@@ -137,10 +141,9 @@ export class ModelBuilder {
           default:
             break;
         }
-        if (name !== 'exportModel') {
-          StepViewerInstance.on('validationInProgress', this.handleValidationStarted);
-          StepViewerInstance.on('validationComplete', this.handleValidationComplete);
-        }
+
+        StepViewerInstance.on('validationInProgress', this.handleValidationStarted);
+        StepViewerInstance.on('validationComplete', this.handleValidationComplete);
       } else {
         console.error('Expected code-step to have a step attribute!');
       }
@@ -244,12 +247,12 @@ export class ModelBuilder {
     }
   };
 
-  handleNextButtonClick = () => {
+  handleNextButtonClick = async () => {
     const next = this.#currentStep?.step ?? 1;
-    this.onStepChange(next + 1);
+    await this.onStepChange(next + 1);
   };
 
-  onStepChange(nextStep: number) {
+  async onStepChange(nextStep: number) {
     if (this.#currentStep) {
       const title = this.#currentStep.name;
       if (this.#isSolutionVisble) {
@@ -261,7 +264,7 @@ export class ModelBuilder {
 
     clearValidationFeedback();
     if (nextStep !== undefined) {
-      this.setCurrentStep(nextStep);
+      await this.setCurrentStep(nextStep);
     }
   }
 
@@ -297,15 +300,29 @@ export class ModelBuilder {
     }
   };
 
-  handleStepChange(name: string, readOnly = 'false') {
+  handleCodeToggleClick = () => {
+    if (!this.#showCode) {
+      this.#codeContainerElement.style.display = 'block';
+    } else {
+      this.#codeContainerElement.style.display = 'none';
+    }
+    this.#showCode = !this.#showCode;
+  };
+
+  async handleStepChange(name: string, readOnly = 'false') {
     const instance = this.#stepMap[name];
     if (instance) {
       instance.setCodeFromCacheOrDefault();
       if (readOnly) {
         instance.readonly = readOnly === 'true';
       }
+      if (name === 'loadData') {
+        this.#loadDataDescElement.style.display = 'block';
+      } else {
+        this.#loadDataDescElement.style.display = 'none';
+      }
 
-      if ((name === 'configureModel' || name === 'exportModel') && this.#aslModel) {
+      if (name === 'exportModel' && this.#aslModel) {
         instance.funcInput = [this.#aslModel, tf];
       }
       if (name === 'trainModel' && this.#aslModel && this.#data) {
@@ -338,20 +355,26 @@ export class ModelBuilder {
       }
       if (readOnly === 'true') {
         // hide solution/reset buttons
-        this.#solutionButton.disabled = true;
-        this.#resetButton.disabled = true;
+        this.#solutionButton.style.display = 'none';
+        this.#resetButton.style.display = 'none';
+        this.#showCode = false;
+        this.#codeContainerElement.style.display = 'none';
+        this.#toggleCodeButton.style.display = 'inline-flex';
       } else {
-        this.#solutionButton.disabled = false;
-        this.#resetButton.disabled = false;
+        this.#solutionButton.style.display = 'inline-flex';
+        this.#resetButton.style.display = 'inline-flex';
+        this.#showCode = true;
+        this.#codeContainerElement.style.display = 'block';
+        this.#toggleCodeButton.style.display = 'none';
       }
-
       instance.show = true;
+      await instance.runCachedCode();
     } else {
       console.error(`Instance of StepViewer for ${name} is not found`);
     }
   }
 
-  setCurrentStep(stepcount: number) {
+  async setCurrentStep(stepcount: number) {
     const step = ProjectSettingsConfig.trainTutorialSteps.find(
       (tutorialStep) => tutorialStep.step === stepcount,
     );
@@ -361,7 +384,7 @@ export class ModelBuilder {
       highlightNavStep(this.#currentStep.step);
       unhighlightNavStep(this.#currentStep.step - 1);
       this.#mainEle.innerHTML = `${this.#currentStep.step}. ${this.#currentStep.description} `;
-      this.handleStepChange(this.#currentStep.name, this.#currentStep.readOnly);
+      await this.handleStepChange(this.#currentStep.name, this.#currentStep.readOnly);
     }
   }
 }

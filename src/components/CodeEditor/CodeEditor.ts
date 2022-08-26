@@ -323,19 +323,6 @@ export class CodeEditorComponent extends BaseComponent {
         startColumn: word.startColumn,
         endColumn: word.endColumn,
       };
-
-      // const textUntilPosition = model.getValueInRange({
-      //   startLineNumber: 1,
-      //   startColumn: 1,
-      //   endLineNumber: position.lineNumber,
-      //   endColumn: position.column,
-      // });
-      // const match = textUntilPosition.match(
-      // 	/"dependencies"\s*:\s*\{\s*("[^"]*"\s*:\s*"[^"]*"\s*,\s*)*([^"]*)?$/
-      // );
-      // if (!match) {
-      // 	return { suggestions: [] };
-      // }
       return {
         suggestions: Object.keys(this.#hints || {}).map((n) => ({
           label: n,

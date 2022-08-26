@@ -4,6 +4,7 @@ import type {
   CodeEditorChangeEvent,
   CodeEditorChangeEventArgs,
   CodeEditorComponent,
+  CodeHints,
   CodeIssue,
   CodeIssueType,
   StepContainerComponent,
@@ -82,6 +83,11 @@ export abstract class CodeStepBaseComponent<
   readonly showCodeToggleButton: boolean;
 
   /**
+   * The code hints to use
+   */
+  readonly codeHints: CodeHints | null;
+
+  /**
    * The validation function
    */
   readonly validate: ValidationFunction<StateType>;
@@ -97,6 +103,7 @@ export abstract class CodeStepBaseComponent<
     solutionCode,
     readonly,
     showCodeToggleButton = false,
+    hints,
     validate,
     template = defaultTemplate,
     successMessage,
@@ -104,6 +111,7 @@ export abstract class CodeStepBaseComponent<
     defaultCode: string;
     solutionCode?: string | null;
     readonly?: boolean;
+    hints?: CodeHints;
     showCodeToggleButton?: boolean;
     defaultState: StateType;
     validate: ValidationFunction<StateType>;
@@ -117,6 +125,7 @@ export abstract class CodeStepBaseComponent<
     this.successMessage = successMessage ?? null;
     this.showCodeToggleButton = showCodeToggleButton ?? false;
     this.readonly = readonly ?? false;
+    this.codeHints = hints ?? null;
     this.validate = validate;
     this.#__stepState = {
       ...defaultState,
@@ -245,6 +254,7 @@ export abstract class CodeStepBaseComponent<
     }
     this.#codeEditor?.toggleAttribute('readonly', this.readonly);
     this.#codeEditor?.setAttribute('code', this.stepState.code || this.defaultCode);
+    this.#codeEditor?.setAttribute('hints', JSON.stringify(this.codeHints || {}));
     this.#codeEditor?.addEventListener('change', (rawEvent: Event) => {
       void this.#loadStateFromCodeEditor((rawEvent as CodeEditorChangeEvent).detail);
     });

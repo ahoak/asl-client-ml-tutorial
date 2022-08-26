@@ -46,6 +46,7 @@ declare interface History {
 declare interface Tensor {
   max(): Tensor;
   min(): Tensor;
+  argMax(axis?: number): Tensor1D;
   sub(tensor: Tensor | number): Tensor;
   mul(tensor: Tensor | number): Tensor;
   div(tensor: Tensor | number): Tensor;

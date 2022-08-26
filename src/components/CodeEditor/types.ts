@@ -13,3 +13,10 @@ export interface CodeIssue {
   message?: string;
   detail?: string;
 }
+
+export type CodeHint = {
+  code: string;
+  detail?: string;
+  documentation?: string;
+};
+export type CodeHints = Record<string, CodeHint>;

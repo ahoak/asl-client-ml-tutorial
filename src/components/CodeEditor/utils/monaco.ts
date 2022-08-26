@@ -1,5 +1,5 @@
 import loader from '@monaco-editor/loader';
-import type * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
+import * as monacoEditor from 'monaco-editor/esm/vs/editor/editor.api';
 
 import jszipTypes from './codeEditorTypes/jszip.d.ts?raw';
 import mainTypes from './codeEditorTypes/main.d.ts?raw';
@@ -9,6 +9,8 @@ export type ITypescriptWorker = monacoEditor.languages.typescript.TypeScriptWork
 export type IStandaloneCodeEditor = monacoEditor.editor.IStandaloneCodeEditor;
 export type IModel = monacoEditor.editor.IModel;
 export type Monaco = typeof monacoEditor;
+
+export const languages = monacoEditor.languages;
 
 /**
  * The type declarations for the monaco editor

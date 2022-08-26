@@ -1,12 +1,13 @@
 import '../IssueDisplay';
 
+import type { Position } from 'monaco-editor';
 import { MarkerSeverity } from 'monaco-editor';
 
 import BaseComponent from '../BaseComponent';
 import template from './template.html?raw';
-import type { CodeEditorChangeEventArgs, CodeIssue, CodeIssueType } from './types';
+import type { CodeEditorChangeEventArgs, CodeHints, CodeIssue, CodeIssueType } from './types';
 import type { IModel, IStandaloneCodeEditor, Monaco } from './utils/monaco';
-import { getTypescriptWorker, loadMonaco } from './utils/monaco';
+import { getTypescriptWorker, languages, loadMonaco } from './utils/monaco';
 
 export class CodeEditorComponent extends BaseComponent {
   /**
@@ -19,6 +20,7 @@ export class CodeEditorComponent extends BaseComponent {
       'code',
       'hide-issues',
       'readonly',
+      'hints',
       'allow-background-execution',
     ];
   }
@@ -41,6 +43,7 @@ export class CodeEditorComponent extends BaseComponent {
   #visibilityObserver: IntersectionObserver | null = null;
   #currentCode: string | null = null;
   #allowBackgroundExecution = false;
+  #hints: CodeHints | null = null;
 
   /**
    * The root of the app component
@@ -65,6 +68,20 @@ export class CodeEditorComponent extends BaseComponent {
    */
   set hideIssues(value: boolean) {
     this.toggleAttribute('hide-issues', value);
+  }
+
+  /**
+   * Gets the hints used for the code editor
+   */
+  get hints(): CodeHints | null {
+    return this.#hints;
+  }
+
+  /**
+   * Sets to readonly mode
+   */
+  set hints(value: CodeHints | null) {
+    this.setAttribute('hints', JSON.stringify(value || {}));
   }
 
   /**
@@ -129,6 +146,12 @@ export class CodeEditorComponent extends BaseComponent {
       this.#editor?.updateOptions({ readOnly: this.readOnly, domReadOnly: this.readOnly });
     } else if (name === 'allow-background-execution') {
       this.#allowBackgroundExecution = newValue !== null;
+    } else if (name === 'hints') {
+      try {
+        this.#hints = JSON.parse(newValue ? newValue : '{}') as CodeHints;
+      } catch (e) {
+        console.error('Could not parse hints', e);
+      }
     }
   }
 
@@ -147,6 +170,11 @@ export class CodeEditorComponent extends BaseComponent {
       language: 'typescript',
       minimap: {
         enabled: false,
+      },
+    });
+    this.#monaco.languages.registerCompletionItemProvider('typescript', {
+      provideCompletionItems: (model, position) => {
+        return this.#provideCompletionItems(model, position);
       },
     });
 
@@ -283,6 +311,33 @@ export class CodeEditorComponent extends BaseComponent {
     if (this.#editor) {
       this.#editor.layout();
     }
+  }
+
+  #provideCompletionItems(model: IModel, position: Position) {
+    // Only provide completion for my model
+    if (model === this.#model && this.#hints) {
+      const word = model.getWordUntilPosition(position);
+      const range = {
+        startLineNumber: position.lineNumber,
+        endLineNumber: position.lineNumber,
+        startColumn: word.startColumn,
+        endColumn: word.endColumn,
+      };
+      return {
+        suggestions: Object.keys(this.#hints || {}).map((n) => ({
+          label: n,
+          kind: languages.CompletionItemKind.Function,
+          detail: this.#hints![n].detail ?? '',
+          documentation: this.#hints![n].documentation ?? '',
+          insertText: this.#hints![n].code,
+          insertTextRules: languages.CompletionItemInsertTextRule.InsertAsSnippet,
+          range: range,
+        })),
+      };
+    }
+    return {
+      suggestions: [],
+    };
   }
 }
 

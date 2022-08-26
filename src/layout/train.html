@@ -47,13 +47,13 @@
   <div class="load-data-description">
     <h3 class="description-header">Basic Process</h3>
     <ol>
-      <li>Use the Mediapipe model to extract the set of joint positions each of the image in the dataset.</li>
+      <li>Use the Mediapipe model to extract the set of joint positions of each image in the dataset.</li>
       <li>Flatten the joint positions into an array of values with the format:
         <code>[joint1_x, joint1_y, joint1_z, ..., jointN_x, jointN_y, jointN_z]</code>
       </li>
-      <li>Normalize the flattened joint positions so that thier values are scaled from -1 to 1.</li>
+      <li>Normalize the flattened joint positions so that their values are scaled from -1 to 1.</li>
       <li>Shuffle the data.</li>
-      <li>Use one-hot encoding to transform letter labels (i.e 'A', 'B', 'C' ) to a machine-friendly data format.</li>
+      <li>Use one-hot encoding to transform letter labels (i.e. 'A', 'B', 'C') to a machine-friendly data format.</li>
       <li>Split data into a training set and validation set.</li>
     </ol>
   </div>

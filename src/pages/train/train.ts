@@ -11,11 +11,11 @@ import { loadTensors, trainTestSplit } from '../../utils/utils.js';
 export async function testFullPipeline() {
   const data = await loadTensorDataSolution();
   // await setTensorFlowBackend();
-  const [trainX, trainY, validationX, validationY] = encodeAndSplitData(data);
-  const model = createModel();
-  configureModel(model);
-  await trainTestModel(model, [trainX, trainY, validationX, validationY], 1);
-  await exportModel(model);
+  // const [trainX, trainY, validationX, validationY] = encodeAndSplitData(data);
+  // const model = createModel();
+  // configureModel(model);
+  // await trainTestModel(model, [trainX, trainY, validationX, validationY], 1);
+  // await exportModel(model);
 }
 
 export async function trainTestModel(
@@ -67,6 +67,20 @@ export async function setTensorFlowBackend() {
 }
 
 export function encodeAndSplitData(
+  data: TensorData,
+  applyOneHotEncoding: (data: TensorData) => { X: number[][]; Y: number[][] },
+  splitTrainingData: (
+    X: number[][],
+    Y: number[][],
+  ) => [number[][], number[][], number[][], number[][]],
+) {
+  // apply one-hot encoding function below
+  const { X, Y } = applyOneHotEncoding(data);
+  // take the results from one-hot encoding and split data
+  return splitTrainingData(X, Y);
+}
+
+export function encodeAndSplitDataTF(
   data: TensorData,
   trainSplit = 0.8,
   valSplit = 0.1,
@@ -142,7 +156,7 @@ export function splitTrainingData(
     testSize: 0.1,
     randomState: 42,
   });
-  // console.log('[X_train, X_val, y_train, y_val]', [X_train, X_val, y_train, y_val]);
+
   return [X_train, X_val, y_train, y_val];
 }
 

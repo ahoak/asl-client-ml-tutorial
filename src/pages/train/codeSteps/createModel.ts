@@ -9,30 +9,43 @@ export const template = `
 // Create a feed-forward model using the tf.sequential (https://js.tensorflow.org/api/latest/#sequential)
 function createModel(classes: string[]):LayersModel {
  
+  // Step 1: Create Model
   const model = tf.sequential({
     layers: [
-      // Fill in the inputShape (hint this is equal to mediapipe hands output per image = 63)
-      // Fill in units (nuerons) in range 50-75
+      // Fill in the inputShape and units (hint this is equal to mediapipe hands output per image = 63)
       // Want to play with other activation functions, go for it! 
-      // This interactive app visualizes tfjs options:https://polarisation.github.io/tfjs-activation-functions/
-      tf.layers.dense({ inputShape: [/*<input>*/], units: /*<input>*/, activation: 'relu' }),
+      tf.layers.dense({ inputShape: [/*✨INSERT_HERE✨*/], units: /*✨INSERT_HERE✨*/, activation: 'relu' }),
 
-      // Fill in units (nuerons) in range 100-300??
-      tf.layers.dense({ units: /*<input>*/, activation: 'relu' }),
+      // Fill in units (nuerons) in range 100-300
+      tf.layers.dense({ units: /*✨INSERT_HERE✨*/, activation: 'relu' }),
 
       // Add a final dense layer wtih number of nuerons equal to classes (i.e classes.length )
-      tf.layers.dense({ units: /*<input>*/, activation: 'softmax' }),
+      tf.layers.dense({ units: /*✨INSERT_HERE✨*/, activation: 'softmax' }),
     ],
   });
 
-  // Uncomment below statement to check the output. 
+  // Step 2: Configure Model
+  model.compile({
+    // Adam changes the learning rate over time which is useful.
+    // https://js.tensorflow.org/api/latest/#Training-Optimizers
+    optimizer:  /*✨INSERT_HERE✨*/, //optimizer options: 'sgd', 'momentum', 'adagrad', 'ada', 'adam', 'adamax', 'rmsprop'
+
+    // Use the correct loss function. https://js.tensorflow.org/api/latest/#Training-Losses
+    // If 2 classes of data, use 'binaryCrossentropy' else use 'categoricalCrossentropy' if more than 2 classes and output of our model is a probability distribution.
+    loss:  /*✨INSERT_HERE✨*/,
+    // As this is a classification problem you can record accuracy in the logs too!
+    metrics: ['accuracy'],
+  });
+
+
+  /* Uncomment below statement to check the output. */
   // console.log(model.summary())
+
   return model;
 }
 `;
 
 export const solution = `
-// Create a feed-forward model using the tf.sequential (https://js.tensorflow.org/api/latest/#sequential)
 function createModelSolution(classes: string[]):LayersModel {
   // Create a feed-forward model
   const model = tf.sequential({
@@ -42,6 +55,13 @@ function createModelSolution(classes: string[]):LayersModel {
       tf.layers.dense({ units: classes.length, activation: 'softmax' }),
     ],
   });
+
+  model.compile({
+    optimizer: 'adam',
+    loss: 'categoricalCrossentropy',
+    metrics: ['accuracy'],
+  });
+
   return model;
 }`;
 

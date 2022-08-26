@@ -1,6 +1,4 @@
 import type { ValidationResult } from '../../../types';
-import * as cleanupTensors from './cleanupTensors';
-import * as configureModel from './configureModel';
 import * as createModel from './createModel';
 import * as exportModel from './exportModel';
 import * as loadData from './loadData';
@@ -15,9 +13,7 @@ export type CodeStepRecord = {
 export type CodeStep = Record<string, CodeStepRecord>;
 
 export const codeSteps: CodeStep = {
-  configureModel,
   createModel,
-  cleanupTensors,
   exportModel,
   trainModel,
   loadData,

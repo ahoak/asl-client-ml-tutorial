@@ -57,7 +57,7 @@ export class ModelBuilder {
   #trainingEnabled = true;
   #trainingComplete = false;
 
-  #dataTensors = [Tensor, Tensor, Tensor, Tensor];
+  #data?: [number[][], number[][], number[][], number[][]]; //[X_train, X_val, y_train, y_val]
 
   #aslModel: LayersModel | undefined;
   #stepMap: Record<string, StepViewer> = {};
@@ -124,7 +124,7 @@ export class ModelBuilder {
         this.#stepMapRef[step] = name;
         switch (name) {
           case 'loadData':
-            StepViewerInstance.funcInput = [loadTensors, assetURL, classes];
+            StepViewerInstance.funcInput = [loadTensors, assetURL];
             StepViewerInstance.on(Validated, this.handleDataSplitValidation);
             break;
           case 'createModel':
@@ -160,11 +160,7 @@ export class ModelBuilder {
     if (this.#currentStep?.step === step) {
       let successStatement = 'validation failed';
       if (passedValidation) {
-        let backendInUse;
-        if (step === 2) {
-          backendInUse = tf.getBackend();
-        }
-        successStatement = getSuccessStatement(name, backendInUse);
+        successStatement = getSuccessStatement(name);
       }
       if (name === 'trainModel' && this.#trainingComplete) {
         handleValidationgComplete(step, passedValidation, successStatement);
@@ -242,7 +238,7 @@ export class ModelBuilder {
   handleDataSplitValidation = (result: ValidationResult) => {
     if (result.valid && result.data && result.data.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      this.#dataTensors = result.data[0];
+      this.#data = result.data[0];
     } else {
       console.log('no data provided to ModelBuilder, please retry load data function');
     }
@@ -309,20 +305,17 @@ export class ModelBuilder {
         instance.readonly = readOnly === 'true';
       }
 
-      if (name === 'cleanupTensors') {
-        instance.funcInput = [this.#dataTensors];
-      }
       if ((name === 'configureModel' || name === 'exportModel') && this.#aslModel) {
         instance.funcInput = [this.#aslModel, tf];
       }
-      if (name === 'trainModel' && this.#aslModel) {
-        console.log('this.#dataTensors', this.#dataTensors);
+      if (name === 'trainModel' && this.#aslModel && this.#data) {
+        const [x_train, x_val, y_train, y_val] = this.#data;
         instance.funcInput = [
           this.#aslModel,
-          this.#dataTensors[0],
-          this.#dataTensors[1],
-          this.#dataTensors[2],
-          this.#dataTensors[3],
+          x_train,
+          y_train,
+          x_val,
+          y_val,
           // callbacks
           {
             onBatchEnd: this.onBatchEnd,

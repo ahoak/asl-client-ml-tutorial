@@ -25,53 +25,39 @@
       }
     
     </script>
-    <div>
-      <a href="/asl-client-ml-tutorial/">🏠 Home</a>
-      <a href="/asl-client-ml-tutorial/train">🔨Build</a>
-      <a href="/asl-client-ml-tutorial/predict">✨Predict</a>
+    <div class="nav-links">
+      <a href="/asl-client-ml-tutorial/" id="home" class>🏠 Home</a>
+      <a href="/asl-client-ml-tutorial/train" id="build">🔨 Build</a>
+      <a href="/asl-client-ml-tutorial/predict" id="predict">✨ Predict</a>
     
     </div>
     <link rel="stylesheet" type="text/css" href="/asl-client-ml-tutorial/styles/themes/glitch.css" />
-  <script type="module" crossorigin src="/asl-client-ml-tutorial/assets/train.3e545b1b.js"></script>
-  <link rel="modulepreload" crossorigin href="/asl-client-ml-tutorial/assets/utils.d9c2bb6f.js">
-  <link rel="stylesheet" href="/asl-client-ml-tutorial/assets/utils.c1b5c374.css">
+  <script type="module" crossorigin src="/asl-client-ml-tutorial/assets/train.42d8d55b.js"></script>
+  <link rel="modulepreload" crossorigin href="/asl-client-ml-tutorial/assets/utils.83332e14.js">
+  <link rel="modulepreload" crossorigin href="/asl-client-ml-tutorial/assets/VideoStreamViewer.c118ebcd.js">
+  <link rel="stylesheet" href="/asl-client-ml-tutorial/assets/VideoStreamViewer.c1b5c374.css">
 </head>
 
 <body>
     <main>
         <div class="wrapper">
             <div class="content">
-
-                <div>
-                
-                  <h1> ASL Fingerspelling Tutorial 👋 </h1>
-                  
-                
-                
-                </div>                <div class="training-container">
+                <div class="training-container">
                   <fluent-breadcrumb>
                     <fluent-breadcrumb-item id="tutorial-step1">
                       <!-- <a href="#step1">Load Data</a> -->
                       Load Data
                     </fluent-breadcrumb-item>
                     <fluent-breadcrumb-item id="tutorial-step2">
-                      <!-- <a href="#step2">Create Model</a> -->
-                      Create Model
+                      <!-- <a href="#step2">Create and Configure Model</a> -->
+                      Create and Configure Model
                     </fluent-breadcrumb-item>
                     <fluent-breadcrumb-item id="tutorial-step3">
-                      <!-- <a href="#step3">Configure Model</a> -->
-                      Configure Model
-                    </fluent-breadcrumb-item>
-                    <fluent-breadcrumb-item id="tutorial-step4">
-                      <!-- <a href="#step4">Train Model</a> -->
+                      <!-- <a href="#step3">Train Model</a> -->
                       Train Model
                     </fluent-breadcrumb-item>
-                    <fluent-breadcrumb-item id="tutorial-step5">
-                      <!-- <a href="#step5">Cleanup</a> -->
-                      Cleanup
-                    </fluent-breadcrumb-item>
-                    <fluent-breadcrumb-item id="tutorial-step6">
-                      <!-- <a href="#step6">Download Model Files</a> -->
+                    <fluent-breadcrumb-item id="tutorial-step4">
+                      <!-- <a href="#step4">Download Model Files</a> -->
                       Download Model Files
                     </fluent-breadcrumb-item>
                   </fluent-breadcrumb>
@@ -98,44 +84,44 @@
                   </div>
                   <p id="validation-status"></p>
                   <div class="training-feedback-container">
-                    <!-- <fluent-card class="custom-card">
-                      <p class="training-feedback"></p>
-                      <div class="progress-bar-container">
-                        <fluent-progress class="training-progress-bar"></fluent-progress>
-                        <p class="time-remaining"></p>
-                      </div>
-                    </fluent-card> -->
                   </div>
-                
+                  <div class="load-data-description">
+                    <h3 class="description-header">Basic Process</h3>
+                    <ol>
+                      <li>Use the Mediapipe model to extract the set of joint positions of each image in the dataset.</li>
+                      <li>Flatten the joint positions into an array of values with the format:
+                        <code>[joint1_x, joint1_y, joint1_z, ..., jointN_x, jointN_y, jointN_z]</code>
+                      </li>
+                      <li>Normalize the flattened joint positions so that their values are scaled from -1 to 1.</li>
+                      <li>Shuffle the data.</li>
+                      <li>Use one-hot encoding to transform letter labels (i.e. 'A', 'B', 'C') to a machine-friendly data format.</li>
+                      <li>Split data into a training set and validation set.</li>
+                    </ol>
+                  </div>
+                  <fluent-button class="toggle-code-button" style="display: none;">Toggle Code</fluent-button>
                   <code-step name="loadData" step="1" code="function step1() {}" style="display: none;"
                     read-only="true"></code-step>
                   <code-step name="createModel" step="2" code="function step2() {}" style="display: none;"
                     read-only="false"></code-step>
-                  <code-step name="configureModel" step="3" code="function step3() {}" style="display: none;"
+                  <code-step name="trainModel" step="3" code="function step3() {}" style="display: none;"
                     read-only="false"></code-step>
-                  <code-step name="trainModel" step="4" code="function step4() {}" style="display: none;"
-                    read-only="false"></code-step>
-                  <code-step name="cleanupTensors" step="5" code="function step5() {}" style="display: none;"
-                    read-only="true"></code-step>
-                  <code-step name="exportModel" step="6" code="function step6() {}" style="display: none;"
+                  <code-step name="exportModel" step="4" code="function step4() {}" style="display: none;"
                     read-only="true"></code-step>
                 
+                
+                
                   <div class="bottom-button-container">
-                    <fluent-button class="view-solution-button">View solution</fluent-button>
-                    <fluent-button class="reset-button">Reset</fluent-button>
+                    <fluent-button class="view-solution-button" style="display: none;">View solution</fluent-button>
+                    <fluent-button class="reset-button" style="display: none;">Reset</fluent-button>
                   </div>
                 
                   <code-step name="loadData-solution" step="11" code="function step11() {}"
                     style="display: none;" read-only="true"></code-step>
                   <code-step name="createModel-solution" step="21" code="function step21() {}"
                     style="display: none;" read-only="true"></code-step>
-                  <code-step name="configureModel-solution" step="31" code="function step31() {}"
+                  <code-step name="trainModel-solution" step="31" code="function step31() {}"
                     style="display: none;" read-only="true"></code-step>
-                  <code-step name="trainModel-solution" step="41" code="function step41() {}"
-                    style="display: none;" read-only="true"></code-step>
-                  <code-step name="cleanupTensors-solution" step="51" code="function step51() {}"
-                    style="display: none;" read-only="true"></code-step>
-                  <code-step name="exportModel-solution" step="61" code="function step61() {}"
+                  <code-step name="exportModel-solution" step="41" code="function step41() {}"
                     style="display: none;" read-only="true"></code-step>
                 
                 

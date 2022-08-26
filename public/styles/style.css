@@ -147,20 +147,30 @@ h1 {
 }
 ul > li,
 ol > li {
-  margin-bottom: 0.75rem;
+  /* margin-bottom: 0.75rem; */
   line-height: 1.5;
-  font-size: clamp(1rem, 0.625rem + 1.6667vw, 1.5rem);
+  font-size: clamp(1rem, 0.625rem + 1.6667vw, 1rem);
+  text-align: left;
 }
 ul {
   padding: 0 0 0 18px;
   margin: 0;
 }
 
+.active-page{
+  border-bottom: 6px solid var(--color-primary);
+  /* background: var(--color-primary); */
+}
+.inactive-page {
+  border-bottom: 6px solid #BDBDBD;
+
+}
+
 /* Link styles */
 a:not(.btn--remix):link,
 a:not(.btn--remix):visited {
   text-decoration: none;
-  border-bottom: 6px solid var(--color-primary);
+  /* border-bottom: 6px solid var(--color-primary); */
   color: var(--color-text-main);
   transition: background 0.2s linear;
 }

@@ -1,7 +1,10 @@
 import '../../components';
 
+import { styleNavOnChange } from '../../utils/utils';
 // import { testFullPipeline } from './train';
 import { ModelBuilder } from './ModelBuilder.js';
+
+styleNavOnChange('build');
 
 const ModelBuilderInstance = new ModelBuilder();
 void ModelBuilderInstance.init();

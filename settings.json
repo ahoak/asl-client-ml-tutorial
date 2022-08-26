@@ -17,39 +17,22 @@
       "name" : "loadData",
       "readOnly": "true"
     },
-   
- 
     {
       "step": 2,
-      "description": "Create Model",
+      "description": "Create and Configure Model",
       "helperText": "creating a feed-forward model. We will use 5 layers with relu activation function. Function must return the model.",
       "name": "createModel",
       "readOnly": "false"
     },
     {
       "step": 3,
-      "description": "Configure Model",
-      "helperText": "edit function configureModel() by using the Tf.compile API. We will use an adam optimizer, and add correct loss function.",
-      "name" : "configureModel",
-      "readOnly": "false"
-
-    },
-    {
-      "step": 4,
       "description": "Train Model",
       "helperText": "edit function trainModel() by using the Tf.fit API. Set the following parameters: epochs, batchSize,validationData, callbacks. Hint, you may need to transform your data into tensors ",
       "name" : "trainModel",
       "readOnly": "false"
     },
-    {
-      "step": 5,
-      "description": "Cleanup",
-      "helperText": "Remove tensors used for model training ",
-      "name" : "cleanupTensors",
-      "readOnly": "true"
-    },
       {
-      "step": 6,
+      "step": 4,
       "description": "Download Model Files",
       "helperText": "Click the button to download your shiney new model. We will use this in our webapp.",
       "name" : "exportModel",

@@ -4,7 +4,7 @@
 <head>
     <title>{{ settings.metaTitle }}</title>
 
-    {{> head }}
+    {{> head link='home'}}
 
 
     <link rel="stylesheet" type="text/css" href="/styles/themes/glitch.css" />
@@ -15,9 +15,11 @@
         <div class="wrapper">
             <div class="content">
 
-                HOME
+                {{> avatar }}
+                {{> name }}
                 {{> social }}
             </div>
+            <script type="module" src="/src/pages/index/main.ts"></script>
         </div>
 
     </main>

@@ -1,4 +1,3 @@
-import type { Tensor } from '@tensorflow/tfjs';
 import * as tf from '@tensorflow/tfjs';
 
 import type { ValidationResult } from '../../../types';
@@ -9,75 +8,99 @@ export const template = `
 
 async function trainModel(
   model: LayersModel,
-  xTensor: Tensor, 
-  yTensor: Tensor, 
-  xValidateTensor: Tensor, 
-  yValidateTensor: Tensor, 
+  xTrainData: number[][], 
+  yTrainData: number[][], 
+  xValidationData: number[][], 
+  yValidationData: number[][], 
   callbacks: {
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
   },
-  numEpochs = 2
+  numEpochs = 3
 ): Promise<History> {
+
+  const xTrainTensor = tf.tensor(xTrainData);
+  const yTrainTensor = tf.tensor(yTrainData);
+  const xValidationTensor = tf.tensor(xValidationData);
+  const yValidationTensor = tf.tensor(yValidationData);
 
 
   // Since our data fits in memory, we can use the model.fit() api. 
   // https://js.tensorflow.org/api/latest/#tf.LayersModel.fit
 
-  return await model.fit( /*<InputValue>*/, /*<OutputValue>*/, {
-    epochs: numEpochs,
-    batchSize: 128,
+  const modelHistory = await model.fit( /*✨INSERT_HERE✨*/, /*✨INSERT_HERE✨*/, {
+    epochs: numEpochs, // default = 3 
+    batchSize: 128, 
     verbose: 1,
-    validationData: [/*<InputValidationValue>*/, /*<OutputValidationValue> */],
+    validationData: [/*✨INSERT_HERE✨*/, /*✨INSERT_HERE✨*/],
     callbacks: callbacks
    });
 
-   /* 
-   Under the hood, model.fit() can do a lot for us:
+   // Free up memory resources by cleaning up intermediate tensors (i.e the tensors above)
+  xTrainTensor.dispose()
+  yTrainTensor.dispose()
+  xValidationTensor.dispose()
+  yValidationTensor.dispose() 
 
-    Splits the data into a train and validation set, and uses the validation set to measure progress during training.
-    Shuffles the data but only after the split. To be safe, you should pre-shuffle the data before passing it to fit().
-    Splits the large data tensor into smaller tensors of size batchSize.
-    Calls optimizer.minimize() while computing the loss of the model with respect to the batch of data.
-    It can notify you on the start and end of each epoch or batch. In our case, we are notified at the end of every batch using the callbacks.onBatchEndoption. Other options include: onTrainBegin, onTrainEnd, onEpochBegin, onEpochEnd and onBatchBegin.
-    It yields to the main thread to ensure that tasks queued in the JS event loop can be handled in a timely manner.
-    Read more: https://www.tensorflow.org/js/guide/train_models
-   */
+  return modelHistory
 }
+
+/* 
+Under the hood, model.fit() can do a lot for us:
+
+ Splits the data into a train and validation set, and uses the validation set to measure progress during training.
+ Shuffles the data but only after the split. To be safe, you should pre-shuffle the data before passing it to fit().
+ Splits the large data tensor into smaller tensors of size batchSize.
+ Calls optimizer.minimize() while computing the loss of the model with respect to the batch of data.
+ It can notify you on the start and end of each epoch or batch. In our case, we are notified at the end of every batch using the callbacks.onBatchEndoption. Other options include: onTrainBegin, onTrainEnd, onEpochBegin, onEpochEnd and onBatchBegin.
+ It yields to the main thread to ensure that tasks queued in the JS event loop can be handled in a timely manner.
+ Read more: https://www.tensorflow.org/js/guide/train_models
+*/
 `;
 
 export const solution = `
  async function trainModelSolution(
   model: LayersModel,
-  xTensor: Tensor, 
-  yTensor: Tensor, 
-  xValidateTensor: Tensor, 
-  yValidateTensor: Tensor, 
+  xTrainData: number[][], 
+  yTrainData: number[][], 
+  xValidationData: number[][], 
+  yValidationData: number[][], 
   callbacks: {
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
   },
-  numEpochs = 2,
+  numEpochs = 3,
 ): Promise<History> {
 
-  return await model.fit(xTensor, yTensor, {
-    epochs: numEpochs,
+  const xTrainTensor = tf.tensor(xTrainData);
+  const yTrainTensor = tf.tensor(yTrainData);
+  const xValidationTensor = tf.tensor(xValidationData);
+  const yValidationTensor = tf.tensor(yValidationData);
+
+  const modelHistory = await model.fit(xTrainTensor, yTrainTensor, {
+    epochs: numEpochs, 
     batchSize: 128,
     verbose: 1,
-    validationData: [xValidateTensor, yValidateTensor],
+    validationData: [xValidationTensor, yValidationTensor],
     callbacks: callbacks
   });
 
+  xTrainTensor.dispose()
+  yTrainTensor.dispose()
+  xValidationTensor.dispose()
+  yValidationTensor.dispose() 
+  
+  return modelHistory
 }`;
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function implementation<T = (...args: any[]) => any>(
   code: string,
   model: LayersModel,
-  xTensor: Tensor,
-  yTensor: Tensor,
-  xValidateTensor: Tensor,
-  yValidateTensor: Tensor,
+  xTrainData: number[][],
+  yTrainData: number[][],
+  xValidationData: number[][],
+  yValidationData: number[][],
   callbacks: {
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
@@ -87,10 +110,10 @@ export function implementation<T = (...args: any[]) => any>(
   // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
   const wrapper = new Function(
     'model',
-    'xTensor',
-    'yTensor',
-    'xValidateTensor',
-    'yValidateTensor',
+    'xTrainData',
+    'yTrainData',
+    'xValidationData',
+    'yValidationData',
     'callbacks',
     'numEpochs',
     'tf',
@@ -99,10 +122,10 @@ export function implementation<T = (...args: any[]) => any>(
   );
   return wrapper(
     model,
-    xTensor,
-    yTensor,
-    xValidateTensor,
-    yValidateTensor,
+    xTrainData,
+    yTrainData,
+    xValidationData,
+    yValidationData,
     callbacks,
     numEpochs,
     tf,
@@ -112,10 +135,10 @@ export function implementation<T = (...args: any[]) => any>(
 
 type trainModel = (
   model: LayersModel,
-  xTensor: Tensor,
-  yTensor: Tensor,
-  xValidateTensor: Tensor,
-  yValidateTensor: Tensor,
+  xTrainData: number[][],
+  yTrainData: number[][],
+  xValidationData: number[][],
+  yValidationData: number[][],
   callbacks: {
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
@@ -126,10 +149,10 @@ type trainModel = (
 export async function validate(
   impl: trainModel,
   model: LayersModel,
-  xTensor: Tensor,
-  yTensor: Tensor,
-  xValidateTensor: Tensor,
-  yValidateTensor: Tensor,
+  xTrainData: number[][],
+  yTrainData: number[][],
+  xValidationData: number[][],
+  yValidationData: number[][],
   callbacks: {
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
@@ -140,10 +163,10 @@ export async function validate(
     // eslint-disable-next-line @typescript-eslint/await-thenable
     const history = await impl(
       model,
-      xTensor,
-      yTensor,
-      xValidateTensor,
-      yValidateTensor,
+      xTrainData,
+      yTrainData,
+      xValidationData,
+      yValidationData,
       callbacks,
       numEpochs,
     );

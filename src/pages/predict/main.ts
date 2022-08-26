@@ -1,6 +1,7 @@
 import '../../utils/fluentBootstrap';
 import './components';
 
+import { styleNavOnChange } from '../../utils/utils';
 import * as stepDefs from './steps';
 import { warmup } from './steps/helpers/extractAllJointPositions';
 import type {
@@ -10,6 +11,7 @@ import type {
   StepState,
 } from './steps/types';
 
+styleNavOnChange('predict');
 const predictionContents = document.querySelector('.predict-contents');
 const stepController = document.querySelector('step-controller');
 const nextButton = predictionContents!.querySelector('.next-button') as HTMLElement;

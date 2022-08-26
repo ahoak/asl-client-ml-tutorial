@@ -288,3 +288,21 @@ export function createUnknownValidationError(detail: string): ValidationResult {
     ],
   };
 }
+
+export function styleNavOnChange(target: string) {
+  const navElements = document.querySelector('.nav-links');
+
+  const children = navElements?.children;
+
+  if (children) {
+    for (let i = 0; i < children.length; i++) {
+      const element = children[i];
+      const id = element.id;
+      if (id === target) {
+        element.className = 'active-page';
+      } else {
+        element.className = 'inactive-page';
+      }
+    }
+  }
+}

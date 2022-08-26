@@ -45,7 +45,6 @@ export class ModelBuilder {
   #timeElement = getOrCreateElement('.training-progress-bar') as HTMLElement;
   #codeStepEles = document.querySelectorAll('code-step') as NodeListOf<CodeStepComponent>;
   #progressBarElement = getOrCreateElement('.training-progress-bar') as HTMLProgressElement;
-  #codeContainerElement = getOrCreateElement('.editor-container') as HTMLElement;
   #loadDataDescElement = getOrCreateElement('.load-data-description') as HTMLElement;
 
   #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;
@@ -301,12 +300,16 @@ export class ModelBuilder {
   };
 
   handleCodeToggleClick = () => {
-    if (!this.#showCode) {
-      this.#codeContainerElement.style.display = 'block';
-    } else {
-      this.#codeContainerElement.style.display = 'none';
+    if (this.#currentStep?.name) {
+      const instance = this.#stepMap[this.#currentStep?.name];
+
+      if (!this.#showCode) {
+        instance.show = true;
+      } else {
+        instance.show = false;
+      }
+      this.#showCode = !this.#showCode;
     }
-    this.#showCode = !this.#showCode;
   };
 
   async handleStepChange(name: string, readOnly = 'false') {
@@ -318,6 +321,7 @@ export class ModelBuilder {
       }
       if (name === 'loadData') {
         this.#loadDataDescElement.style.display = 'block';
+        await instance.runCachedCode();
       } else {
         this.#loadDataDescElement.style.display = 'none';
       }
@@ -358,17 +362,14 @@ export class ModelBuilder {
         this.#solutionButton.style.display = 'none';
         this.#resetButton.style.display = 'none';
         this.#showCode = false;
-        this.#codeContainerElement.style.display = 'none';
         this.#toggleCodeButton.style.display = 'inline-flex';
       } else {
         this.#solutionButton.style.display = 'inline-flex';
         this.#resetButton.style.display = 'inline-flex';
         this.#showCode = true;
-        this.#codeContainerElement.style.display = 'block';
         this.#toggleCodeButton.style.display = 'none';
       }
-      instance.show = true;
-      await instance.runCachedCode();
+      instance.show = this.#showCode;
     } else {
       console.error(`Instance of StepViewer for ${name} is not found`);
     }

@@ -47,6 +47,46 @@ async function exportModel(model: LayersModel, ArrayBufferModelSaverInstance,  d
 }
 `;
 
+export const solution = `
+// READ-ONLY
+async function exportModel(model: LayersModel, ArrayBufferModelSaverInstance,  download: (filename: string, data: string)=> void): Promise<void> {
+    // checkout https://www.tensorflow.org/js/guide/save_load for info on the async method 'save'
+    // We can save the topology and weights of a model
+    // Topology: This is a file describing the architecture of a model (i.e. what operations it uses). It contains references to the models's weights which are stored externally.
+    // Weights: These are binary files that store the weights of a given model in an efficient format. They are generally stored in the same folder as the topology.
+
+
+    // save to localstorage or downloads
+    await model.save('localstorage://model');
+
+    // custom Logic to save as zip folder
+
+    const zip = new JSZip();
+    const files = await model.save(ArrayBufferModelSaverInstance);
+    const f = files as unknown as { data: { [key: string]: ArrayBuffer } };
+  
+    Object.keys(f.data).forEach((fileName, index) => {
+      if (index === 0) {
+        zip.file(fileName, JSON.stringify(f.data[fileName]));
+      } else {
+        zip.file(fileName, f.data[fileName]);
+      }
+    });
+
+    // download to zip file for upload in part 2 of the tutorial
+
+    await zip.generateAsync({ type: 'base64' }).then(
+      function (base64) {
+        download('model.zip', base64);
+      },
+      function (error) {
+        console.warn(error);
+      },
+    );
+    
+}
+`;
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function implementation<T = (...args: any[]) => any>(
   code: string,

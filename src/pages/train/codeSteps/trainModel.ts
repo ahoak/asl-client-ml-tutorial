@@ -16,7 +16,7 @@ async function trainModel(
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
   },
-  numEpochs = 3
+  numEpochs = 5
 ): Promise<History> {
 
   const xTrainTensor = tf.tensor(xTrainData);
@@ -24,19 +24,14 @@ async function trainModel(
   const xValidationTensor = tf.tensor(xValidationData);
   const yValidationTensor = tf.tensor(yValidationData);
 
-
-  // Since our data fits in memory, we can use the model.fit() api. 
-  // https://js.tensorflow.org/api/latest/#tf.LayersModel.fit
-
   const modelHistory = await model.fit( /*✨INSERT_HERE✨*/, /*✨INSERT_HERE✨*/, {
-    epochs: numEpochs, // default = 3 
+    epochs: numEpochs, // default = 5 
     batchSize: 128, 
     verbose: 1,
     validationData: [/*✨INSERT_HERE✨*/, /*✨INSERT_HERE✨*/],
     callbacks: callbacks
    });
 
-   // Free up memory resources by cleaning up intermediate tensors (i.e the tensors above)
   xTrainTensor.dispose()
   yTrainTensor.dispose()
   xValidationTensor.dispose()
@@ -45,17 +40,6 @@ async function trainModel(
   return modelHistory
 }
 
-/* 
-Under the hood, model.fit() can do a lot for us:
-
- Splits the data into a train and validation set, and uses the validation set to measure progress during training.
- Shuffles the data but only after the split. To be safe, you should pre-shuffle the data before passing it to fit().
- Splits the large data tensor into smaller tensors of size batchSize.
- Calls optimizer.minimize() while computing the loss of the model with respect to the batch of data.
- It can notify you on the start and end of each epoch or batch. In our case, we are notified at the end of every batch using the callbacks.onBatchEndoption. Other options include: onTrainBegin, onTrainEnd, onEpochBegin, onEpochEnd and onBatchBegin.
- It yields to the main thread to ensure that tasks queued in the JS event loop can be handled in a timely manner.
- Read more: https://www.tensorflow.org/js/guide/train_models
-*/
 `;
 
 export const solution = `
@@ -77,6 +61,9 @@ export const solution = `
   const xValidationTensor = tf.tensor(xValidationData);
   const yValidationTensor = tf.tensor(yValidationData);
 
+
+  // Since our data fits in memory, we can use the model.fit() api. 
+  // https://js.tensorflow.org/api/latest/#tf.LayersModel.fit
   const modelHistory = await model.fit(xTrainTensor, yTrainTensor, {
     epochs: numEpochs, 
     batchSize: 128,
@@ -84,14 +71,30 @@ export const solution = `
     validationData: [xValidationTensor, yValidationTensor],
     callbacks: callbacks
   });
-
+  
+  // Free up memory resources by cleaning up intermediate tensors (i.e the tensors above)
   xTrainTensor.dispose()
   yTrainTensor.dispose()
   xValidationTensor.dispose()
   yValidationTensor.dispose() 
   
   return modelHistory
-}`;
+}
+
+/* 
+Under the hood, model.fit() can do a lot for us:
+
+ Splits the data into a train and validation set, and uses the validation set to measure progress during training.
+ Shuffles the data but only after the split. To be safe, you should pre-shuffle the data before passing it to fit().
+ Splits the large data tensor into smaller tensors of size batchSize.
+ Calls optimizer.minimize() while computing the loss of the model with respect to the batch of data.
+ It can notify you on the start and end of each epoch or batch. In our case, we are notified at the end of every batch using the callbacks.onBatchEndoption. Other options include: onTrainBegin, onTrainEnd, onEpochBegin, onEpochEnd and onBatchBegin.
+ It yields to the main thread to ensure that tasks queued in the JS event loop can be handled in a timely manner.
+ Read more: https://www.tensorflow.org/js/guide/train_models
+*/
+
+
+`;
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function implementation<T = (...args: any[]) => any>(

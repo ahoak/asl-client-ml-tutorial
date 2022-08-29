@@ -15,7 +15,7 @@
       "description": "Load Data",
       "helperText": "Load preprocessed data by pressing the button",
       "name" : "loadData",
-      "readOnly": "true"
+      "readOnly": "false"
     },
     {
       "step": 2,
@@ -36,7 +36,7 @@
       "description": "Download Model Files",
       "helperText": "Click the button to download your shiney new model. We will use this in our webapp.",
       "name" : "exportModel",
-      "readOnly": "true"
+      "readOnly": "false"
     }
   ],
   "predictSteps": [{

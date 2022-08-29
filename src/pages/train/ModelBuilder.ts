@@ -54,6 +54,7 @@ export class ModelBuilder {
   #startTrainingButton = getOrCreateElement('.training-start-button') as HTMLButtonElement;
   #downloadButton = getOrCreateElement('.download-button') as HTMLButtonElement;
   #toggleCodeButton = getOrCreateElement('.toggle-code-button') as HTMLButtonElement;
+  #solveButton = getOrCreateElement('.solve-button') as HTMLButtonElement;
 
   #trainingEnabled = true;
   #trainingComplete = false;
@@ -69,7 +70,7 @@ export class ModelBuilder {
     this.#epochs = options?.epochs ?? DefaultEpoch;
   }
 
-  init() {
+  async init() {
     this.#actionButton.disabled = true;
     this.#actionButton.onclick = this.handleNextButtonClick;
     this.#solutionButton.onclick = this.handleSolutionButtonClick;
@@ -78,8 +79,9 @@ export class ModelBuilder {
     this.#startTrainingButton.onclick = this.handlestartTrainingClick;
     this.#downloadButton.onclick = this.handleDownloadClick;
     this.#toggleCodeButton.onclick = this.handleCodeToggleClick;
+    this.#solveButton.onclick = this.handleSolveClick;
     this.mapCodeSteps();
-    // await this.setCurrentStep(1);
+    await this.setCurrentStep(1);
   }
 
   mapCodeSteps() {
@@ -106,6 +108,7 @@ export class ModelBuilder {
     this.#codeStepEles.forEach((codeStep: CodeStepComponent) => {
       const name = codeStep.getAttribute('name') ?? '';
       const step = codeStep.getAttribute('step') ?? '';
+
       const stepDef = codeSteps[name];
       if (name && stepDef) {
         const stepImpl = stepImpls[name];
@@ -129,6 +132,8 @@ export class ModelBuilder {
           case 'loadData':
             StepViewerInstance.funcInput = [loadTensors, assetURL];
             StepViewerInstance.on(Validated, this.handleDataSplitValidation);
+            StepViewerInstance.setCodeFromCacheOrDefault();
+
             break;
           case 'createModel':
             StepViewerInstance.funcInput = [tf, classes];
@@ -141,10 +146,10 @@ export class ModelBuilder {
             break;
         }
 
-        StepViewerInstance.on('validationInProgress', this.handleValidationStarted);
+        // StepViewerInstance.on('validationInProgress', this.handleValidationStarted);
         StepViewerInstance.on('validationComplete', this.handleValidationComplete);
       } else {
-        console.error('Expected code-step to have a step attribute!');
+        // console.error('Expected code-step to have a step attribute!');
       }
     });
   }
@@ -176,6 +181,14 @@ export class ModelBuilder {
     const name = this.#currentStep?.name ?? '';
     const currentInstance = this.#stepMap[name];
     currentInstance.resetCodeToDefault();
+  };
+
+  handleSolveClick = () => {
+    const name = this.#currentStep?.name ?? '';
+    const currentInstance = this.#stepMap[name];
+    if (currentInstance) {
+      currentInstance.solve();
+    }
   };
 
   handleStopTrainingClick = () => {
@@ -361,11 +374,13 @@ export class ModelBuilder {
         // hide solution/reset buttons
         this.#solutionButton.style.display = 'none';
         this.#resetButton.style.display = 'none';
+        this.#solveButton.style.display = 'none';
         this.#showCode = false;
         this.#toggleCodeButton.style.display = 'inline-flex';
       } else {
         this.#solutionButton.style.display = 'inline-flex';
         this.#resetButton.style.display = 'inline-flex';
+        this.#solveButton.style.display = 'inline-flex';
         this.#showCode = true;
         this.#toggleCodeButton.style.display = 'none';
       }

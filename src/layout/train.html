@@ -24,12 +24,7 @@
     </div>
 
   </div>
-  <div class="output-container">
-    <p id="output-element"></p>
-    <div class="loading-element">
-      <fluent-progress-ring></fluent-progress-ring>
-    </div>
-  </div>
+
   <p id="validation-status"></p>
   <div class="training-feedback-container">
   </div>
@@ -46,20 +41,20 @@
       <li>Split data into a training set and validation set.</li>
     </ol>
   </div>
+  <div class="bottom-button-container">
+    <fluent-button class="reset-button" style="display: none;">Reset</fluent-button>
+    <fluent-button class="solve-button" style="display: none;">Solve</fluent-button>
+    <fluent-button class="view-solution-button" style="display: none;">View solution</fluent-button>
+
+  </div>
   {{#if settings.trainTutorialSteps}}
   <fluent-button class="toggle-code-button" style="display: none;">Toggle Code</fluent-button>
   {{#each settings.trainTutorialSteps}}
   <code-step name="{{this.name}}" step="{{this.step}}" code="function step{{this.step}}() {}" style="display: none;"
-    read-only="{{this.readOnly}}"></code-step>
+    allow-background-execution="true"></code-step>
   {{/each}}
   {{/if}}
 
-
-
-  <div class="bottom-button-container">
-    <fluent-button class="view-solution-button" style="display: none;">View solution</fluent-button>
-    <fluent-button class="reset-button" style="display: none;">Reset</fluent-button>
-  </div>
 
   {{#if settings.trainTutorialSteps}}
   {{#each settings.trainTutorialSteps}}

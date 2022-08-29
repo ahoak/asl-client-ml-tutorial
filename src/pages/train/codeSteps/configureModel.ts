@@ -11,12 +11,6 @@ export const template = `
 
  */
 function configureModel(model: LayersModel):LayersModel {
-  // Configures and prepares the model for training and evaluation. Compiling outfits the model with an optimizer, loss, and/or metrics
-  
-  // Optimizer: The job of the optimizer is to decide how much to change each parameter in the model, given the current model prediction.
-  // Loss Function: Its goal is to give a single number for "how wrong" the model's prediction was. The loss is computed on every batch of data so that the model can update its weights.
-  // List of Metrics: Similar to losses, metrics compute a single number, summarizing how well our model is doing. The metrics are usually computed on the whole data at the end of each epoch
- 
   model.compile({
     // Adam changes the learning rate over time which is useful.
     // https://js.tensorflow.org/api/latest/#Training-Optimizers
@@ -40,6 +34,11 @@ export const solution = `
   
    */
   function configureModelSolution(model: LayersModel):LayersModel {
+    // Configures and prepares the model for training and evaluation. Compiling outfits the model with an optimizer, loss, and/or metrics
+  
+    // Optimizer: The job of the optimizer is to decide how much to change each parameter in the model, given the current model prediction.
+    // Loss Function: Its goal is to give a single number for "how wrong" the model's prediction was. The loss is computed on every batch of data so that the model can update its weights.
+    // List of Metrics: Similar to losses, metrics compute a single number, summarizing how well our model is doing. The metrics are usually computed on the whole data at the end of each epoch
       model.compile({
         optimizer: tf.train.adam(0.001),
         loss: 'categoricalCrossentropy',

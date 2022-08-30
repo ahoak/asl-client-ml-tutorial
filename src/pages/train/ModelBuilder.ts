@@ -315,7 +315,7 @@ export class ModelBuilder {
     const instance = this.#stepMap[name];
     if (instance) {
       const instructionsContainer = getOrCreateElement(`#${name}-image`) as HTMLElement;
-      instructionsContainer.style.display = 'inline-flex';
+      instructionsContainer.style.display = 'flex';
       instance.setCodeFromCacheOrDefault();
       if (readOnly) {
         instance.readonly = readOnly === 'true';

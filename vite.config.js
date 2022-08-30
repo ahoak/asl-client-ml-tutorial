@@ -9,7 +9,7 @@ const Settings = require('./settings.json');
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
-  const base = process.env.APP_BASE_URL || '/'
+  const base = process.env.APP_BASE_URL || '/';
   return {
     resolve: {
       alias: {
@@ -26,6 +26,9 @@ export default defineConfig(async () => {
 
         // context: { settings: Settings },
         context: (pagePath) => {
+          Settings['trainTutorialSteps'].forEach((element) => {
+            element.baseUrl = base;
+          });
           return { baseUrl: base, settings: Settings };
         },
 

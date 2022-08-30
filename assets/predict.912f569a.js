@@ -443,6 +443,8 @@ should be:<br />
 								<li>Normalize the flattened joint positions so that their values are scaled from -1 to\r
 									1.</li>\r
 							</ol>\r
+\r
+							<!-- <image src="/instructions/extractJointPositions.png" width=" 900px" /> -->\r
 						</div>\r
 					</fluent-card>\r
 				</fluent-tab-panel>\r

@@ -53,6 +53,7 @@ export async function loadTensors(zipFolder: JSZip) {
               (i + 1) * numComponents,
             ) as unknown as number[];
             const tensor = Array.from(joints);
+            data.push(tensor);
             // Also push the mirror
             const mirror = tensor.slice(0) as number[];
             const wristX = mirror[0] as number;

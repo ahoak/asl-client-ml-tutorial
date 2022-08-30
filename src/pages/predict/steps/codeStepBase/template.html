@@ -30,7 +30,6 @@
 	.solution-editor::part(main) {
 		margin-top: 5px;
 	}
-
 </style>
 <div class="root">
 	<step-container class="step-container">
@@ -48,7 +47,35 @@
 			<div class="bottom-button-container">
 				<fluent-button class="toggle-solution-button">Toggle Solution</fluent-button>
 			</div>
-			<code-editor style="display: none;" code="function test() {}" readonly hide-issues class="solution-editor"></code-editor>
+			<code-editor style="display: none;" code="function test() {}" readonly hide-issues class="solution-editor">
+			</code-editor>
 		</div>
 	</step-container>
 </div>
+
+
+
+
+
+
+<!-- <fluent-tabs activeid="code-tab" class="fluent-tab-container">
+			<fluent-tab id="code-tab">Code</fluent-tab>
+			<fluent-tab id="solution-tab">Solution</fluent-tab>
+			<fluent-tab id="instructions-tab">Instructions</fluent-tab>
+			<fluent-tab-panel id="codePanel">
+				<div class="editor-container">
+					<code-editor hide-issues class="code-editor"></code-editor>
+				</div>
+			</fluent-tab-panel>
+			<fluent-tab-panel id="solutionPanel">
+				<div class="solution-container">
+
+					<code-editor code="function test() {}" readonly hide-issues class="solution-editor">
+					</code-editor>
+				</div>
+
+			</fluent-tab-panel>
+			<fluent-tab-panel id="instructionPanel">
+
+			</fluent-tab-panel>
+		</fluent-tabs> -->

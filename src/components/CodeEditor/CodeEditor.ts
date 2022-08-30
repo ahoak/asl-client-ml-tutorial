@@ -190,8 +190,9 @@ export class CodeEditorComponent extends BaseComponent {
     let lastCode: string | null = null;
     let lastTranspiledCode: string | null = null;
     let lastMarkerKey: string | null = null;
+
     this.#model!.onDidChangeDecorations(async () => {
-      if (this.#isVisibleOnScreen || this.#allowBackgroundExecution) {
+      if (this.#allowBackgroundExecution || this.#isVisibleOnScreen) {
         const markers = this.#monaco!.editor.getModelMarkers({
           resource: this.#model!.uri,
         });

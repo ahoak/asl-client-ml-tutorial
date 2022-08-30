@@ -6,40 +6,27 @@ import { classes } from '../../../utils/constants';
 import { createIncompleteImplValidationError } from '../../../utils/utils';
 
 export const template = `
-// Create a feed-forward model using the tf.sequential (https://js.tensorflow.org/api/latest/#sequential)
 function createModel(classes: string[]):LayersModel {
  
-  // Step 1: Create Model
   const model = tf.sequential({
     layers: [
-      // Fill in the inputShape and units (hint this is equal to mediapipe hands output per image = 63)
-      // Want to play with other activation functions, go for it! 
+ 
       tf.layers.dense({ inputShape: [/*✨INSERT_HERE✨*/], units: /*✨INSERT_HERE✨*/, activation: 'relu' }),
 
-      // Fill in units (nuerons) in range 100-300
       tf.layers.dense({ units: /*✨INSERT_HERE✨*/, activation: 'relu' }),
 
-      // Add a final dense layer wtih number of nuerons equal to classes (i.e classes.length )
       tf.layers.dense({ units: /*✨INSERT_HERE✨*/, activation: 'softmax' }),
     ],
   });
 
-  // Step 2: Configure Model
   model.compile({
-    // Adam changes the learning rate over time which is useful.
-    // https://js.tensorflow.org/api/latest/#Training-Optimizers
-    optimizer:  /*✨INSERT_HERE✨*/, //optimizer options: 'sgd', 'momentum', 'adagrad', 'ada', 'adam', 'adamax', 'rmsprop'
 
-    // Use the correct loss function. https://js.tensorflow.org/api/latest/#Training-Losses
-    // If 2 classes of data, use 'binaryCrossentropy' else use 'categoricalCrossentropy' if more than 2 classes and output of our model is a probability distribution.
+    optimizer:  /*✨INSERT_HERE✨*/, 
+
     loss:  /*✨INSERT_HERE✨*/,
-    // As this is a classification problem you can record accuracy in the logs too!
+
     metrics: ['accuracy'],
   });
-
-
-  /* Uncomment below statement to check the output. */
-  // console.log(model.summary())
 
   return model;
 }
@@ -47,18 +34,58 @@ function createModel(classes: string[]):LayersModel {
 
 export const solution = `
 function createModelSolution(classes: string[]):LayersModel {
-  // Create a feed-forward model
+  // Create a feed-forward model using the tf.sequential (https://js.tensorflow.org/api/latest/#sequential)
   const model = tf.sequential({
     layers: [
+      // Fill in the inputShape and units (hint this is equal to mediapipe hands output per image = 63)
+      // Want to play with other activation functions, go for it!
       tf.layers.dense({ inputShape: [63], units: 63, activation: 'relu' }),
+      // Fill in units (nuerons) in range 100-300
       tf.layers.dense({ units: 256, activation: 'relu' }),
+      // Add a final dense layer wtih number of nuerons equal to classes (i.e classes.length )
       tf.layers.dense({ units: classes.length, activation: 'softmax' }),
     ],
   });
 
   model.compile({
-    optimizer: 'adam',
+    // Adam changes the learning rate over time which is useful.
+    // https://js.tensorflow.org/api/latest/#Training-Optimizers
+    optimizer: 'adam', //optimizer options: 'sgd', 'momentum', 'adagrad', 'ada', 'adam', 'adamax', 'rmsprop'
+
+    // Use the correct loss function. https://js.tensorflow.org/api/latest/#Training-Losses
+    // If 2 classes of data, use 'binaryCrossentropy' else use 'categoricalCrossentropy' if more than 2 classes and output of our model is a probability distribution.
     loss: 'categoricalCrossentropy',
+    // As this is a classification problem you can record accuracy in the logs too!
+    metrics: ['accuracy'],
+  });
+
+  /* Uncomment below statement to check the output. */
+  // console.log(model.summary())
+
+  return model;
+}`;
+
+export const solve = `
+function createModel(classes: string[]):LayersModel {
+
+  const model = tf.sequential({
+
+    layers: [
+
+      tf.layers.dense({ inputShape: [63], units: 63, activation: 'relu' }),
+
+      tf.layers.dense({ units: 256, activation: 'relu' }),
+
+      tf.layers.dense({ units: classes.length, activation: 'softmax' }),
+    ],
+  });
+
+  model.compile({
+  
+    optimizer: 'adam', 
+
+    loss: 'categoricalCrossentropy',
+    
     metrics: ['accuracy'],
   });
 

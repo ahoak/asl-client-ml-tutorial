@@ -47,8 +47,10 @@ export class StepViewer {
   set show(state: boolean) {
     if (state) {
       this.#element.setAttribute('style', 'display: flex;width: 100%;height:calc(100vw / 2)');
+      this.showSolution(true);
     } else {
       this.#element.setAttribute('style', 'display:none;');
+      this.showSolution(false);
     }
   }
 
@@ -70,6 +72,10 @@ export class StepViewer {
     this.#element.setAttribute('code', value);
   }
 
+  set allowBackgroundExecution(value: boolean) {
+    this.#element.toggleAttribute('allow-background-execution', value);
+  }
+
   set readonly(value: boolean) {
     this.#element.toggleAttribute('readonly', value);
   }
@@ -84,6 +90,10 @@ export class StepViewer {
     localStorage.removeItem(`build-ts:${this.#name}`);
     this.#transpiledCode = null;
     this.#isValid = false;
+  }
+
+  solve() {
+    this.code = this.#stepRecord.solve ?? this.#stepRecord.solution;
   }
 
   on<E extends keyof Events>(
@@ -121,7 +131,9 @@ export class StepViewer {
   }
 
   setCodeFromCacheOrDefault() {
-    this.code = localStorage.getItem(`build:${this.#name}`) ?? this.#stepRecord.template;
+    const storedValue = localStorage.getItem(`build:${this.#name}`);
+    const code = storedValue && storedValue.length > 0 ? storedValue : this.#stepRecord.template;
+    this.code = code;
   }
 
   async runCachedCode() {

@@ -58,6 +58,11 @@ export abstract class CodeStepBaseComponent<
   #solutionEditorEle: HTMLElement | null = null;
 
   /**
+   * The solve button
+   */
+  #solveButton: HTMLElement | null = null;
+
+  /**
    * The internal step state (DONT USE DIRECTLY)
    */
   #__stepState: StateType;
@@ -229,6 +234,13 @@ export abstract class CodeStepBaseComponent<
     this.#solutionEditorEle = this.root.querySelector('.solution-editor');
     this.#toggleSolutionButton = this.root.querySelector('.toggle-solution-button');
     this.#toggleCodeButton = this.root.querySelector('.toggle-code-button');
+    this.#solveButton = this.root.querySelector('.solve-button');
+    if (!this.readonly && this.#codeEditor && this.#solveButton && this.solutionCode) {
+      this.#solveButton.style.display = this.solutionVisible ? '' : 'none';
+      this.#solveButton.addEventListener('click', () => {
+        this.#codeEditor?.setAttribute('code', this.solutionCode!);
+      });
+    }
     if (this.solutionCode) {
       this.#solutionEditorEle?.setAttribute('code', this.solutionCode);
       this.#toggleSolutionButton?.addEventListener('click', () => {

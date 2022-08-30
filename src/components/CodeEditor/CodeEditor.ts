@@ -3,6 +3,7 @@ import '../IssueDisplay';
 import type { Position } from 'monaco-editor';
 import { MarkerSeverity } from 'monaco-editor';
 
+import { fastDebounce } from '../../utils/utils';
 import BaseComponent from '../BaseComponent';
 import template from './template.html?raw';
 import type { CodeEditorChangeEventArgs, CodeHints, CodeIssue, CodeIssueType } from './types';
@@ -113,11 +114,7 @@ export class CodeEditorComponent extends BaseComponent {
     if (this.#__isVisibleOnScreen !== value) {
       this.#__isVisibleOnScreen = value;
       this.#editor?.updateOptions({ readOnly: this.readOnly, domReadOnly: this.readOnly });
-      if (value) {
-        this.#model?.setValue(this.#placeholder ?? '');
-      } else {
-        this.#model?.setValue('');
-      }
+      this.#model?.setValue(this.#placeholder ?? '');
     }
   }
 
@@ -191,45 +188,94 @@ export class CodeEditorComponent extends BaseComponent {
     let lastTranspiledCode: string | null = null;
     let lastMarkerKey: string | null = null;
 
-    this.#model!.onDidChangeDecorations(async () => {
-      if (this.#allowBackgroundExecution || this.#isVisibleOnScreen) {
-        const markers = this.#monaco!.editor.getModelMarkers({
-          resource: this.#model!.uri,
-        });
-        const code = this.#model!.getValue() ?? '';
-        const newMarkerKey = markers
-          .map(
-            (n) => `${n.severity}:${n.resource.toString()}:${n.startLineNumber}:${n.startColumn}`,
-          )
-          .join(',');
-        const transpiledCode = (await tsWorker.getEmitOutput(`${this.#model!.uri.toString()}`))
-          .outputFiles[0].text;
-        if (
-          code !== lastCode ||
-          newMarkerKey !== lastMarkerKey ||
-          transpiledCode !== lastTranspiledCode
-        ) {
-          lastMarkerKey = newMarkerKey;
-          lastCode = code;
-          lastTranspiledCode = transpiledCode;
+    this.#model!.onDidChangeContent(
+      fastDebounce(async () => {
+        if (this.#allowBackgroundExecution || this.#isVisibleOnScreen) {
+          const code = this.#model!.getValue() ?? '';
+          const fileName = `${this.#model!.uri.toString()}`;
+          const transpiledCode = (await tsWorker.getEmitOutput(fileName)).outputFiles[0].text;
 
-          this.#currentCode = code;
+          // eslint-disable-next-line @essex/adjacent-await
+          const [semanticErrors, syntacticErrors] = await Promise.all([
+            await tsWorker.getSemanticDiagnostics(fileName),
+            await tsWorker.getSyntacticDiagnostics(fileName),
+          ]);
+          const markers = semanticErrors.concat(syntacticErrors).map((n) => {
+            const pos = (n.start != null && this.#model?.getPositionAt(n.start)) || {
+              lineNumber: -1,
+              column: -1,
+            };
+            return {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              type: (n.category === 1 ? 'error' : 'hint') as any,
+              startLineNumber: pos.lineNumber,
+              startColumn: pos.column,
+              message: `${n.messageText}`,
+            };
+          });
 
-          // Update our code attributes to match the newest code in the editors
-          this.setAttribute('code', code);
-          this.setAttribute('transpiled-code', transpiledCode);
+          const newMarkerKey = markers
+            .map((n) => `${n.type}:${n.startLineNumber}:${n.startColumn}`)
+            .join(',');
+          if (
+            code !== lastCode ||
+            transpiledCode !== lastTranspiledCode ||
+            newMarkerKey !== lastMarkerKey
+          ) {
+            lastCode = code;
+            lastTranspiledCode = transpiledCode;
+            lastMarkerKey = newMarkerKey;
 
-          // Grab the issues from the editor
-          const issues = markers.map((n) => ({
-            type: this.#getIssueTypeFromSeverity(n.severity)!,
-            startLineNumber: n.startLineNumber,
-            startColumn: n.startColumn,
-            message: n.message,
-          }));
-          this.#emitChangeEvent(code, transpiledCode, issues);
+            this.#currentCode = code;
+
+            // Update our code attributes to match the newest code in the editors
+            this.setAttribute('code', code);
+            this.setAttribute('transpiled-code', transpiledCode);
+            this.#emitChangeEvent(code, transpiledCode, markers);
+          }
         }
-      }
-    });
+      }, 500),
+    );
+
+    // this.#model!.onDidChangeDecorations(async () => {
+    //   if (this.#allowBackgroundExecution || this.#isVisibleOnScreen) {
+    //     const markers = this.#monaco!.editor.getModelMarkers({
+    //       resource: this.#model!.uri,
+    //     });
+    //     const code = this.#model!.getValue() ?? '';
+    //     const newMarkerKey = markers
+    //       .map(
+    //         (n) => `${n.severity}:${n.resource.toString()}:${n.startLineNumber}:${n.startColumn}`,
+    //       )
+    //       .join(',');
+    //     const transpiledCode = (await tsWorker.getEmitOutput(`${this.#model!.uri.toString()}`))
+    //       .outputFiles[0].text;
+    //     if (
+    //       code !== lastCode ||
+    //       newMarkerKey !== lastMarkerKey ||
+    //       transpiledCode !== lastTranspiledCode
+    //     ) {
+    //       lastMarkerKey = newMarkerKey;
+    //       lastCode = code;
+    //       lastTranspiledCode = transpiledCode;
+
+    //       this.#currentCode = code;
+
+    //       // Update our code attributes to match the newest code in the editors
+    //       this.setAttribute('code', code);
+    //       this.setAttribute('transpiled-code', transpiledCode);
+
+    //       // Grab the issues from the editor
+    //       const issues = markers.map((n) => ({
+    //         type: this.#getIssueTypeFromSeverity(n.severity)!,
+    //         startLineNumber: n.startLineNumber,
+    //         startColumn: n.startColumn,
+    //         message: n.message,
+    //       }));
+    //       this.#emitChangeEvent(code, transpiledCode, issues);
+    //     }
+    //   }
+    // });
 
     // Update the model with the current code
     this.#model!.setValue(

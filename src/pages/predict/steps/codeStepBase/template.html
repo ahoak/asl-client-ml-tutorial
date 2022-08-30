@@ -1,81 +1,67 @@
 <style>
-	[slot="success"] {
-		font-weight: bold;
-	}
+  [slot='success'] {
+    font-weight: bold;
+  }
 
-	.editor-container {
-		width: 100%;
-		height: 600px;
-	}
+  .editor-container {
+    width: 100%;
+    height: 600px;
+  }
 
-	step-container::part(main) {
-		/* max-width: 500px; */
-		width: 80vw;
-	}
+  step-container::part(main) {
+    /* max-width: 500px; */
+    width: 80vw;
+  }
 
-	.editor-container code-editor::part(main) {
-		/* fills editor-container */
-		height: 100%;
-	}
+  .editor-container code-editor::part(main) {
+    /* fills editor-container */
+    height: 100%;
+  }
 
-	.solution-editor::part(main) {
-		margin-top: 5px;
-	}
+  .solution-editor::part(main) {
+    margin-top: 5px;
+  }
 
-	.solution-container code-editor::part(main) {
-		/* fills editor-container */
-		height: 600px;
-	}
+  .solution-container code-editor::part(main) {
+    /* fills editor-container */
+    height: 600px;
+  }
 
-	.solution-editor::part(main) {
-		margin-top: 5px;
-	}
+  .solution-editor::part(main) {
+    margin-top: 5px;
+  }
 </style>
 <div class="root">
-	<step-container class="step-container">
-		<div slot="name"></div>
-		<div slot="buttons-top">
-			<fluent-button class="toggle-code-button">Toggle Code</fluent-button>
-		</div>
-		<div class="editor-container">
-			<code-editor hide-issues class="code-editor"></code-editor>
-		</div>
-		<slot slot="success" name="success">
-			<div class="success-message">Great job! Looks Good 👍.</div>
-		</slot>
-		<div slot="buttons-bottom" class="solution-container">
-			<div class="bottom-button-container">
-				<fluent-button class="toggle-solution-button">Toggle Solution</fluent-button>
-			</div>
-			<code-editor style="display: none;" code="function test() {}" readonly hide-issues class="solution-editor">
-			</code-editor>
-		</div>
-	</step-container>
+  <step-container class="step-container">
+    <div slot="name"></div>
+    <div slot="buttons-top">
+      <fluent-button class="solve-button">Solve</fluent-button>
+    </div>
+    <fluent-tabs activeid="code-tab" class="fluent-tab-container">
+      <fluent-tab id="code-tab">Code</fluent-tab>
+      <fluent-tab id="solution-tab">Solution</fluent-tab>
+      <fluent-tab id="instructions-tab">Instructions</fluent-tab>
+      <fluent-tab-panel id="codePanel">
+        <div class="editor-container">
+          <code-editor hide-issues class="code-editor"></code-editor>
+        </div>
+      </fluent-tab-panel>
+      <fluent-tab-panel id="solutionPanel">
+        <div class="solution-container">
+          <code-editor
+            code="function test() {}"
+            readonly
+            hide-issues
+            class="solution-editor"
+          ></code-editor>
+        </div>
+      </fluent-tab-panel>
+      <fluent-tab-panel id="instructionPanel">
+        <slot name="instructions"></slot>
+      </fluent-tab-panel>
+    </fluent-tabs>
+    <slot slot="success" name="success">
+      <div class="success-message">Great job! Looks Good 👍.</div>
+    </slot>
+  </step-container>
 </div>
-
-
-
-
-
-
-<!-- <fluent-tabs activeid="code-tab" class="fluent-tab-container">
-			<fluent-tab id="code-tab">Code</fluent-tab>
-			<fluent-tab id="solution-tab">Solution</fluent-tab>
-			<fluent-tab id="instructions-tab">Instructions</fluent-tab>
-			<fluent-tab-panel id="codePanel">
-				<div class="editor-container">
-					<code-editor hide-issues class="code-editor"></code-editor>
-				</div>
-			</fluent-tab-panel>
-			<fluent-tab-panel id="solutionPanel">
-				<div class="solution-container">
-
-					<code-editor code="function test() {}" readonly hide-issues class="solution-editor">
-					</code-editor>
-				</div>
-
-			</fluent-tab-panel>
-			<fluent-tab-panel id="instructionPanel">
-
-			</fluent-tab-panel>
-		</fluent-tabs> -->

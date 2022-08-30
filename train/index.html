@@ -15,14 +15,14 @@
     
     <meta name="theme-color" content="#9480FF" />
     
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/asl-client-ml-tutorial/manifest.json">
     <script>
     
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-          .then(reg => console.log('Service Worker registered', reg))
-          .catch(err => console.error('Service Worker **not** registered', err));
-      }
+      // if ('serviceWorker' in navigator) {
+      //   navigator.serviceWorker.register('sw.js')
+      //     .then(reg => console.log('Service Worker registered', reg))
+      //     .catch(err => console.error('Service Worker **not** registered', err));
+      // }
     
     </script>
     <div class="nav-links">
@@ -32,9 +32,9 @@
     
     </div>
     <link rel="stylesheet" type="text/css" href="/asl-client-ml-tutorial/styles/themes/glitch.css" />
-  <script type="module" crossorigin src="/asl-client-ml-tutorial/assets/train.70e3f1f2.js"></script>
+  <script type="module" crossorigin src="/asl-client-ml-tutorial/assets/train.fd075c52.js"></script>
   <link rel="modulepreload" crossorigin href="/asl-client-ml-tutorial/assets/utils.83332e14.js">
-  <link rel="modulepreload" crossorigin href="/asl-client-ml-tutorial/assets/VideoStreamViewer.7d897889.js">
+  <link rel="modulepreload" crossorigin href="/asl-client-ml-tutorial/assets/VideoStreamViewer.93f665a4.js">
   <link rel="stylesheet" href="/asl-client-ml-tutorial/assets/VideoStreamViewer.c1b5c374.css">
 </head>
 
@@ -76,53 +76,70 @@
                     </div>
                 
                   </div>
-                  <div class="output-container">
-                    <p id="output-element"></p>
-                    <div class="loading-element">
-                      <fluent-progress-ring></fluent-progress-ring>
-                    </div>
-                  </div>
+                
                   <p id="validation-status"></p>
                   <div class="training-feedback-container">
                   </div>
-                  <div class="load-data-description">
-                    <h3 class="description-header">Basic Process</h3>
-                    <ol>
-                      <li>Use the Mediapipe model to extract the set of joint positions of each image in the dataset.</li>
-                      <li>Flatten the joint positions into an array of values with the format:
-                        <code>[joint1_x, joint1_y, joint1_z, ..., jointN_x, jointN_y, jointN_z]</code>
-                      </li>
-                      <li>Normalize the flattened joint positions so that their values are scaled from -1 to 1.</li>
-                      <li>Shuffle the data.</li>
-                      <li>Use one-hot encoding to transform letter labels (i.e. 'A', 'B', 'C') to a machine-friendly data format.</li>
-                      <li>Split data into a training set and validation set.</li>
-                    </ol>
-                  </div>
-                  <fluent-button class="toggle-code-button" style="display: none;">Toggle Code</fluent-button>
-                  <code-step name="loadData" step="1" code="function step1() {}" style="display: none;"
-                    read-only="true"></code-step>
-                  <code-step name="createModel" step="2" code="function step2() {}" style="display: none;"
-                    read-only="false"></code-step>
-                  <code-step name="trainModel" step="3" code="function step3() {}" style="display: none;"
-                    read-only="false"></code-step>
-                  <code-step name="exportModel" step="4" code="function step4() {}" style="display: none;"
-                    read-only="true"></code-step>
-                
-                
                 
                   <div class="bottom-button-container">
-                    <fluent-button class="view-solution-button" style="display: none;">View solution</fluent-button>
                     <fluent-button class="reset-button" style="display: none;">Reset</fluent-button>
+                    <fluent-button class="solve-button" style="display: none;">Solve</fluent-button>
                   </div>
                 
-                  <code-step name="loadData-solution" step="11" code="function step11() {}"
-                    style="display: none;" read-only="true"></code-step>
-                  <code-step name="createModel-solution" step="21" code="function step21() {}"
-                    style="display: none;" read-only="true"></code-step>
-                  <code-step name="trainModel-solution" step="31" code="function step31() {}"
-                    style="display: none;" read-only="true"></code-step>
-                  <code-step name="exportModel-solution" step="41" code="function step41() {}"
-                    style="display: none;" read-only="true"></code-step>
+                
+                  <fluent-tabs activeid="code-tab" class="fluent-tab-container">
+                    <fluent-tab id="code-tab">Code</fluent-tab>
+                    <fluent-tab id="solution-tab">Solution</fluent-tab>
+                    <fluent-tab id="instructions-tab">Instructions</fluent-tab>
+                    <fluent-tab-panel id="codePanel">
+                
+                      <code-step name="loadData" step="1" code="function step1() {}" style="display: none;"
+                        allow-background-execution></code-step>
+                      <code-step name="createModel" step="2" code="function step2() {}" style="display: none;"
+                        allow-background-execution></code-step>
+                      <code-step name="trainModel" step="3" code="function step3() {}" style="display: none;"
+                        allow-background-execution></code-step>
+                      <code-step name="exportModel" step="4" code="function step4() {}" style="display: none;"
+                        allow-background-execution></code-step>
+                
+                    </fluent-tab-panel>
+                    <fluent-tab-panel id="solutionPanel">
+                      <code-step name="loadData-solution" step="11" code="function step11() {}"
+                        style="display: none;" read-only="true"></code-step>
+                      <code-step name="createModel-solution" step="21" code="function step21() {}"
+                        style="display: none;" read-only="true"></code-step>
+                      <code-step name="trainModel-solution" step="31" code="function step31() {}"
+                        style="display: none;" read-only="true"></code-step>
+                      <code-step name="exportModel-solution" step="41" code="function step41() {}"
+                        style="display: none;" read-only="true"></code-step>
+                
+                    </fluent-tab-panel>
+                    <fluent-tab-panel id="instructionPanel">
+                      <fluent-card>
+                        <div class="load-data-description">
+                          <image src="/instructions/loadData.png" height="600px" />
+                          <!-- <h3 class=" description-header">Basic Process</h3>
+                            <ol>
+                              <li>Use the Mediapipe model to extract the set of joint positions of each image in the dataset.</li>
+                              <li>Flatten the joint positions into an array of values with the format:
+                                <code>[joint1_x, joint1_y, joint1_z, ..., jointN_x, jointN_y, jointN_z]</code>
+                              </li>
+                              <li>Normalize the flattened joint positions so that their values are scaled from -1 to 1.</li>
+                              <li>Shuffle the data.</li>
+                              <li>Use one-hot encoding to transform letter labels (i.e. 'A', 'B', 'C') to a machine-friendly data
+                                format.
+                              </li>
+                              <li>Split data into a training set and validation set.</li>
+                            </ol> -->
+                        </div>
+                      </fluent-card>
+                    </fluent-tab-panel>
+                  </fluent-tabs>
+                
+                
+                
+                
+                
                 
                 
                   <!--  -->

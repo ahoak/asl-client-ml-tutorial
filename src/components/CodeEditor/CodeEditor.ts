@@ -1,12 +1,12 @@
 import '../IssueDisplay';
 
 import type { Position } from 'monaco-editor';
-import { MarkerSeverity } from 'monaco-editor';
 
+// import { MarkerSeverity } from 'monaco-editor';
 import { fastDebounce } from '../../utils/utils';
 import BaseComponent from '../BaseComponent';
 import template from './template.html?raw';
-import type { CodeEditorChangeEventArgs, CodeHints, CodeIssue, CodeIssueType } from './types';
+import type { CodeEditorChangeEventArgs, CodeHints, CodeIssue } from './types';
 import type { IModel, IStandaloneCodeEditor, Monaco } from './utils/monaco';
 import { getTypescriptWorker, languages, loadMonaco } from './utils/monaco';
 

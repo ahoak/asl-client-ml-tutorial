@@ -332,24 +332,24 @@ export class CodeEditorComponent extends BaseComponent {
     }
   }
 
-  /**
-   * Gets an issue type for the given severity
-   * @param {number} severity The severity
-   */
-  #getIssueTypeFromSeverity(severity: number): CodeIssueType | null {
-    if (severity != null) {
-      if (severity === MarkerSeverity.Error) {
-        return 'error';
-      } else if (severity === MarkerSeverity.Warning) {
-        return 'warning';
-      } else if (severity === MarkerSeverity.Info) {
-        return 'info';
-      } else {
-        return 'hint';
-      }
-    }
-    return null;
-  }
+  // /**
+  //  * Gets an issue type for the given severity
+  //  * @param {number} severity The severity
+  //  */
+  // #getIssueTypeFromSeverity(severity: number): CodeIssueType | null {
+  //   if (severity != null) {
+  //     if (severity === MarkerSeverity.Error) {
+  //       return 'error';
+  //     } else if (severity === MarkerSeverity.Warning) {
+  //       return 'warning';
+  //     } else if (severity === MarkerSeverity.Info) {
+  //       return 'info';
+  //     } else {
+  //       return 'hint';
+  //     }
+  //   }
+  //   return null;
+  // }
 
   /**
    * Forces an editor layout

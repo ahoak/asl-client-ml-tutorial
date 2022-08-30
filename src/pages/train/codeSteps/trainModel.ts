@@ -96,6 +96,44 @@ Under the hood, model.fit() can do a lot for us:
 
 `;
 
+export const solve = `
+
+async function trainModel(
+  model: LayersModel,
+  xTrainData: number[][], 
+  yTrainData: number[][], 
+  xValidationData: number[][], 
+  yValidationData: number[][], 
+  callbacks: {
+    onBatchEnd: (batch: number, logs?: Logs) => void;
+    onEpochEnd: (epoch: number) => void;
+  },
+  numEpochs = 5
+): Promise<History> {
+
+  const xTrainTensor = tf.tensor(xTrainData);
+  const yTrainTensor = tf.tensor(yTrainData);
+  const xValidationTensor = tf.tensor(xValidationData);
+  const yValidationTensor = tf.tensor(yValidationData);
+
+  const modelHistory = await model.fit(xTrainTensor, yTrainTensor, {
+    epochs: numEpochs, 
+    batchSize: 128,
+    verbose: 1,
+    validationData: [xValidationTensor, yValidationTensor],
+    callbacks: callbacks
+  });
+
+  xTrainTensor.dispose()
+  yTrainTensor.dispose()
+  xValidationTensor.dispose()
+  yValidationTensor.dispose() 
+
+  return modelHistory
+}
+
+`;
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function implementation<T = (...args: any[]) => any>(
   code: string,

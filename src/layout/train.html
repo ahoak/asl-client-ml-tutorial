@@ -28,40 +28,60 @@
   <p id="validation-status"></p>
   <div class="training-feedback-container">
   </div>
-  <div class="load-data-description">
-    <h3 class="description-header">Basic Process</h3>
-    <ol>
-      <li>Use the Mediapipe model to extract the set of joint positions of each image in the dataset.</li>
-      <li>Flatten the joint positions into an array of values with the format:
-        <code>[joint1_x, joint1_y, joint1_z, ..., jointN_x, jointN_y, jointN_z]</code>
-      </li>
-      <li>Normalize the flattened joint positions so that their values are scaled from -1 to 1.</li>
-      <li>Shuffle the data.</li>
-      <li>Use one-hot encoding to transform letter labels (i.e. 'A', 'B', 'C') to a machine-friendly data format.</li>
-      <li>Split data into a training set and validation set.</li>
-    </ol>
-  </div>
+
   <div class="bottom-button-container">
     <fluent-button class="reset-button" style="display: none;">Reset</fluent-button>
     <fluent-button class="solve-button" style="display: none;">Solve</fluent-button>
-    <fluent-button class="view-solution-button" style="display: none;">View solution</fluent-button>
-
   </div>
-  {{#if settings.trainTutorialSteps}}
-  <fluent-button class="toggle-code-button" style="display: none;">Toggle Code</fluent-button>
-  {{#each settings.trainTutorialSteps}}
-  <code-step name="{{this.name}}" step="{{this.step}}" code="function step{{this.step}}() {}" style="display: none;"
-    allow-background-execution="true"></code-step>
-  {{/each}}
-  {{/if}}
 
 
-  {{#if settings.trainTutorialSteps}}
-  {{#each settings.trainTutorialSteps}}
-  <code-step name="{{this.name}}-solution" step="{{this.step}}1" code="function step{{this.step}}1() {}"
-    style="display: none;" read-only="true"></code-step>
-  {{/each}}
-  {{/if}}
+  <fluent-tabs activeid="code-tab" class="fluent-tab-container">
+    <fluent-tab id="code-tab">Code</fluent-tab>
+    <fluent-tab id="solution-tab">Solution</fluent-tab>
+    <fluent-tab id="instructions-tab">Instructions</fluent-tab>
+    <fluent-tab-panel id="codePanel">
+      {{#if settings.trainTutorialSteps}}
+
+      {{#each settings.trainTutorialSteps}}
+      <code-step name="{{this.name}}" step="{{this.step}}" code="function step{{this.step}}() {}" style="display: none;"
+        allow-background-execution></code-step>
+      {{/each}}
+      {{/if}}
+
+    </fluent-tab-panel>
+    <fluent-tab-panel id="solutionPanel">
+      {{#if settings.trainTutorialSteps}}
+      {{#each settings.trainTutorialSteps}}
+      <code-step name="{{this.name}}-solution" step="{{this.step}}1" code="function step{{this.step}}1() {}"
+        style="display: none;" read-only="true"></code-step>
+      {{/each}}
+      {{/if}}
+
+    </fluent-tab-panel>
+    <fluent-tab-panel id="instructionPanel">
+
+      <div class="load-data-description">
+        <h3 class="description-header">Basic Process</h3>
+        <ol>
+          <li>Use the Mediapipe model to extract the set of joint positions of each image in the dataset.</li>
+          <li>Flatten the joint positions into an array of values with the format:
+            <code>[joint1_x, joint1_y, joint1_z, ..., jointN_x, jointN_y, jointN_z]</code>
+          </li>
+          <li>Normalize the flattened joint positions so that their values are scaled from -1 to 1.</li>
+          <li>Shuffle the data.</li>
+          <li>Use one-hot encoding to transform letter labels (i.e. 'A', 'B', 'C') to a machine-friendly data format.
+          </li>
+          <li>Split data into a training set and validation set.</li>
+        </ol>
+      </div>
+
+    </fluent-tab-panel>
+  </fluent-tabs>
+
+
+
+
+
 
 
   <!-- {{#if settings.showDataVideo}}

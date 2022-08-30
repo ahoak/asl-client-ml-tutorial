@@ -93,6 +93,10 @@
   .issue-display::part(main) {
     height: 100%;
   }
+
+  h2.name {
+    display: none;
+  }
 </style>
 <div class="root" part="main">
   <h2 class="name" part="name-header"></h2>
@@ -112,7 +116,7 @@
         👍Looks Good!
       </slot>
     </div>
-  </div>  
+  </div>
   <!-- <div class="solution-editor-container" part="solution-editor-container">
     <code-editor hide-issues class="solution-code-editor"></code-editor>
   </div> -->

@@ -1,5 +1,6 @@
 import '../../utils/fluentBootstrap';
 
+import type { Tab } from '@fluentui/web-components';
 import type { LayersModel } from '@tensorflow/tfjs';
 import * as tf from '@tensorflow/tfjs';
 
@@ -29,7 +30,7 @@ export interface StepImplementationRecord extends CodeStepRecord {
 }
 type StepImplementation = Record<keyof typeof codeSteps, StepImplementationRecord>;
 
-const DefaultEpoch = 3;
+const DefaultEpoch = 5;
 export class ModelBuilder {
   #epochs = DefaultEpoch;
   #currentEpochCount = 1;
@@ -46,14 +47,13 @@ export class ModelBuilder {
   #codeStepEles = document.querySelectorAll('code-step') as NodeListOf<CodeStepComponent>;
   #progressBarElement = getOrCreateElement('.training-progress-bar') as HTMLProgressElement;
   #loadDataDescElement = getOrCreateElement('.load-data-description') as HTMLElement;
+  #solutionTabPanel = getOrCreateElement('#solution-tab') as Tab;
 
   #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;
-  #solutionButton = getOrCreateElement('.view-solution-button') as HTMLButtonElement;
   #resetButton = getOrCreateElement('.reset-button') as HTMLButtonElement;
   #stopTrainingButton = getOrCreateElement('.training-stop-button') as HTMLButtonElement;
   #startTrainingButton = getOrCreateElement('.training-start-button') as HTMLButtonElement;
   #downloadButton = getOrCreateElement('.download-button') as HTMLButtonElement;
-  #toggleCodeButton = getOrCreateElement('.toggle-code-button') as HTMLButtonElement;
   #solveButton = getOrCreateElement('.solve-button') as HTMLButtonElement;
 
   #trainingEnabled = true;
@@ -64,7 +64,6 @@ export class ModelBuilder {
   #aslModel: LayersModel | undefined;
   #stepMap: Record<string, StepViewer> = {};
   #stepMapRef: Record<string, string> = {};
-  #showCode = false;
 
   constructor(options?: ModelBuilderOptions) {
     this.#epochs = options?.epochs ?? DefaultEpoch;
@@ -73,12 +72,10 @@ export class ModelBuilder {
   async init() {
     this.#actionButton.disabled = true;
     this.#actionButton.onclick = this.handleNextButtonClick;
-    this.#solutionButton.onclick = this.handleSolutionButtonClick;
     this.#resetButton.onclick = this.handleResetButtonClick;
     this.#stopTrainingButton.onclick = this.handleStopTrainingClick;
     this.#startTrainingButton.onclick = this.handlestartTrainingClick;
     this.#downloadButton.onclick = this.handleDownloadClick;
-    this.#toggleCodeButton.onclick = this.handleCodeToggleClick;
     this.#solveButton.onclick = this.handleSolveClick;
     this.mapCodeSteps();
     await this.setCurrentStep(1);
@@ -222,7 +219,7 @@ export class ModelBuilder {
 
   onEpochEnd = (epoch: number) => {
     const batchDuration = Date.now() - this.#startBatchTime;
-    this.#currentEpochCount = epoch + 1;
+    this.#currentEpochCount = epoch + 2;
     const remainingIncrements = this.#epochs - epoch;
     const msRemaining = batchDuration * remainingIncrements;
     const [time, hasMinutes] = millisToMinutesAndSeconds(msRemaining);
@@ -297,7 +294,7 @@ export class ModelBuilder {
     if (this.#aslModel && instance) {
       this.#aslModel.stopTraining = false;
       this.#trainingEnabled = true;
-      this.#currentEpochCount = 0;
+      this.#currentEpochCount = 1;
       this.#startTrainingButton.disabled = true;
       this.#trainingComplete = false;
       this.#actionButton.disabled = true;
@@ -309,19 +306,6 @@ export class ModelBuilder {
     const instance = this.#stepMap['exportModel'];
     if (this.#aslModel && instance) {
       await instance.runCachedCode();
-    }
-  };
-
-  handleCodeToggleClick = () => {
-    if (this.#currentStep?.name) {
-      const instance = this.#stepMap[this.#currentStep?.name];
-
-      if (!this.#showCode) {
-        instance.show = true;
-      } else {
-        instance.show = false;
-      }
-      this.#showCode = !this.#showCode;
     }
   };
 
@@ -371,20 +355,17 @@ export class ModelBuilder {
         this.#actionButton.style.display = 'none';
       }
       if (readOnly === 'true') {
-        // hide solution/reset buttons
-        this.#solutionButton.style.display = 'none';
         this.#resetButton.style.display = 'none';
         this.#solveButton.style.display = 'none';
-        this.#showCode = false;
-        this.#toggleCodeButton.style.display = 'inline-flex';
+
+        this.#solutionTabPanel.style.display = 'none';
       } else {
-        this.#solutionButton.style.display = 'inline-flex';
         this.#resetButton.style.display = 'inline-flex';
         this.#solveButton.style.display = 'inline-flex';
-        this.#showCode = true;
-        this.#toggleCodeButton.style.display = 'none';
+        this.#solutionTabPanel.style.display = 'inline-flex';
       }
-      instance.show = this.#showCode;
+
+      instance.show = true;
     } else {
       console.error(`Instance of StepViewer for ${name} is not found`);
     }

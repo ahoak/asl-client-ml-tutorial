@@ -47,8 +47,10 @@ export class StepViewer {
   set show(state: boolean) {
     if (state) {
       this.#element.setAttribute('style', 'display: flex;width: 100%;height:calc(100vw / 2)');
+      this.showSolution(true);
     } else {
       this.#element.setAttribute('style', 'display:none;');
+      this.showSolution(false);
     }
   }
 
@@ -91,7 +93,7 @@ export class StepViewer {
   }
 
   solve() {
-    this.code = this.#stepRecord.solution;
+    this.code = this.#stepRecord.solve ?? this.#stepRecord.solution;
   }
 
   on<E extends keyof Events>(

@@ -27,11 +27,7 @@ function createModel(classes: string[]):LayersModel {
 
     metrics: ['accuracy'],
   });
-
-
-  /* Uncomment below statement to check the output. */
-  // console.log(model.summary())
-
+  
   return model;
 }
 `;
@@ -60,6 +56,36 @@ function createModelSolution(classes: string[]):LayersModel {
     // If 2 classes of data, use 'binaryCrossentropy' else use 'categoricalCrossentropy' if more than 2 classes and output of our model is a probability distribution.
     loss: 'categoricalCrossentropy',
     // As this is a classification problem you can record accuracy in the logs too!
+    metrics: ['accuracy'],
+  });
+
+  /* Uncomment below statement to check the output. */
+  // console.log(model.summary())
+
+  return model;
+}`;
+
+export const solve = `
+function createModelSolution(classes: string[]):LayersModel {
+
+  const model = tf.sequential({
+
+    layers: [
+
+      tf.layers.dense({ inputShape: [63], units: 63, activation: 'relu' }),
+
+      tf.layers.dense({ units: 256, activation: 'relu' }),
+
+      tf.layers.dense({ units: classes.length, activation: 'softmax' }),
+    ],
+  });
+
+  model.compile({
+  
+    optimizer: 'adam', 
+
+    loss: 'categoricalCrossentropy',
+    
     metrics: ['accuracy'],
   });
 

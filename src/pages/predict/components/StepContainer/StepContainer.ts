@@ -93,7 +93,7 @@ export class StepContainerComponent extends BaseComponent<AttributeName> {
 
       const hasIssues = this.#stepIssues.length > 0;
       this.#issueContainer!.style.display = hasIssues ? 'block' : 'none';
-      this.#successContainer!.style.display = this.hasAttribute('valid') ? 'block' : 'none';
+      this.#successContainer!.style.visibility = this.hasAttribute('valid') ? 'visible' : 'hidden';
     }
   }
 

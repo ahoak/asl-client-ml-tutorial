@@ -70,7 +70,8 @@ export const defaultCode = generateCodeFunction(
   userInputIndicator,
   userInputIndicator,
 );
-export const solutionCode = generateCodeFunction(
+export const solutionCode = generateCodeFunction(answer1, answer2, answer3, undefined, false);
+export const fullyCommentedSolutionCode = generateCodeFunction(
   answer1,
   answer2,
   answer3,

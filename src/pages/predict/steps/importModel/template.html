@@ -6,8 +6,20 @@
 	step-container::part(main) {
 		width: 500px;
 	}
+
+	.step-buttons {
+		display: flex;
+		justify-items: left;
+		margin-bottom: 5px;
+		margin: 5px;
+	}
 </style>
 <div class="root">
+	<div class="step-buttons" part="step-buttons">
+		<slot name="step-buttons">
+			<fluent-button class="reset-button">Reset</fluent-button>
+		</slot>
+	</div>
 	<fluent-card>
 		<step-container class="step-container">
 			<div slot="name">Import Model</div>

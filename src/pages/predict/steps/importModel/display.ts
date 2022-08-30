@@ -127,7 +127,7 @@ export class ImportModelStep extends BaseComponent implements StepDisplayElement
       () => void this.#loadStateFromLocalStorage(),
     );
 
-    this.#modelResetButton = this.#root.querySelector('.model-reset-button');
+    this.#modelResetButton = this.#root.querySelector('.reset-button');
     this.#modelResetButton?.addEventListener('click', () => {
       this.stepState = {
         valid: false,

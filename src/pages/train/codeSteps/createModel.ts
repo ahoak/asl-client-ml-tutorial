@@ -27,7 +27,7 @@ function createModel(classes: string[]):LayersModel {
 
     metrics: ['accuracy'],
   });
-  
+
   return model;
 }
 `;
@@ -66,7 +66,7 @@ function createModelSolution(classes: string[]):LayersModel {
 }`;
 
 export const solve = `
-function createModelSolution(classes: string[]):LayersModel {
+function createModel(classes: string[]):LayersModel {
 
   const model = tf.sequential({
 

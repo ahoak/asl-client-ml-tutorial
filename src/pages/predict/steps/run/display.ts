@@ -22,6 +22,7 @@ export class RunStep extends BaseComponent implements StepDisplayElement {
   #codeEditor: CodeEditorComponent | null = null;
   #predictionOutput: HTMLElement | null = null;
   #stream: MediaStream | null = null;
+  #signDisplayContainer: HTMLElement | null = null;
   #model: LayersModel | null = null;
   #source = 'webcam';
 
@@ -117,6 +118,15 @@ export class RunStep extends BaseComponent implements StepDisplayElement {
     this.#startButton!.onclick = () => this.#handleStartButtonClick();
     this.#predictionOutput = this.#root.querySelector('.predictions-output');
     this.#codeEditor = this.#root.querySelector('.code-editor');
+    this.#signDisplayContainer = this.#root.querySelector('.sign-display-container');
+
+    if (this.#signDisplayContainer) {
+      let signHtml = '';
+      for (const cls of classes) {
+        signHtml += `<sign-display sign="${cls}"></sign-display>`;
+      }
+      this.#signDisplayContainer.innerHTML = signHtml;
+    }
 
     const toggleCodeButton = this.#root.querySelector('.toggle-code-button');
     if (this.#codeEditor) {

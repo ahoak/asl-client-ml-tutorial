@@ -32,9 +32,8 @@ async function extractAndProcessJointPositions(
     const flattenedTensor = tf.tensor1d(flattenedJoints);
 
     // Normalize the flattened tensor values to [-1, 1]
-    const dataMax = flattenedTensor.abs().max();
-    const dataMin = flattenedTensor.abs().min();
-    const normalizedTensor = flattenedTensor.sub(dataMin).div(dataMax.sub(dataMin));
+    const dataAbsMax = flattenedTensor.abs().max();
+    const normalizedTensor = flattenedTensor.div(dataAbsMax);
     return {
       jointPositionsFlat: normalizedTensor.expandDims(0),
       jointPositions: firstHand
@@ -80,9 +79,8 @@ async function extractAndProcessJointPositions(
     const flattenedTensor = tf.tensor1d(flattenedJoints);
 
     // Normalize the flattened tensor values to [-1, 1]
-    const dataMax = flattenedTensor.abs().max();
-    const dataMin = flattenedTensor.abs().min();
-    const normalizedTensor = flattenedTensor.sub(dataMin).div(dataMax.sub(dataMin));
+    const dataAbsMax = flattenedTensor.abs().max();
+    const normalizedTensor = flattenedTensor.div(dataAbsMax);
     return {
       jointPositionsFlat: normalizedTensor,
       jointPositions: firstHand

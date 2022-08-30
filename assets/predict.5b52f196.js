@@ -419,7 +419,7 @@ should be:<br />
 			</div>\r
 			<fluent-button class="toggle-code-button">Toggle Code</fluent-button>\r
 			<div class="editor-container">\r
-				<code-editor style="display: none;" hide-issues class="code-editor"></code-editor>\r
+				<code-editor style="display: none;" allow-background-execution hide-issues class="code-editor"></code-editor>\r
 			</div>\r
 		</div>\r
 	</step-container>\r

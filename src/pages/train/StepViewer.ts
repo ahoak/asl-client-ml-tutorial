@@ -72,8 +72,8 @@ export class StepViewer {
     this.#element.setAttribute('code', value);
   }
 
-  set allowBackgroundExecution(value: string | null) {
-    this.#element.setAttribute('allow-background-execution', value!);
+  set allowBackgroundExecution(value: boolean) {
+    this.#element.toggleAttribute('allow-background-execution', value);
   }
 
   set readonly(value: boolean) {

@@ -267,6 +267,8 @@ export class ModelBuilder {
       if (this.#isSolutionVisble) {
         this.toggleSolution(false, title);
       }
+      const instructionsContainer = getOrCreateElement(`#${title}-image`) as HTMLElement;
+      instructionsContainer.style.display = 'none';
       const currentInstance = this.#stepMap[title];
       currentInstance.show = false;
     }
@@ -312,6 +314,8 @@ export class ModelBuilder {
   async handleStepChange(name: string, readOnly = 'false') {
     const instance = this.#stepMap[name];
     if (instance) {
+      const instructionsContainer = getOrCreateElement(`#${name}-image`) as HTMLElement;
+      instructionsContainer.style.display = 'inline-flex';
       instance.setCodeFromCacheOrDefault();
       if (readOnly) {
         instance.readonly = readOnly === 'true';

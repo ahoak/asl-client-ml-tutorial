@@ -30,17 +30,29 @@
   .solution-editor::part(main) {
     margin-top: 5px;
   }
+
+  .step-buttons {
+    display: flex;
+    justify-items: left;
+  }
+
+  .step-buttons fluent-button {
+		margin: 2px;
+  }
 </style>
 <div class="root">
   <step-container class="step-container">
     <div slot="name"></div>
-    <div slot="buttons-top">
-      <fluent-button class="solve-button">Solve</fluent-button>
+    <div class="step-buttons" part="step-buttons">
+      <slot name="step-buttons">
+        <fluent-button class="solve-button">Solve</fluent-button>
+        <fluent-button class="reset-button">Reset</fluent-button>
+      </slot>
     </div>
     <fluent-tabs activeid="code-tab" class="fluent-tab-container">
       <fluent-tab id="code-tab">Code</fluent-tab>
-      <fluent-tab id="solution-tab">Solution</fluent-tab>
-      <fluent-tab id="instructions-tab">Instructions</fluent-tab>
+      <fluent-tab id="solution-tab" style="display: none">Solution</fluent-tab>
+      <fluent-tab id="instructions-tab" style="display: none">Instructions</fluent-tab>
       <fluent-tab-panel id="codePanel">
         <div class="editor-container">
           <code-editor hide-issues class="code-editor"></code-editor>
@@ -57,11 +69,18 @@
         </div>
       </fluent-tab-panel>
       <fluent-tab-panel id="instructionPanel">
-        <slot name="instructions"></slot>
+        <slot name="instructions">
+          <fluent-card>
+            <image class="instructions-image" width="900px"></image>
+          </fluent-card>
+        </slot>
       </fluent-tab-panel>
     </fluent-tabs>
     <slot slot="success" name="success">
-      <div class="success-message">Great job! Looks Good 👍.</div>
+      <div class="success-message">Great job! Looks Good. 👍</div>
+    </slot>
+    <slot slot="fail" name="fail">
+      🤔 Looks like you have some issues with your code. <br>Check below the code editor for some hints.
     </slot>
   </step-container>
 </div>

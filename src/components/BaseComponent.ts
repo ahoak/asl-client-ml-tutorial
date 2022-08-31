@@ -75,6 +75,8 @@ export default class BaseComponent<AttributeNames extends string = any> extends 
     } else {
       this.templateRoot = this;
     }
-    this.templateRoot.innerHTML = templateContent ?? '';
+    this.templateRoot.innerHTML = (templateContent ?? '')
+      .replaceAll('{{baseUrl}}', import.meta.env.BASE_URL ?? '')
+      .replaceAll('{{componentId}}', Math.random().toString(36).slice(2));
   }
 }

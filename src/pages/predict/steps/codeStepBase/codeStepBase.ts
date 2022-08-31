@@ -43,24 +43,34 @@ export abstract class CodeStepBaseComponent<
   #stepContainerEle: StepContainerComponent | null = null;
 
   /**
-   * The toggle solution button
-   */
-  #toggleSolutionButton: HTMLElement | null = null;
-
-  /**
-   * The toggle code button
-   */
-  #toggleCodeButton: HTMLElement | null = null;
-
-  /**
    * The solution container element
    */
   #solutionEditorEle: HTMLElement | null = null;
 
   /**
+   * The solution tab element
+   */
+  #solutionTabEle: HTMLElement | null = null;
+
+  /**
+   * The instructions tab element
+   */
+  #instructionsTabEle: HTMLElement | null = null;
+
+  /**
+   * The instructions image element
+   */
+  #instructionsImageEle: HTMLImageElement | null = null;
+
+  /**
    * The solve button
    */
   #solveButton: HTMLElement | null = null;
+
+  /**
+   * The reset button
+   */
+  #resetButton: HTMLElement | null = null;
 
   /**
    * The internal step state (DONT USE DIRECTLY)
@@ -73,14 +83,19 @@ export abstract class CodeStepBaseComponent<
   readonly defaultCode: string;
 
   /**
-   * The solution code
+   * The solution code without all extra comments
    */
   readonly solutionCode: string | null;
 
   /**
-   * The success message
+   * The fully commented solution code
    */
-  readonly successMessage: string | null;
+  readonly fullyCommentedSolutionCode: string | null;
+
+  /**
+   * The instructions url
+   */
+  readonly instructionsUrl: string | null;
 
   /**
    * True if the code toggle button should be visible
@@ -106,28 +121,31 @@ export abstract class CodeStepBaseComponent<
     defaultCode,
     defaultState,
     solutionCode,
+    fullyCommentedSolutionCode,
     readonly,
     showCodeToggleButton = false,
     hints,
     validate,
     template = defaultTemplate,
-    successMessage,
+    instructionsUrl,
   }: {
     defaultCode: string;
     solutionCode?: string | null;
+    fullyCommentedSolutionCode?: string | null;
     readonly?: boolean;
     hints?: CodeHints;
     showCodeToggleButton?: boolean;
     defaultState: StateType;
     validate: ValidationFunction<StateType>;
     template?: string;
-    successMessage?: string;
+    instructionsUrl?: string;
   }) {
     super(template);
 
     this.defaultCode = defaultCode;
-    this.solutionCode = solutionCode ?? null;
-    this.successMessage = successMessage ?? null;
+    this.fullyCommentedSolutionCode = fullyCommentedSolutionCode ?? solutionCode ?? null;
+    this.solutionCode = solutionCode ?? fullyCommentedSolutionCode ?? null;
+    this.instructionsUrl = instructionsUrl ?? null;
     this.showCodeToggleButton = showCodeToggleButton ?? false;
     this.readonly = readonly ?? false;
     this.codeHints = hints ?? null;
@@ -150,22 +168,6 @@ export abstract class CodeStepBaseComponent<
   set codeVisible(value: boolean) {
     if (this.#codeEditor) {
       this.#codeEditor.style.display = value ? '' : 'none';
-    }
-  }
-
-  /**
-   * True if the solution is visible
-   */
-  get solutionVisible() {
-    return this.#solutionEditorEle?.style.display !== 'none';
-  }
-
-  /**
-   * If true, the solution will be visible
-   */
-  set solutionVisible(value: boolean) {
-    if (this.#solutionEditorEle) {
-      this.#solutionEditorEle.style.display = value ? '' : 'none';
     }
   }
 
@@ -232,38 +234,47 @@ export abstract class CodeStepBaseComponent<
     this.#codeEditor = this.root.querySelector('.code-editor');
     this.#stepContainerEle = this.root.querySelector('.step-container');
     this.#solutionEditorEle = this.root.querySelector('.solution-editor');
-    this.#toggleSolutionButton = this.root.querySelector('.toggle-solution-button');
-    this.#toggleCodeButton = this.root.querySelector('.toggle-code-button');
+    this.#solutionTabEle = this.root.querySelector('#solution-tab');
     this.#solveButton = this.root.querySelector('.solve-button');
-    if (!this.readonly && this.#codeEditor && this.#solveButton && this.solutionCode) {
-      this.#solveButton.style.display = this.solutionVisible ? '' : 'none';
-      this.#solveButton.addEventListener('click', () => {
-        this.#codeEditor?.setAttribute('code', this.solutionCode!);
+    this.#resetButton = this.root.querySelector('.reset-button');
+    this.#instructionsImageEle = this.root.querySelector('.instructions-image');
+    this.#instructionsTabEle = this.root.querySelector('#instructions-tab');
+
+    if (this.#instructionsImageEle) {
+      this.#instructionsImageEle.style.display = this.instructionsUrl ? '' : 'none';
+      this.#instructionsImageEle.src = this.instructionsUrl ?? 'about:blank';
+    }
+    if (this.#instructionsTabEle) {
+      this.#instructionsTabEle.style.display = this.instructionsUrl ? '' : 'none';
+    }
+    if (this.#resetButton) {
+      this.#resetButton.style.display = !this.readonly ? '' : 'none';
+      this.#resetButton.addEventListener('click', () => {
+        this.#codeEditor?.setAttribute('code', this.defaultCode!);
       });
     }
-    if (this.solutionCode) {
-      this.#solutionEditorEle?.setAttribute('code', this.solutionCode);
-      this.#toggleSolutionButton?.addEventListener('click', () => {
-        this.solutionVisible = !this.solutionVisible;
-      });
-    } else {
-      // There is no solution, so hide it
-      if (this.#toggleSolutionButton) {
-        this.#toggleSolutionButton.style.display = 'none';
+
+    if (this.#solveButton) {
+      this.#solveButton.style.display = !this.readonly && this.solutionCode ? '' : 'none';
+      if (!this.readonly && this.#codeEditor && this.solutionCode) {
+        this.#solveButton.addEventListener('click', () => {
+          this.#codeEditor?.setAttribute('code', this.solutionCode!);
+        });
       }
     }
 
-    if (this.#toggleCodeButton) {
-      this.#toggleCodeButton.style.display = this.showCodeToggleButton ? '' : 'none';
-      this.#toggleCodeButton.addEventListener('click', () => {
-        this.codeVisible = !this.codeVisible;
-      });
+    if (this.#solutionEditorEle) {
+      this.#solutionEditorEle.style.display =
+        !this.readonly && this.fullyCommentedSolutionCode ? '' : 'none';
+      if (this.fullyCommentedSolutionCode) {
+        this.#solutionEditorEle?.setAttribute('code', this.fullyCommentedSolutionCode);
+      }
     }
 
-    const successMessageEle = this.root.querySelector('.success-message');
-    if (this.successMessage && successMessageEle) {
-      successMessageEle.innerHTML = this.successMessage;
+    if (this.#solutionTabEle) {
+      this.#solutionTabEle.style.display = this.#solutionEditorEle?.style.display ?? 'none';
     }
+
     this.#codeEditor?.toggleAttribute('readonly', this.readonly);
     this.#codeEditor?.setAttribute('code', this.stepState.code || this.defaultCode);
     this.#codeEditor?.setAttribute('hints', JSON.stringify(this.codeHints || {}));

@@ -31,11 +31,11 @@
   .validate-success {
     color: green;
     text-align: center;
-    display: none;
   }
 
   .validate-container {
     font-size: 25px;
+    min-height: 30px;
   }
 
   .validate-progress {
@@ -72,13 +72,16 @@
   <div class="buttons buttons-top" part="buttons-top">
     <slot name="buttons-top"></slot>
   </div>
-  <div class="validate-container">
+  <div class="validate-container" part="validate-container">
     <div class="validate-progress" name="progress" style="display: none">
       <fluent-progress-ring></fluent-progress-ring>
       <span class="validate-label">...Validating</span>
     </div>
     <div class="validate-success" part="validate-success" style="display: none">
       <slot name="success"> 👍Looks Good! </slot>
+    </div>
+    <div class="validate-fail" part="validate-fail" style="display: none">
+      <slot name="fail">🤔 Looks like you may have some validation issues.<br>Look below.</slot>
     </div>
   </div>
   <div class="step-contents" part="contents">

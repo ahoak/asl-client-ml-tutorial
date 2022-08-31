@@ -97,7 +97,8 @@ export class StepContainerComponent extends BaseComponent<AttributeName> {
       this.#issueContainer!.style.display = hasIssues ? 'block' : 'none';
 
       this.#validateSuccessMessage!.style.display = this.hasAttribute('valid') ? '' : 'none';
-      this.#validateFailMessage!.style.display = !this.hasAttribute('valid') ? '' : 'none';
+      this.#validateFailMessage!.style.display =
+        hasIssues && !this.hasAttribute('valid') ? '' : 'none';
     }
   }
 

@@ -20,7 +20,6 @@ export class StepContainerComponent extends BaseComponent<AttributeName> {
   }
 
   #nameEle: HTMLElement | null = null;
-  #validateMessageContainer: HTMLElement | null = null;
   #validateSuccessMessage: HTMLElement | null = null;
   #validateFailMessage: HTMLElement | null = null;
   #issueContainer: HTMLElement | null = null;
@@ -57,7 +56,6 @@ export class StepContainerComponent extends BaseComponent<AttributeName> {
    */
   connectedCallback() {
     this.#nameEle = this.#root.querySelector('.name');
-    this.#validateMessageContainer = this.#root.querySelector('.validate-container');
     this.#validateSuccessMessage = this.#root.querySelector('.validate-success');
     this.#validateFailMessage = this.#root.querySelector('.validate-fail');
     this.#validateProgressContainer = this.#root.querySelector('.validate-progress');

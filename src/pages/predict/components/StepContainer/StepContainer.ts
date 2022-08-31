@@ -20,7 +20,9 @@ export class StepContainerComponent extends BaseComponent<AttributeName> {
   }
 
   #nameEle: HTMLElement | null = null;
-  #successContainer: HTMLElement | null = null;
+  #validateMessageContainer: HTMLElement | null = null;
+  #validateSuccessMessage: HTMLElement | null = null;
+  #validateFailMessage: HTMLElement | null = null;
   #issueContainer: HTMLElement | null = null;
   #validateProgressContainer: HTMLElement | null = null;
   #issueDisplay: CodeIssueDisplayComponent | null = null;
@@ -55,7 +57,9 @@ export class StepContainerComponent extends BaseComponent<AttributeName> {
    */
   connectedCallback() {
     this.#nameEle = this.#root.querySelector('.name');
-    this.#successContainer = this.#root.querySelector('.validate-success');
+    this.#validateMessageContainer = this.#root.querySelector('.validate-container');
+    this.#validateSuccessMessage = this.#root.querySelector('.validate-success');
+    this.#validateFailMessage = this.#root.querySelector('.validate-fail');
     this.#validateProgressContainer = this.#root.querySelector('.validate-progress');
     this.#issueContainer = this.#root.querySelector('.issue-container');
     this.#issueDisplay = this.#root.querySelector('.issue-display');
@@ -93,7 +97,9 @@ export class StepContainerComponent extends BaseComponent<AttributeName> {
 
       const hasIssues = this.#stepIssues.length > 0;
       this.#issueContainer!.style.display = hasIssues ? 'block' : 'none';
-      this.#successContainer!.style.visibility = this.hasAttribute('valid') ? 'visible' : 'hidden';
+
+      this.#validateSuccessMessage!.style.display = this.hasAttribute('valid') ? '' : 'none';
+      this.#validateFailMessage!.style.display = !this.hasAttribute('valid') ? '' : 'none';
     }
   }
 

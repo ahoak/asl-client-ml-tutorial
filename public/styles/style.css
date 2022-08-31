@@ -39,6 +39,7 @@ START Page structure and element resets
   --glitch-yellow: #ffff60;
   --glitch-purple: #9480ff;
   --glitch-gray-3: #BDBDBD;
+  --ghc_purple-1: #A9248C;
 }
 
 /* Basic page style resets */
@@ -418,6 +419,10 @@ fluent-button {
   --accent-fill-rest: var(--glitch-pink);
 }
 
+fluent-button.solve-button {
+  --accent-fill-rest: var(--ghc_purple-1);
+}
+
 #validation-status {
   font-size: medium;
 }
@@ -447,7 +452,14 @@ fluent-button {
   margin-top: 1rem;
 }
 
+.instructions-image {
+  max-width: 900px;
+}
 
+.instruction-img {
+  max-width: 900px;
+  width: 100%;
+}
 /******************************************************************************
 END default theme
 ******************************************************************************/

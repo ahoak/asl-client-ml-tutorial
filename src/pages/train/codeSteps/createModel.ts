@@ -21,9 +21,9 @@ function createModel(classes: string[]):LayersModel {
 
   model.compile({
 
-    optimizer:  /*✨INSERT_HERE✨*/, 
+    optimizer:  /*✨INSERT_HERE✨*/, // optimizer options: 'sgd', 'adam', 'adamax', 'momentum'
 
-    loss:  /*✨INSERT_HERE✨*/,
+    loss:  /*✨INSERT_HERE✨*/, // loss options: 'categoricalCrossentropy' , 'binaryCrossentropy'
 
     metrics: ['accuracy'],
   });
@@ -82,9 +82,9 @@ function createModel(classes: string[]):LayersModel {
 
   model.compile({
   
-    optimizer: 'adam', 
+    optimizer: 'adam',  // optimizer options: 'sgd', 'adam', 'adamax', 'momentum'
 
-    loss: 'categoricalCrossentropy',
+    loss: 'categoricalCrossentropy', // loss options: 'categoricalCrossentropy' , 'binaryCrossentropy'
     
     metrics: ['accuracy'],
   });

@@ -30,8 +30,9 @@
   </div>
 
   <div class="bottom-button-container">
+    <fluent-button class="solve-button" style="display: none;" appearance="accent">Solve</fluent-button>
+
     <fluent-button class="reset-button" style="display: none;">Reset</fluent-button>
-    <fluent-button class="solve-button" style="display: none;">Solve</fluent-button>
   </div>
 
 
@@ -68,7 +69,7 @@
       {{#each settings.trainTutorialSteps}}
 
       <div class="instructions-image" id="{{this.name}}-image" style="display: none">
-        <image src="{{baseUrl}}{{this.imageLink}}" width="900px" />
+        <image src="{{this.baseUrl}}{{this.imageLink}}" class="instruction-img" />
       </div>
       {{/each}}
       {{/if}}

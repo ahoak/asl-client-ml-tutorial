@@ -16,7 +16,7 @@
       "helperText": "Load preprocessed data by pressing the button",
       "name" : "loadData",
       "readOnly": "true",
-      "imageLink": "/instructions/loadData.png"
+      "imageLink": "instructions/loadData.png"
     },
     {
       "step": 2,
@@ -24,7 +24,7 @@
       "helperText": "creating a feed-forward model. We will use 5 layers with relu activation function. Function must return the model.",
       "name": "createModel",
       "readOnly": "false",
-      "imageLink": "/instructions/createModel.png"
+      "imageLink": "instructions/createModel.png"
     },
     {
       "step": 3,
@@ -32,7 +32,7 @@
       "helperText": "edit function trainModel() by using the Tf.fit API. Set the following parameters: epochs, batchSize,validationData, callbacks. Hint, you may need to transform your data into tensors ",
       "name" : "trainModel",
       "readOnly": "false",
-      "imageLink": "/instructions/trainModel.png"
+      "imageLink": "instructions/trainModel.png"
     },
       {
       "step": 4,
@@ -40,7 +40,7 @@
       "helperText": "Click the button to download your shiney new model. We will use this in our webapp.",
       "name" : "exportModel",
       "readOnly": "true",
-      "imageLink": "/instructions/exportModel.png"
+      "imageLink": "instructions/exportModel.png"
     }
   ],
   "predictSteps": [{

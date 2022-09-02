@@ -12,7 +12,7 @@ export const template = `
 async function loadTensorData(
   loadTensors: (folder: jsZipInstance) => Promise<{ [key: string]: number[][] }>,
   assetURL: string,
-  applyOneHotEncoding: (data: {  [key: string]: number[][]}) => { X: number[][]; Y: number[][] },
+  applyOneHotEncoding: (data: {  [key: string]: number[][]}) => { inputs: number[][]; outputs: number[][] },
   splitTrainingData: (
     X: number[][],
     Y: number[][],
@@ -28,8 +28,8 @@ async function loadTensorData(
   // Check inspector to view data
   console.log("data", data)
 
-  const { X, Y } = applyOneHotEncoding(data);
-  return splitTrainingData(X, Y);
+  const { inputs, outputs } = applyOneHotEncoding(data);
+  return splitTrainingData(inputs, outputs);
 }
 `;
 
@@ -41,7 +41,7 @@ export const solution = `
 async function loadTensorData(
   loadTensors: (folder: jsZipInstance) => Promise<{ [key: string]: number[][] }>,
   assetURL: string,
-  applyOneHotEncoding: (data: {  [key: string]: number[][]}) => { X: number[][]; Y: number[][] },
+  applyOneHotEncoding: (data: {  [key: string]: number[][]}) => { inputs: number[][]; outputs: number[][] },
   splitTrainingData: (
     X: number[][],
     Y: number[][],
@@ -58,9 +58,9 @@ async function loadTensorData(
   console.log("data", data)
 
   // apply one-hot encoding function below
-  const { X, Y } = applyOneHotEncoding(data);
+  const { inputs, outputs } = applyOneHotEncoding(data);
   // take the results from one-hot encoding and split data
-  return splitTrainingData(X, Y);
+  return splitTrainingData(inputs, outputs);
 }
 `;
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -92,7 +92,10 @@ export function implementation<T = (...args: any[]) => any>(code: string): T {
 type loadData = (
   loadTensors: (folder: jszip) => Promise<{ [key: string]: number[][] }>,
   assetURL: string,
-  applyOneHotEncoding: (data: { [key: string]: number[][] }) => { X: number[][]; Y: number[][] },
+  applyOneHotEncoding: (data: { [key: string]: number[][] }) => {
+    inputs: number[][];
+    outputs: number[][];
+  },
   splitTrainingData: (
     X: number[][],
     Y: number[][],

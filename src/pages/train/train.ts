@@ -119,7 +119,7 @@ export function encodeAndSplitDataTF(
   return [trainX, trainY, validationX, validationY, testX, testY];
 }
 
-export function applyOneHotEncoding(data: TensorData): { X: number[][]; Y: number[][] } {
+export function applyOneHotEncoding(data: TensorData): { inputs: number[][]; outputs: number[][] } {
   const X: number[][] = [];
   const Y: number[][] = [];
 
@@ -139,7 +139,7 @@ export function applyOneHotEncoding(data: TensorData): { X: number[][]; Y: numbe
     });
   });
 
-  return { X, Y };
+  return { inputs: X, outputs: Y };
 }
 
 export function splitTrainingData(

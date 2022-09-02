@@ -21,9 +21,9 @@ function createModel(classes: string[]):LayersModel {
 
   model.compile({
 
-    optimizer:  /*✨INSERT_HERE✨*/, 
+    optimizer:  /*✨INSERT_HERE✨*/, // optimizer options: 'sgd', 'adam', 'adamax', 'momentum'
 
-    loss:  /*✨INSERT_HERE✨*/,
+    loss:  /*✨INSERT_HERE✨*/, // loss options: 'categoricalCrossentropy' , 'binaryCrossentropy'
 
     metrics: ['accuracy'],
   });
@@ -40,9 +40,9 @@ function createModelSolution(classes: string[]):LayersModel {
       // Fill in the inputShape and units (hint this is equal to mediapipe hands output per image = 63)
       // Want to play with other activation functions, go for it!
       tf.layers.dense({ inputShape: [63], units: 63, activation: 'relu' }),
-      // Fill in units (nuerons) in range 100-300
+      // Fill in units (neurons) in range 100-300
       tf.layers.dense({ units: 256, activation: 'relu' }),
-      // Add a final dense layer wtih number of nuerons equal to classes (i.e classes.length )
+      // Add a final dense layer wtih number of neurons equal to classes (i.e classes.length )
       tf.layers.dense({ units: classes.length, activation: 'softmax' }),
     ],
   });
@@ -82,9 +82,9 @@ function createModel(classes: string[]):LayersModel {
 
   model.compile({
   
-    optimizer: 'adam', 
+    optimizer: 'adam',  // optimizer options: 'sgd', 'adam', 'adamax', 'momentum'
 
-    loss: 'categoricalCrossentropy',
+    loss: 'categoricalCrossentropy', // loss options: 'categoricalCrossentropy' , 'binaryCrossentropy'
     
     metrics: ['accuracy'],
   });

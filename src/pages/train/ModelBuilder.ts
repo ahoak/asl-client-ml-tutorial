@@ -334,10 +334,10 @@ export class ModelBuilder {
         const [x_train, x_val, y_train, y_val] = this.#data;
         instance.funcInput = [
           this.#aslModel,
-          x_train,
-          y_train,
-          x_val,
-          y_val,
+          // training data
+          { inputs: x_train, outputs: y_train },
+          // validation data
+          { inputs: x_val, outputs: y_val },
           // callbacks
           {
             onBatchEnd: this.onBatchEnd,

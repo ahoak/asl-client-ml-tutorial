@@ -7,11 +7,9 @@ import { createIncompleteImplValidationError } from '../../../utils/utils';
 export const template = `
 
 async function trainModel(
-  model: LayersModel,
-  inputTrainingData: number[][], 
-  outputTrainData: number[][], 
-  inputValidationData: number[][], 
-  outputValidationData: number[][], 
+  model: LayersModel, 
+  trainingData: { inputs: number[][]; outputs: number[][] },
+  validationData: { inputs: number[][]; outputs: number[][] },
   callbacks: {
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
@@ -19,10 +17,10 @@ async function trainModel(
   numEpochs = 5
 ): Promise<History> {
 
-  const inputs = tf.tensor(inputTrainingData);
-  const outputs = tf.tensor(outputTrainData);
-  const inputValidation = tf.tensor(inputValidationData);
-  const outputValidation = tf.tensor(outputValidationData);
+  const inputs = tf.tensor(trainingData.inputs);
+  const outputs = tf.tensor(trainingData.outputs);
+  const inputValidation = tf.tensor(validationData.inputs);
+  const outputValidation = tf.tensor(validationData.outputs);
 
   const modelHistory = await model.fit( /*✨INSERT_HERE✨*/, /*✨INSERT_HERE✨*/, {
     epochs: numEpochs, // default = 5 
@@ -45,10 +43,8 @@ async function trainModel(
 export const solution = `
  async function trainModelSolution(
   model: LayersModel,
-  inputTrainingData: number[][], 
-  outputTrainData: number[][], 
-  inputValidationData: number[][], 
-  outputValidationData: number[][], 
+  trainingData: { inputs: number[][]; outputs: number[][] },
+  validationData: { inputs: number[][]; outputs: number[][] },
   callbacks: {
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
@@ -56,11 +52,10 @@ export const solution = `
   numEpochs = 3,
 ): Promise<History> {
 
-  const inputs = tf.tensor(inputTrainingData);
-  const outputs = tf.tensor(outputTrainData);
-  const inputValidation = tf.tensor(inputValidationData);
-  const outputValidation = tf.tensor(outputValidationData);
-
+  const inputs = tf.tensor(trainingData.inputs);
+  const outputs = tf.tensor(trainingData.outputs);
+  const inputValidation = tf.tensor(validationData.inputs);
+  const outputValidation = tf.tensor(validationData.outputs);
 
   // Since our data fits in memory, we can use the model.fit() api. 
   // https://js.tensorflow.org/api/latest/#tf.LayersModel.fit
@@ -100,10 +95,8 @@ export const solve = `
 
 async function trainModel(
   model: LayersModel,
-  inputTrainingData: number[][], 
-  outputTrainData: number[][], 
-  inputValidationData: number[][], 
-  outputValidationData: number[][], 
+  trainingData: { inputs: number[][]; outputs: number[][] },
+  validationData: { inputs: number[][]; outputs: number[][] },
   callbacks: {
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
@@ -111,10 +104,10 @@ async function trainModel(
   numEpochs = 5
 ): Promise<History> {
 
-  const inputs = tf.tensor(inputTrainingData);
-  const outputs = tf.tensor(outputTrainData);
-  const inputValidation = tf.tensor(inputValidationData);
-  const outputValidation = tf.tensor(outputValidationData);
+  const inputs = tf.tensor(trainingData.inputs);
+  const outputs = tf.tensor(trainingData.outputs);
+  const inputValidation = tf.tensor(validationData.inputs);
+  const outputValidation = tf.tensor(validationData.outputs);
 
   const modelHistory = await model.fit(inputs, outputs, {
     epochs: numEpochs, 
@@ -138,10 +131,8 @@ async function trainModel(
 export function implementation<T = (...args: any[]) => any>(
   code: string,
   model: LayersModel,
-  inputTrainingData: number[][],
-  outputTrainData: number[][],
-  inputValidationData: number[][],
-  outputValidationData: number[][],
+  trainingData: { inputs: number[][]; outputs: number[][] },
+  validationData: { inputs: number[][]; outputs: number[][] },
   callbacks: {
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
@@ -151,35 +142,21 @@ export function implementation<T = (...args: any[]) => any>(
   // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
   const wrapper = new Function(
     'model',
-    'inputTrainingData',
-    'outputTrainData',
-    'inputValidationData',
-    'outputValidationData',
+    'trainingData',
+    'validationData',
     'callbacks',
     'numEpochs',
     'tf',
     'tfjs',
     `return (${code.replace(/export/g, '')})`,
   );
-  return wrapper(
-    model,
-    inputTrainingData,
-    outputTrainData,
-    inputValidationData,
-    outputValidationData,
-    callbacks,
-    numEpochs,
-    tf,
-    tf,
-  ) as T;
+  return wrapper(model, trainingData, validationData, callbacks, numEpochs, tf, tf) as T;
 }
 
 type trainModel = (
   model: LayersModel,
-  inputTrainingData: number[][],
-  outputTrainData: number[][],
-  inputValidationData: number[][],
-  outputValidationData: number[][],
+  trainingData: { inputs: number[][]; outputs: number[][] },
+  validationData: { inputs: number[][]; outputs: number[][] },
   callbacks: {
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
@@ -190,10 +167,8 @@ type trainModel = (
 export async function validate(
   impl: trainModel,
   model: LayersModel,
-  inputTrainingData: number[][],
-  outputTrainData: number[][],
-  inputValidationData: number[][],
-  outputValidationData: number[][],
+  trainingData: { inputs: number[][]; outputs: number[][] },
+  validationData: { inputs: number[][]; outputs: number[][] },
   callbacks: {
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
@@ -202,15 +177,7 @@ export async function validate(
 ): Promise<ValidationResult> {
   try {
     // eslint-disable-next-line @typescript-eslint/await-thenable
-    const history = await impl(
-      model,
-      inputTrainingData,
-      outputTrainData,
-      inputValidationData,
-      outputValidationData,
-      callbacks,
-      numEpochs,
-    );
+    const history = await impl(model, trainingData, validationData, callbacks, numEpochs);
 
     //TODO: Add validation method here??
 

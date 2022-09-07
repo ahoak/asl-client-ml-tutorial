@@ -1,5 +1,12 @@
 {{#if settings.avatarImage}}
-<div class="avatar-container">
-  <img src="{{ settings.avatarImage }}" class="avatar" alt="{{ settings.name }}" />
+<div class="avatar-content">
+  <div class="avatar-banner">
+    This workshop was built with ❤️ for
+  </div>
+  <div class="avatar-container">
+
+    <img src="{{baseUrl}}{{ settings.avatarImage }}" class="avatar" alt="{{ settings.name }}" />
+  </div>
 </div>
+
 {{/if}}

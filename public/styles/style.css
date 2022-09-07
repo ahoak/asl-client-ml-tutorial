@@ -125,7 +125,9 @@ body {
 p {
   margin: 0 0 1rem 0;
   line-height: 1.5 !important;
-  font-size: clamp(1rem, 0.25rem + 3.3333vw, 2rem);
+  /* font-size: clamp(1rem, 0.25rem + 3.3333vw, 2rem);
+   */
+   font-size: 1rem;
 }
 h1,
 h2,
@@ -167,6 +169,7 @@ ul {
 
 }
 
+
 /* Link styles */
 a:not(.btn--remix):link,
 a:not(.btn--remix):visited {
@@ -199,9 +202,43 @@ Select your chosen CSS by adding the theme name (e.g. glitch) in settings.json
 .avatar {
   max-width: var(--avatar-max-width);
   max-height: var(--avatar-max-width);
-  margin: 1rem 0 1.5rem;
-  border-radius: 50%;
+  margin: 0 0 1.5rem;
+  /* border-radius: 50%; */
 }
+
+.avatar-banner {
+  font-style: italic;
+}
+.avatar-content {
+  padding-top: 2%;
+}
+
+.agenda-table {
+  text-align: left;
+  justify-content: center;
+  width: 60%;
+  overflow: hidden;
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+
+.agenda-table td{
+  padding: 8px;
+  text-align: left;
+  vertical-align:middle;
+  font-weight: 300;
+  font-size: 12px;
+  border-bottom: solid 1px rgba(255,255,255,0.1);
+}
+.home-content-p {
+  text-align: left !important;
+}
+
+
+
 
 /* Link list content specified in settings.json links array */
 ul.link-list {
@@ -421,6 +458,10 @@ fluent-button {
 
 fluent-button.solve-button {
   --accent-fill-rest: var(--ghc_purple-1);
+}
+
+fluent-card {
+  padding-left: 10px;
 }
 
 #validation-status {

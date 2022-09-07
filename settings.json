@@ -3,7 +3,7 @@
   "metaDescription": "Train ASL Fingerspelling ML Model using Tensorflowjs",
   "name": "ASL Fingerspelling Tutorial 👋",
   "theme": "",
-  "avatarImage": "",
+  "avatarImage": "images/ghc_logo_v4.svg",
   "social": {
     "github": "https://github.com/ahoak/asl-client-ml-tutorial",
     "twitter": "https://twitter.com/amber_hoak"

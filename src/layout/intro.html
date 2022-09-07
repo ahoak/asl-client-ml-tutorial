@@ -1,0 +1,146 @@
+<div class="home-page-intro">
+    <hr />
+    <h2>Workshop Agenda</h2>
+
+    <table class="agenda-table">
+        <tr>
+            <td>
+                <p><b>Client-side ML: explanation and benefits</b></p>
+            </td>
+            <td>
+                <p>5 minutes</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><b>Use cases of client-side ML</b></p>
+            </td>
+            <td>
+                <p>5 minutes</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><b>Web platform constraints</b></p>
+            </td>
+            <td>
+                <p>5 minutes</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><b>ML Basics</b></p>
+            </td>
+            <td>
+                <p>5 minutes</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>
+                    <b>Static ASL Fingerspelling Tutorial</b>
+                </p>
+            </td>
+            <td>
+                <p>30 minutes</p>
+            </td>
+        </tr>
+    </table>
+
+
+    <h2>Goal</h2>
+    <div class="home-content-p">
+        <p> We will build a simple feed-forward network to classify static images to detect ASL
+            fingerspelling using <a href="https://www.tensorflow.org/js" target="_blank">
+                TensorFlow.js</a>
+            and then use the model to test locally with a participant’s own webcam.</p>
+    </div>
+
+    <fluent-card>
+        <h2>Getting Started</h2>
+        <div class="home-content-p">
+
+            <div>
+                <h3>Code</h3>
+                <p>Fill in code-blocks for interactive steps. Not all steps are
+                    interactive!
+                    Steps requiring user input will have a /*✨INSERT_HERE✨*/ as a placeholder
+                    for
+                    input in the code editor.
+                </p>
+
+
+                <p>Any errors that occur in the code will appear below the code editor. </p>
+
+                <p>When a step is validated, press
+                    <fluent-button class="train-button" appearance="accent">
+                        Next
+                    </fluent-button>. You should see a ✅ icon for completed steps.
+                </p>
+
+            </div>
+
+
+
+            <div>
+                <h3>Solution</h3>
+                <p>
+                    The solutions tab will allow you to check the answer.
+
+                </p>
+                <p>
+                    You can set the code editor to the
+                    solution by
+                    pressing <fluent-button class="solve-button" appearance="accent">Solve</fluent-button>
+
+                </p>
+
+            </div>
+            <p>
+                Having issues with the code editor? Pressing
+                <fluent-button class="reset-button">Reset</fluent-button> will put the editor back to default state.
+            </p>
+            <h3>Instructions</h3>
+            <ol>
+                <li>
+                    <p>First start with the <a href="{{baseUrl}}train" id="build">🔨 Build</a> page to create the model.
+                    </p>
+                    <ul>
+                        <li><b>Load Data (No Coding)</b>: Loads preprocessed data. Data images are from <a
+                                href="https://www.kaggle.com/datasets/grassknoted/asl-alphabet" target="_blank">
+                                Kaggle</a></li> and processed using <a
+                            href="https://google.github.io/mediapipe/solutions/hands.html" target="_blank"> MedialPipe
+                            Hands Model</a>.
+                        <li><b>Create and Configure Model</b>: Create a feed-forward network and specify layers,
+                            optimizer and loss functions.</li>
+                        <li><b>Train Model</b>: Specify training and validation data to train our model and run
+                            training.
+                        </li>
+                        <li><b>Download Model Files (No Coding)</b></li>
+                    </ul>
+                </li>
+                <li>
+                    <p>After model is created, navigate to
+                        <a href="{{baseUrl}}predict" id="predict">✨ Predict</a> page to use the model.
+
+                    </p>
+                    <ul>
+                        <li><b>Load Model (No Coding)</b>: Import a pre-trained model to perform inference with.</li>
+                        <li><b>Extract and Process Joint Positions (No Coding)</b>: Extract the hand joint positions
+                            from within an image.</li>
+                        <li><b>Classify</b>: Run inference with the normalized joint positions to get a classification
+                            (ASL sign).</li>
+                        <li><b>Run (No Coding)</b>: Run prediction on the model using your webcam.</li>
+                    </ul>
+                </li>
+
+            </ol>
+        </div>
+
+    </fluent-card>
+
+
+
+
+
+</div>

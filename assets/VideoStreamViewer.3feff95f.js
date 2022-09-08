@@ -1,4 +1,4 @@
-import{i as ZE}from"./utils.89a8259c.js";class Jf extends HTMLElement{templateRoot;constructor(e){super(),this.#e(!0,e)}hasAttribute(e){return super.hasAttribute(e)}getAttribute(e){return super.getAttribute(e)}setAttribute(e,t){return super.setAttribute(e,t)}connectedCallback(){}disconnectedCallback(){}adoptedCallback(){}attributeChangedCallback(e,t,i){}#e(e=!1,t){e?(this.attachShadow({mode:"open"}),this.templateRoot=this.shadowRoot??this):this.templateRoot=this,this.templateRoot.innerHTML=(t??"").replaceAll("{{baseUrl}}","/asl-client-ml-tutorial/").replaceAll("{{componentId}}",Math.random().toString(36).slice(2))}}const YE=`<style>\r
+import{i as ZE}from"./utils.fd1d5341.js";class Jf extends HTMLElement{templateRoot;constructor(e){super(),this.#e(!0,e)}hasAttribute(e){return super.hasAttribute(e)}getAttribute(e){return super.getAttribute(e)}setAttribute(e,t){return super.setAttribute(e,t)}connectedCallback(){}disconnectedCallback(){}adoptedCallback(){}attributeChangedCallback(e,t,i){}#e(e=!1,t){e?(this.attachShadow({mode:"open"}),this.templateRoot=this.shadowRoot??this):this.templateRoot=this,this.templateRoot.innerHTML=(t??"").replaceAll("{{baseUrl}}","/asl-client-ml-tutorial/").replaceAll("{{componentId}}",Math.random().toString(36).slice(2))}}const YE=`<style>\r
 	.issue-type {\r
 		display: inline-block;\r
 		font-weight: bold;\r
@@ -727,7 +727,7 @@ declare function normalize(values: number[]): number[];
  */
 declare interface LayersModel {
   predict(tensor: Tensor): Tensor;
-  fit(x: Tensor | Tensor[], y: Tensor | Tensor[][], ModelFitArgs): Promise<History>;
+  fit(inputs: Tensor, outputs: Tensor, ModelFitArgs): Promise<History>;
   compile(arg0: {
     // Adam changes the learning rate over time which is useful.
     // optimizer: 'adam',
@@ -762,9 +762,9 @@ declare interface History {
    * Await the values of all losses and metrics.
    */
   syncData(): Promise<void>;
-  params?: {
-    samples?: number;
-  };
+  params?: ModelFitArgs;
+  input: Tensor;
+  output: Tensor;
 }
 
 declare interface Tensor {
@@ -796,7 +796,7 @@ declare type ActivationIdentifier =
   | 'tanh'
   | 'swish'
   | 'mish';
-interface ModelFitArgs {
+declare interface ModelFitArgs {
   batchSize?: number;
   epochs?: number;
   verbose?: 0 | 1;

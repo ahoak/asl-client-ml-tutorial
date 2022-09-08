@@ -84,6 +84,10 @@ export class StepViewer {
     return this.#solutionElement;
   }
 
+  get stepCount(): number {
+    return this.#stepCount;
+  }
+
   resetCodeToDefault() {
     this.code = this.#stepRecord.template;
     localStorage.removeItem(`build:${this.#name}`);
@@ -122,6 +126,8 @@ export class StepViewer {
         if (!this.#overrideEventListener) {
           await this.handleEvalInput(code);
         }
+      } else {
+        this.#emitter.emit(ValidationComplete, this.#name, this.#stepCount, false);
       }
     });
   }

@@ -3,8 +3,8 @@
   <fluent-breadcrumb>
     {{#each settings.trainTutorialSteps}}
     <fluent-breadcrumb-item id="tutorial-step{{this.step}}">
-      <!-- <a href="#step{{this.step}}">{{this.description}}</a> -->
-      {{this.description}}
+      <a href="#step{{this.step}}">{{this.description}}</a>
+      <!-- {{this.description}} -->
     </fluent-breadcrumb-item>
     {{/each}}
   </fluent-breadcrumb>
@@ -60,10 +60,6 @@
 
     </fluent-tab-panel>
     <fluent-tab-panel id="instructionPanel">
-
-      <!-- <div class="load-data-description">
-          <image src="/instructions/loadData.png" height="600px" />
-        </div> -->
 
       {{#if settings.trainTutorialSteps}}
       {{#each settings.trainTutorialSteps}}

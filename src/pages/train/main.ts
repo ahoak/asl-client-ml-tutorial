@@ -13,3 +13,16 @@ void ModelBuilderInstance.init();
 
 // Test full pipeline without code-blocks
 // void testFullPipeline();
+
+/**
+ * Loads the step number from the url hash
+ * @returns The step number
+ */
+function loadStepFromHash(): number {
+  const hash = window.location.hash ?? null;
+  return +(hash.replace('#step', '') || '1');
+}
+// Listen to the hash change, and update the current step
+window.addEventListener('hashchange', () => ModelBuilderInstance.onStepChange(loadStepFromHash()));
+
+void ModelBuilderInstance.onStepChange(loadStepFromHash());

@@ -249,6 +249,9 @@ export function download(filename: string, data: string) {
 }
 
 export async function exportModel(model: LayersModel): Promise<void> {
+  // save to localstorage or downloads
+  await model.save('localstorage://model');
+  console.log('model saved to localstorage!');
   const zip = new JSZip();
   const files = await model.save(new ArrayBufferModelSaver());
   const f = files as unknown as { data: { [key: string]: ArrayBuffer } };
@@ -268,4 +271,37 @@ export async function exportModel(model: LayersModel): Promise<void> {
       console.warn(error);
     },
   );
+}
+
+export async function trainModelSolution(
+  model?: LayersModel,
+  trainingData?: { inputs: number[][]; outputs: number[][] },
+  validationData?: { inputs: number[][]; outputs: number[][] },
+  callbacks?: {
+    onBatchEnd: (batch: number, logs?: Logs) => void;
+    onEpochEnd: (epoch: number) => void;
+  },
+  numEpochs = 5,
+  batchSize = 128,
+) {
+  if (!model || !trainingData || !validationData) {
+    return new Error('missing parameter for trainModel');
+  }
+  const inputs = tf.tensor(trainingData.inputs);
+  const outputs = tf.tensor(trainingData.outputs);
+  const inputValidation = tf.tensor(validationData.inputs);
+  const outputValidation = tf.tensor(validationData.outputs);
+
+  await model.fit(inputs, outputs, {
+    epochs: numEpochs,
+    batchSize,
+    verbose: 1,
+    validationData: [inputValidation, outputValidation],
+    callbacks: callbacks,
+  });
+
+  inputs.dispose();
+  outputs.dispose();
+  inputValidation.dispose();
+  outputValidation.dispose();
 }

@@ -30,11 +30,20 @@ export function handleValidationgComplete(
     const breadcrumbItem = getOrCreateElement(`#tutorial-step${step}`) as BreadcrumbItem;
     const description = Settings.trainTutorialSteps.find((item) => item.step === step);
     if (description && breadcrumbItem) {
-      breadcrumbItem.innerHTML = `✅${description.description}`;
+      breadcrumbItem.innerHTML = `<a href="#step${step}">✅${description.description}</a>`;
     }
     const actionButton = getOrCreateElement(actionButtonQuery) as HTMLButtonElement;
     actionButton.disabled = false;
   }
+}
+
+export function handleNavReset(step: number) {
+  const breadcrumbItem = getOrCreateElement(`#tutorial-step${step}`) as BreadcrumbItem;
+  const description = Settings.trainTutorialSteps.find((item) => item.step === step);
+  if (description && breadcrumbItem) {
+    breadcrumbItem.innerHTML = `<a href="#step${step}">${description.description}</a>`;
+  }
+  clearValidationFeedback();
 }
 
 export function clearValidationFeedback() {

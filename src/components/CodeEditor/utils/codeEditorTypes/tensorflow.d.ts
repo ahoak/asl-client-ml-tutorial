@@ -3,7 +3,7 @@
  */
 declare interface LayersModel {
   predict(tensor: Tensor): Tensor;
-  fit(x: Tensor | Tensor[], y: Tensor | Tensor[][], ModelFitArgs): Promise<History>;
+  fit(inputs: Tensor, outputs: Tensor, ModelFitArgs): Promise<History>;
   compile(arg0: {
     // Adam changes the learning rate over time which is useful.
     // optimizer: 'adam',
@@ -38,9 +38,9 @@ declare interface History {
    * Await the values of all losses and metrics.
    */
   syncData(): Promise<void>;
-  params?: {
-    samples?: number;
-  };
+  params?: ModelFitArgs;
+  input: Tensor;
+  output: Tensor;
 }
 
 declare interface Tensor {
@@ -72,7 +72,7 @@ declare type ActivationIdentifier =
   | 'tanh'
   | 'swish'
   | 'mish';
-interface ModelFitArgs {
+declare interface ModelFitArgs {
   batchSize?: number;
   epochs?: number;
   verbose?: 0 | 1;

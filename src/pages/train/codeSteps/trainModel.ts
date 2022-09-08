@@ -1,4 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
+import { sequential } from '@tensorflow/tfjs';
 
 import type { ValidationResult } from '../../../types';
 import { ValidationErrorType } from '../../../types';
@@ -162,7 +163,7 @@ type trainModel = (
     onEpochEnd: (epoch: number) => void;
   },
   numEpochs?: number,
-) => Promise<History>;
+) => Promise<any>;
 
 export async function validate(
   impl: trainModel,
@@ -175,24 +176,52 @@ export async function validate(
   },
   numEpochs?: number,
 ): Promise<ValidationResult> {
+  let modelHistory: History;
   try {
-    // eslint-disable-next-line @typescript-eslint/await-thenable
-    const history = await impl(model, trainingData, validationData, callbacks, numEpochs);
+    if (!model) {
+      return createIncompleteImplValidationError(`
+      Missing model. Please make sure model was created in previous step. 
+      `);
+    }
+    if (!trainingData || !validationData) {
+      return createIncompleteImplValidationError(`
+      Missing data. Please make sure data is loaded in step 1.'
+      `);
+    }
 
-    //TODO: Add validation method here??
-
-    if (!history) {
+    const fakeModel = {} as unknown as LayersModel;
+    fakeModel.fit = (input: Tensor, output: Tensor, parameters: ModelFitArgs) => {
+      return new Promise((resolve) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        return resolve({
+          epoch: [0],
+          history: {},
+          params: parameters,
+          validationData: null,
+          input,
+          output,
+        } as unknown as any);
+      });
+    };
+    // eslint-disable-next-line @typescript-eslint/await-thenable, @typescript-eslint/no-unsafe-assignment
+    modelHistory = await impl(fakeModel, trainingData, validationData, callbacks, numEpochs);
+    if (!modelHistory) {
       return createIncompleteImplValidationError(`
       Looks like you didn't return anything. Please return value from model.fit()'
       `);
-    } else if (!history.params) {
+    } else if (!modelHistory.params) {
       return createIncompleteImplValidationError(`
       Looks like you didn't put any parameters in your fit function'
+      `);
+    } else if (!modelHistory.input || !modelHistory.output) {
+      return createIncompleteImplValidationError(`
+      Model.fit() requires input and output to defined parameters.'
       `);
     }
   } catch (e) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    const error = `${e}`;
+
+    const error = `${JSON.stringify(e)}`;
     return {
       valid: false,
       errors: [
@@ -203,10 +232,12 @@ export async function validate(
       ],
     };
   }
+  const batchSize = modelHistory ? modelHistory.params?.batchSize : 128;
+  const epochs = modelHistory ? modelHistory.params?.epochs : 5;
 
   return {
     valid: true,
     errors: [],
-    data: [],
+    data: [batchSize, epochs],
   };
 }

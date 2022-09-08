@@ -29,7 +29,7 @@ export class BuildState {
   #startTrainingButton = getOrCreateElement('.training-start-button') as HTMLButtonElement;
   #stopTrainingButton = getOrCreateElement('.training-stop-button') as HTMLButtonElement;
 
-  #trainingComplete = false;
+  //   #trainingComplete = false;
 
   #stepCompleted: Record<string, boolean> = {};
 
@@ -86,17 +86,19 @@ export class BuildState {
 
   getTrainingData(): { inputs: number[][]; outputs: number[][] } | undefined {
     if (this.#data) {
-      const [x_train, x_val, y_train, y_val] = this.#data!;
+      const [x_train, , y_train] = this.#data!;
       return { inputs: x_train, outputs: y_train };
     }
+    return;
   }
 
   getValidationData(): { inputs: number[][]; outputs: number[][] } | undefined {
     if (this.#data) {
       //[X_train, X_val, y_train, y_val];
-      const [x_train, x_val, y_train, y_val] = this.#data;
+      const [, x_val, , y_val] = this.#data;
       return { inputs: x_val, outputs: y_val };
     }
+    return;
   }
 
   handleModelResults = (result: ValidationResult) => {
@@ -170,7 +172,7 @@ export class BuildState {
     this.#timeElement.innerHTML = `${time} ${hasMinutes ? 'minutes' : 'seconds'} remaining`;
     this.#startBatchTime = Date.now();
     if (epoch === this.#epochs - 1) {
-      this.#trainingComplete = true;
+      //   this.#trainingComplete = true;
       handleValidationgComplete(this.step ?? 1, true, getSuccessStatement('trainModel'));
     }
   };
@@ -207,7 +209,7 @@ export class BuildState {
   handleTrainingStopped() {
     this.#trainingEnabled = false;
     this.#startTrainingButton.disabled = false;
-    this.#trainingComplete = true;
+    // this.#trainingComplete = true;
     handleValidationgComplete(this.step ?? 1, true, getSuccessStatement('trainModel'));
   }
 
@@ -234,7 +236,7 @@ export class BuildState {
       this.#trainingEnabled = true;
       this.#currentEpochCount = 1;
       this.#startTrainingButton.disabled = true;
-      this.#trainingComplete = false;
+      //   this.#trainingComplete = false;
 
       await trainModelSolution(model, trainingData, validationData, cbs, epochs, this.#batchSize);
     }

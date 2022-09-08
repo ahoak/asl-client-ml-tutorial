@@ -1,12 +1,9 @@
 import type { Tab } from '@fluentui/web-components';
 
-import type { CodeStepComponent } from '../../components';
 import { getOrCreateElement } from '../../utils/utils';
 
 export class ElementViewer {
-  #mainEle = getOrCreateElement('#output-element') as HTMLElement;
   #trainingStatusElement = getOrCreateElement('.training-feedback-container') as HTMLElement;
-  #codeStepEles = document.querySelectorAll('code-step') as NodeListOf<CodeStepComponent>;
   #solutionTabPanel = getOrCreateElement('#solution-tab') as Tab;
 
   #actionButton = getOrCreateElement('.train-button') as HTMLButtonElement;

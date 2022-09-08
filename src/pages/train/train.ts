@@ -292,7 +292,7 @@ export async function trainModelSolution(
   const inputValidation = tf.tensor(validationData.inputs);
   const outputValidation = tf.tensor(validationData.outputs);
 
-  await model.fit(inputs, outputs, {
+  const modelHistory = await model.fit(inputs, outputs, {
     epochs: numEpochs,
     batchSize,
     verbose: 1,
@@ -304,4 +304,6 @@ export async function trainModelSolution(
   outputs.dispose();
   inputValidation.dispose();
   outputValidation.dispose();
+
+  return modelHistory;
 }

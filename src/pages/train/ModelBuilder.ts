@@ -12,7 +12,6 @@ import type { CodeStepRecord } from './codeSteps';
 import { codeSteps } from './codeSteps';
 import { ElementViewer, highlightNavStep, unhighlightNavStep } from './ElementViewer';
 import { StepViewer, Validated } from './StepViewer';
-import { exportModel } from './train';
 import { clearValidationFeedback, handleNavReset } from './utils/dataLoader';
 
 const ProjectSettingsConfig = Settings as unknown as ProjectSettings;

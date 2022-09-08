@@ -1,5 +1,4 @@
 import * as tf from '@tensorflow/tfjs';
-import { sequential } from '@tensorflow/tfjs';
 
 import type { ValidationResult } from '../../../types';
 import { ValidationErrorType } from '../../../types';

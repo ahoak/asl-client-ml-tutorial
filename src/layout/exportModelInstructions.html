@@ -1,0 +1,11 @@
+{{#markdown}}
+1. We can export our model for use in our application by using the [model.save()](https://js.tensorflow.org/api/latest/#tf.LayersModel.save) method. Here we are exporting a model as a zip folder to download locally.This saves the model topology (model.json) and weights (binary files). 
+We are also using the following method to download to localstorage:
+``` javascript
+await model.save('localstorage://model');
+```
+> Press the **'Download'** button.
+
+> Continue to the **'Predict'** tab when download is complete. 
+
+{{/markdown}}

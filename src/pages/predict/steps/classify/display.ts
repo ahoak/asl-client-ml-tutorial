@@ -1,3 +1,4 @@
+import instructions from '../../../../layout/classifyInstructions.html?raw';
 import { CodeStepBaseComponent } from '../codeStepBase';
 import type { StepDisplayElement } from '../types';
 import { defaultCode, fullyCommentedSolutionCode, hints, solutionCode } from './code';
@@ -19,6 +20,7 @@ export class ClassifyStep
       validate,
       hints,
       instructionsUrl,
+      instructionsMarkdown: instructions,
     });
   }
 }

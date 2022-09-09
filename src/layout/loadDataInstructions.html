@@ -1,0 +1,13 @@
+{{#markdown}}
+1. Use the [MedialPipe Hands Model](https://google.github.io/mediapipe/solutions/hands.html) to extract the set of joint positions of each image in the dataset.
+![mediapipe hands datapoints]({{baseUrl}}instructions/load_data_asset1.png)
+2. Flatten the joint positions into an array of values with the format:
+``[x_1,y_1,z_1,x_2,y_2,z_2 ... x_21, y_21, z_21]
+``
+3. Normalize the flattened joint positions so that the values are scaled from -1 to 1.
+4. Shuffle the data.
+5. Use [one-hot encoding](https://www.geeksforgeeks.org/what-is-one-hot-design/) to transform the letter labels (i.e. 'A', 'B', 'C'...) to a machine-friendly data format.
+![one hot encoding example]({{baseUrl}}instructions/load_data_asset2.png)
+6. Split data into a training dataset, validation dataset, and test dataset.
+![data split illustration]({{baseUrl}}instructions/load_data_asset3.png)
+{{/markdown}}

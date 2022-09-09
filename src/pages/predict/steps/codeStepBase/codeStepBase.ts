@@ -62,6 +62,8 @@ export abstract class CodeStepBaseComponent<
    */
   #instructionsImageEle: HTMLImageElement | null = null;
 
+  #instructionsElement: HTMLElement | null = null;
+
   /**
    * The solve button
    */
@@ -97,6 +99,8 @@ export abstract class CodeStepBaseComponent<
    */
   readonly instructionsUrl: string | null;
 
+  readonly instructionsMarkdown: string | null;
+
   /**
    * True if the code toggle button should be visible
    */
@@ -128,6 +132,7 @@ export abstract class CodeStepBaseComponent<
     validate,
     template = defaultTemplate,
     instructionsUrl,
+    instructionsMarkdown,
   }: {
     defaultCode: string;
     solutionCode?: string | null;
@@ -139,13 +144,16 @@ export abstract class CodeStepBaseComponent<
     validate: ValidationFunction<StateType>;
     template?: string;
     instructionsUrl?: string;
+    instructionsMarkdown?: string;
   }) {
+    console.log('instructionsUrl', instructionsUrl);
     super(template);
 
     this.defaultCode = defaultCode;
     this.fullyCommentedSolutionCode = fullyCommentedSolutionCode ?? solutionCode ?? null;
     this.solutionCode = solutionCode ?? fullyCommentedSolutionCode ?? null;
     this.instructionsUrl = instructionsUrl ?? null;
+    this.instructionsMarkdown = instructionsMarkdown ?? null;
     this.showCodeToggleButton = showCodeToggleButton ?? false;
     this.readonly = readonly ?? false;
     this.codeHints = hints ?? null;
@@ -238,11 +246,16 @@ export abstract class CodeStepBaseComponent<
     this.#solveButton = this.root.querySelector('.solve-button');
     this.#resetButton = this.root.querySelector('.reset-button');
     this.#instructionsImageEle = this.root.querySelector('.instructions-image');
+    this.#instructionsElement = this.root.querySelector('.instructions-md');
     this.#instructionsTabEle = this.root.querySelector('#instructions-tab');
 
     if (this.#instructionsImageEle) {
       this.#instructionsImageEle.style.display = this.instructionsUrl ? '' : 'none';
       this.#instructionsImageEle.src = this.instructionsUrl ?? 'about:blank';
+    }
+    if (this.#instructionsElement) {
+      this.#instructionsElement.style.display = this.instructionsMarkdown ? '' : 'none';
+      this.#instructionsElement.innerHTML = this.instructionsMarkdown ?? 'about:blank';
     }
     if (this.#instructionsTabEle) {
       this.#instructionsTabEle.style.display = this.instructionsUrl ? '' : 'none';

@@ -65,7 +65,18 @@
       {{#each settings.trainTutorialSteps}}
 
       <div class="instructions-image" id="{{this.name}}-image" style="display: none">
-        <image src="{{this.baseUrl}}{{this.imageLink}}" class="instruction-img" />
+        {{#ifEquals this.name "loadData"}}
+          {{> loadDataInstructions baseUrl }}
+        {{/ifEquals}}
+        {{#ifEquals this.name "createModel"}}
+          {{> createModelInstructions baseUrl  }}
+        {{/ifEquals}}
+        {{#ifEquals this.name "trainModel"}}
+          {{> trainModelInstructions baseUrl }}
+        {{/ifEquals}}
+        {{#ifEquals this.name "exportModel"}}
+        {{> exportModelInstructions baseUrl }}
+      {{/ifEquals}}
       </div>
       {{/each}}
       {{/if}}

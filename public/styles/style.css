@@ -494,13 +494,15 @@ fluent-card {
 }
 
 .instructions-image {
-  max-width: 900px;
+  text-align: left;
 }
 
-.instruction-img {
-  max-width: 900px;
-  width: 100%;
-}
+/* markdown codeblocks*/
+pre {
+  background-color: white;
+} 
+
+
 /******************************************************************************
 END default theme
 ******************************************************************************/

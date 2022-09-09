@@ -146,7 +146,6 @@ export abstract class CodeStepBaseComponent<
     instructionsUrl?: string;
     instructionsMarkdown?: string;
   }) {
-    console.log('instructionsUrl', instructionsUrl);
     super(template);
 
     this.defaultCode = defaultCode;

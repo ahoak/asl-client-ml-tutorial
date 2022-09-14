@@ -1,0 +1,59 @@
+{{#markdown}}
+1. **Create model architecture using [tf.sequential()](https://js.tensorflow.org/api/latest/#sequential) API.** 
+This will create a model which executes sequentially, where the outputs of one layer are the inputs for the next layer. 
+We will create our model by adding layers using tf.layers.dense() API.
+Dense layers means each neuron in the layer is fully connected to all inputs. Activation functions will produce output if values cross some threshold.
+
+```javascript
+const model = tf.sequential({
+    layers: [
+      // INPUT LAYER  
+      tf.layers.dense({ inputShape: [/*✨INSERT_HERE✨*/], units: /*✨INSERT_HERE✨*/, activation: 'relu' }),
+      // HIDDEN LAYER  
+      tf.layers.dense({ units: /*✨INSERT_HERE✨*/, activation: 'relu' }),
+      // OUTPUT LAYER  
+      tf.layers.dense({ units: /*✨INSERT_HERE✨*/, activation: 'softmax' }),
+    ],
+  });
+```
+
+> **✨Input Layer** 
+Fill in the inputShape and units (number of neurons) based on our feature values  
+(hint this is equal to mediapipe hands joint positions per image = 63)
+
+ > **✨Hidden Layer**
+Choose number of neurons for the hidden layer.
+We suggest in range 100-300 neurons.
+
+> **✨Output Layer**
+Add final layer with number of neurons equal to the letter classes (i.e classes.length). 
+
+> ![model overview]({{baseUrl}}instructions/create_model_asset1.png)
+
+
+> **Softmax Activation**: used for classification and requires mutually exclusive prediction outputs. This produces values that add to 1. 
+
+> **Rectified Linear Unit (ReLU) Activation**: returns 0 if neuron output value is less than 0 and returns value in all other cases. 
+
+
+2. **Configure model using [model.compile()](https://js.tensorflow.org/api/latest/#tf.LayersModel.compile).**  
+Here we can fine tune our model by providing optimizer and loss functions.
+The model will initialize with random values to weights and bias. 
+Neurons improve accuracy by adjusting weights and biases during training. 
+We measure how incorrect our model predictions are with our loss function. Our goal is to minimize loss.
+The optimizer defines how to tweak the parameters to get closer to minimum loss.
+
+``` javascript
+model.compile({
+// optimizer options: 'sgd', 'adam', 'adamax', 'momentum'
+optimizer:  /*✨INSERT_HERE✨*/, 
+// loss options: 'categoricalCrossentropy' , 'binaryCrossentropy'
+loss:  /*✨INSERT_HERE✨*/, 
+metrics: ['accuracy'],
+})
+```
+> **✨[Optimizer Function](https://js.tensorflow.org/api/latest/#class:train.Optimizer)**: Choose an optimizer (options include 'sgd', 'adam', 'momentum', 'adamax').
+
+> **✨[Loss Function](https://js.tensorflow.org/api/latest/#Training-Losses)**: Choose loss function, we suggest ‘categoricalCrossentropy’ since our output is greater than 3 and has a probability distribution.
+
+{{/markdown}}

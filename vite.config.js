@@ -4,8 +4,11 @@ import handlebarsPlugin from 'vite-plugin-handlebars';
 import mpa from 'vite-plugin-mpa';
 import topLevelAwait from 'vite-plugin-top-level-await';
 import wasm from 'vite-plugin-wasm';
+const markdown = require('helper-markdown');
 
 const Settings = require('./settings.json');
+
+
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
@@ -33,6 +36,13 @@ export default defineConfig(async () => {
         },
 
         reloadOnPartialChange: true,
+        helpers: {
+          markdown: (value) => markdown(value),
+          ifEquals: function(arg1, arg2, options) {
+            return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+        },
+
+        },
       }),
     ],
     base,

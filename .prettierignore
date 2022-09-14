@@ -6,3 +6,4 @@ build/
 dist/
 lib/
 public/
+*.html

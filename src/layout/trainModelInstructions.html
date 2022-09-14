@@ -1,0 +1,28 @@
+{{#markdown}}
+1. Train our model by using the async function [model.fit()](https://js.tensorflow.org/api/latest/#tf.LayersModel.fit).  This will adjust the weights and bias to learn from the data.
+``` javascript
+await model.fit( /*✨INSERT_HERE✨*/, /*✨INSERT_HERE✨*/, {
+    epochs: numEpochs, // default = 5 
+    batchSize: 128, 
+    verbose: 1,
+    validationData: [/*✨INSERT_HERE✨*/, /*✨INSERT_HERE✨*/],
+    callbacks: callbacks
+});
+```
+**✨Training Data** : You will need to define the input data as a tensor (```inputs```) and the output data as a tensor (```outputs```) as parameters in model.fit().
+
+**✨Validation Data** : Add the validation data (inputValidation,  outputValidation) to evaluate model performance.
+
+*Model.fit() method also accepts parameters such as epochs, batchSize, and callbacks.*
+**batchSize**: number of training examples before calculating loss and optimizes weights and biases.
+**epochs**: number of times the model will go through the entire training dataset.
+**callbacks**: callback functions to hook into in order to track progress.
+
+Whenever we create tensors we need to remove them from memory for best performance. We can do this with the [tensor.dispose()](https://js.tensorflow.org/api/latest/#tf.Tensor.dispose) method.
+
+``` javascript
+inputs.dispose()
+```
+When you feel your model is ready to train, click 'Start training' button.
+
+{{/markdown}}

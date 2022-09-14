@@ -60,7 +60,7 @@ export class ElementViewer {
 
   showInstructions(name: string) {
     const instructionsContainer = getOrCreateElement(`#${name}-image`) as HTMLElement;
-    instructionsContainer.style.display = 'flex';
+    instructionsContainer.style.display = 'block';
   }
 
   hideInstructions(name: string) {

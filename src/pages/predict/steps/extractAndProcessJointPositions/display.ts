@@ -1,3 +1,4 @@
+import instructions from '../../../../layout/extractJointInstructions.html?raw';
 import { CodeStepBaseComponent } from '../codeStepBase';
 import type { StepDisplayElement } from '../types';
 import { defaultCode } from './code';
@@ -17,6 +18,7 @@ export class ExtractAndProcessJointPositionsStep
       validate,
       readonly: true,
       instructionsUrl,
+      instructionsMarkdown: instructions,
     });
   }
 }

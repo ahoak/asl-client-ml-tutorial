@@ -32,7 +32,7 @@
     
     </div>
     <link rel="stylesheet" type="text/css" href="/asl-client-ml-tutorial/styles/themes/glitch.css" />
-  <script type="module" crossorigin src="/asl-client-ml-tutorial/assets/train.64387186.js"></script>
+  <script type="module" crossorigin src="/asl-client-ml-tutorial/assets/train.94445029.js"></script>
   <link rel="modulepreload" crossorigin href="/asl-client-ml-tutorial/assets/utils.fd1d5341.js">
   <link rel="modulepreload" crossorigin href="/asl-client-ml-tutorial/assets/VideoStreamViewer.3feff95f.js">
   <link rel="stylesheet" href="/asl-client-ml-tutorial/assets/VideoStreamViewer.1bd16a3c.css">
@@ -119,19 +119,122 @@
                 
                 
                       <div class="instructions-image" id="loadData-image" style="display: none">
-                        <image src="/asl-client-ml-tutorial/instructions/loadData.png" class="instruction-img" />
+                          <ol>
+                          <li>Use the <a href="https://google.github.io/mediapipe/solutions/hands.html">MedialPipe Hands Model</a> to extract the set of joint positions of each image in the dataset.<br>
+                          <img src="instructions/load_data_asset1.png" alt="mediapipe hands datapoints"></li>
+                          <li>Flatten the joint positions into an array of values with the format:<br>
+                          <code>[x_1,y_1,z_1,x_2,y_2,z_2 ... x_21, y_21, z_21]</code></li>
+                          <li>Normalize the flattened joint positions so that the values are scaled from -1 to 1.</li>
+                          <li>Shuffle the data.</li>
+                          <li>Use <a href="https://www.geeksforgeeks.org/what-is-one-hot-design/">one-hot encoding</a> to transform the letter labels (i.e. 'A', 'B', 'C'...) to a machine-friendly data format.<br>
+                          <img src="instructions/load_data_asset2.png" alt="one hot encoding example"></li>
+                          <li>Split data into a training dataset, validation dataset, and test dataset.<br>
+                          <img src="instructions/load_data_asset3.png" alt="data split illustration"></li>
+                          </ol>
                       </div>
                 
                       <div class="instructions-image" id="createModel-image" style="display: none">
-                        <image src="/asl-client-ml-tutorial/instructions/createModel.png" class="instruction-img" />
+                          <ol>
+                          <li><strong>Create model architecture using <a href="https://js.tensorflow.org/api/latest/#sequential">tf.sequential()</a> API.</strong><br>
+                          This will create a model which executes sequentially, where the outputs of one layer are the inputs for the next layer.<br>
+                          We will create our model by adding layers using tf.layers.dense() API.<br>
+                          Dense layers means each neuron in the layer is fully connected to all inputs. Activation functions will produce output if values cross some threshold.</li>
+                          </ol>
+                          <pre><code class="language-javascript"><span class="hljs-keyword">const</span> model = tf.sequential({
+                              <span class="hljs-attr">layers</span>: [
+                                <span class="hljs-comment">// INPUT LAYER  </span>
+                                tf.layers.dense({ <span class="hljs-attr">inputShape</span>: [<span class="hljs-comment">/*✨INSERT_HERE✨*/</span>], <span class="hljs-attr">units</span>: <span class="hljs-comment">/*✨INSERT_HERE✨*/</span>, <span class="hljs-attr">activation</span>: <span class="hljs-string">'relu'</span> }),
+                                <span class="hljs-comment">// HIDDEN LAYER  </span>
+                                tf.layers.dense({ <span class="hljs-attr">units</span>: <span class="hljs-comment">/*✨INSERT_HERE✨*/</span>, <span class="hljs-attr">activation</span>: <span class="hljs-string">'relu'</span> }),
+                                <span class="hljs-comment">// OUTPUT LAYER  </span>
+                                tf.layers.dense({ <span class="hljs-attr">units</span>: <span class="hljs-comment">/*✨INSERT_HERE✨*/</span>, <span class="hljs-attr">activation</span>: <span class="hljs-string">'softmax'</span> }),
+                              ],
+                            });
+                          </code></pre>
+                          <blockquote>
+                          <p><strong>✨Input Layer</strong><br>
+                          Fill in the inputShape and units (number of neurons) based on our feature values<br>
+                          (hint this is equal to mediapipe hands joint positions per image = 63)</p>
+                          </blockquote>
+                          <blockquote>
+                          <p><strong>✨Hidden Layer</strong><br>
+                          Choose number of neurons for the hidden layer.<br>
+                          We suggest in range 100-300 neurons.</p>
+                          </blockquote>
+                          <blockquote>
+                          <p><strong>✨Output Layer</strong><br>
+                          Add final layer with number of neurons equal to the letter classes (i.e classes.length).</p>
+                          </blockquote>
+                          <blockquote>
+                          <p><img src="instructions/create_model_asset1.png" alt="model overview"></p>
+                          </blockquote>
+                          <blockquote>
+                          <p><strong>Softmax Activation</strong>: used for classification and requires mutually exclusive prediction outputs. This produces values that add to 1.</p>
+                          </blockquote>
+                          <blockquote>
+                          <p><strong>Rectified Linear Unit (ReLU) Activation</strong>: returns 0 if neuron output value is less than 0 and returns value in all other cases.</p>
+                          </blockquote>
+                          <ol start="2">
+                          <li><strong>Configure model using <a href="https://js.tensorflow.org/api/latest/#tf.LayersModel.compile">model.compile()</a>.</strong>  <br>
+                          Here we can fine tune our model by providing optimizer and loss functions.<br>
+                          The model will initialize with random values to weights and bias.<br>
+                          Neurons improve accuracy by adjusting weights and biases during training.<br>
+                          We measure how incorrect our model predictions are with our loss function. Our goal is to minimize loss.<br>
+                          The optimizer defines how to tweak the parameters to get closer to minimum loss.</li>
+                          </ol>
+                          <pre><code class="language-javascript">model.compile({
+                          <span class="hljs-comment">// optimizer options: 'sgd', 'adam', 'adamax', 'momentum'</span>
+                          <span class="hljs-attr">optimizer</span>:  <span class="hljs-comment">/*✨INSERT_HERE✨*/</span>, 
+                          <span class="hljs-comment">// loss options: 'categoricalCrossentropy' , 'binaryCrossentropy'</span>
+                          <span class="hljs-attr">loss</span>:  <span class="hljs-comment">/*✨INSERT_HERE✨*/</span>, 
+                          <span class="hljs-attr">metrics</span>: [<span class="hljs-string">'accuracy'</span>],
+                          })
+                          </code></pre>
+                          <blockquote>
+                          <p><strong>✨<a href="https://js.tensorflow.org/api/latest/#class:train.Optimizer">Optimizer Function</a></strong>: Choose an optimizer (options include 'sgd', 'adam', 'momentum', 'adamax').</p>
+                          </blockquote>
+                          <blockquote>
+                          <p><strong>✨<a href="https://js.tensorflow.org/api/latest/#Training-Losses">Loss Function</a></strong>: Choose loss function, we suggest ‘categoricalCrossentropy’ since our output is greater than 3 and has a probability distribution.</p>
+                          </blockquote>
                       </div>
                 
                       <div class="instructions-image" id="trainModel-image" style="display: none">
-                        <image src="/asl-client-ml-tutorial/instructions/trainModel.png" class="instruction-img" />
+                          <ol>
+                          <li>Train our model by using the async function <a href="https://js.tensorflow.org/api/latest/#tf.LayersModel.fit">model.fit()</a>.  This will adjust the weights and bias to learn from the data.</li>
+                          </ol>
+                          <pre><code class="language-javascript"><span class="hljs-keyword">await</span> model.fit( <span class="hljs-comment">/*✨INSERT_HERE✨*/</span>, <span class="hljs-comment">/*✨INSERT_HERE✨*/</span>, {
+                              <span class="hljs-attr">epochs</span>: numEpochs, <span class="hljs-comment">// default = 5 </span>
+                              <span class="hljs-attr">batchSize</span>: <span class="hljs-number">128</span>, 
+                              <span class="hljs-attr">verbose</span>: <span class="hljs-number">1</span>,
+                              <span class="hljs-attr">validationData</span>: [<span class="hljs-comment">/*✨INSERT_HERE✨*/</span>, <span class="hljs-comment">/*✨INSERT_HERE✨*/</span>],
+                              <span class="hljs-attr">callbacks</span>: callbacks
+                          });
+                          </code></pre>
+                          <p><strong>✨Training Data</strong> : You will need to define the input data as a tensor (<code>inputs</code>) and the output data as a tensor (<code>outputs</code>) as parameters in model.fit().</p>
+                          <p><strong>✨Validation Data</strong> : Add the validation data (inputValidation,  outputValidation) to evaluate model performance.</p>
+                          <p><em>Model.fit() method also accepts parameters such as epochs, batchSize, and callbacks.</em><br>
+                          <strong>batchSize</strong>: number of training examples before calculating loss and optimizes weights and biases.<br>
+                          <strong>epochs</strong>: number of times the model will go through the entire training dataset.<br>
+                          <strong>callbacks</strong>: callback functions to hook into in order to track progress.</p>
+                          <p>Whenever we create tensors we need to remove them from memory for best performance. We can do this with the <a href="https://js.tensorflow.org/api/latest/#tf.Tensor.dispose">tensor.dispose()</a> method.</p>
+                          <pre><code class="language-javascript">inputs.dispose()
+                          </code></pre>
+                          <p>When you feel your model is ready to train, click 'Start training' button.</p>
                       </div>
                 
                       <div class="instructions-image" id="exportModel-image" style="display: none">
-                        <image src="/asl-client-ml-tutorial/instructions/exportModel.png" class="instruction-img" />
+                        <ol>
+                        <li>We can export our model for use in our application by using the <a href="https://js.tensorflow.org/api/latest/#tf.LayersModel.save">model.save()</a> method. Here we are exporting a model as a zip folder to download locally.This saves the model topology (model.json) and weights (binary files).<br>
+                        We are also using the following method to download to localstorage:</li>
+                        </ol>
+                        <pre><code class="language-javascript"><span class="hljs-keyword">await</span> model.save(<span class="hljs-string">'localstorage://model'</span>);
+                        </code></pre>
+                        <blockquote>
+                        <p>Press the <strong>'Download'</strong> button.</p>
+                        </blockquote>
+                        <blockquote>
+                        <p>Continue to the <strong>'Predict'</strong> tab when download is complete.</p>
+                        </blockquote>
                       </div>
                 
                     </fluent-tab-panel>
@@ -175,5 +278,8 @@
     </main>
 
 </body>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/github.min.css">
+
 
 </html>

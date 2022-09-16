@@ -27,7 +27,7 @@ async function init() {
   predictionContents?.classList.add('initializing');
 
   // Warmup the hand model
-  // await warmup();
+  await warmup();
 
   // eslint-disable-next-line @essex/adjacent-await
   const pipelineState: PredictPipelineState = await restorePipelineState();

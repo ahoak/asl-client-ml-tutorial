@@ -1,12 +1,11 @@
-import instructions from '../../../../layout/classifyInstructions.html?raw';
 import { CodeStepBaseComponent } from '../codeStepBase';
 import type { StepDisplayElement } from '../types';
 import { defaultCode, fullyCommentedSolutionCode, hints, solutionCode } from './code';
+import instructions from './instructions.md';
 import { defaultState } from './state';
 import type { ClassifyStepState } from './types';
 import { validate } from './validate';
 
-const instructionsUrl = `${import.meta.env.BASE_URL}instructions/classify.png`;
 export class ClassifyStep
   extends CodeStepBaseComponent<ClassifyStepState>
   implements StepDisplayElement
@@ -19,7 +18,6 @@ export class ClassifyStep
       fullyCommentedSolutionCode,
       validate,
       hints,
-      instructionsUrl,
       instructionsMarkdown: instructions,
     });
   }

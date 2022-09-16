@@ -12,7 +12,7 @@ declare module '*.html' {
   export default contents;
 }
 
-declare module '*.html?raw' {
+declare module '*.md' {
   const contents: string;
   export default contents;
 }

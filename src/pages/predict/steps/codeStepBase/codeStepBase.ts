@@ -254,10 +254,13 @@ export abstract class CodeStepBaseComponent<
     }
     if (this.#instructionsElement) {
       this.#instructionsElement.style.display = this.instructionsMarkdown ? '' : 'none';
-      this.#instructionsElement.innerHTML = this.instructionsMarkdown ?? 'about:blank';
+      this.#instructionsElement.innerHTML = this.injectTemplate(
+        this.instructionsMarkdown ?? 'about:blank',
+      );
     }
     if (this.#instructionsTabEle) {
-      this.#instructionsTabEle.style.display = this.instructionsUrl ? '' : 'none';
+      this.#instructionsTabEle.style.display =
+        this.instructionsUrl || this.instructionsMarkdown ? '' : 'none';
     }
     if (this.#resetButton) {
       this.#resetButton.style.display = !this.readonly ? '' : 'none';

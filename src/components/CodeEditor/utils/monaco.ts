@@ -35,6 +35,12 @@ const editorDeclarations = [
  */
 // eslint-disable-next-line no-async-promise-executor
 const initMonaco = new Promise(async (resolve) => {
+  loader.config({
+    paths: {
+      // vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs",
+      vs: 'node_modules/monaco-editor/min/vs',
+    },
+  });
   const monaco = await loader.init();
   // monaco.languages.typescript.javascriptDefaults.addExtraLib(tfLib, 'tensorflow/tfjs/dist/index.d.ts');
   for (const { declaration, uri } of editorDeclarations) {

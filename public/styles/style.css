@@ -431,17 +431,16 @@ step-controller code-step code-editor {
   padding-left: 5px;
 }
 
-.breadcrumbs .step-status .valid,
-.breadcrumbs .step-status .invalid {
-  display: none;
+.breadcrumbs .step-status::before {
+  content: "";
 }
 
-.breadcrumbs fluent-breadcrumb-item.valid .step-status .valid {
-  display: block;
+.breadcrumbs fluent-breadcrumb-item.valid .step-status::before {
+  content: "✅";
 }
 
-.breadcrumbs fluent-breadcrumb-item.invalid .step-status .invalid {
-  display: block;
+.breadcrumbs fluent-breadcrumb-item.invalid .step-status::before {
+  content: "✏️";
 }
 
 .predict-container .predict-button:not(.active-step) {

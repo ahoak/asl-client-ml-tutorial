@@ -1,6 +1,5 @@
 import type { BreadcrumbItem } from '@fluentui/web-components';
 
-import Settings from '../../../../settings.json';
 import { getOrCreateElement } from '../../../utils/utils';
 
 const loadingstring = '.loading-element';
@@ -17,7 +16,7 @@ export function handleValidatingStep() {
   loadingElement.style.visibility = 'visible';
 }
 
-export function handleValidationgComplete(
+export function handleValidatingComplete(
   step: number,
   passedValidation: boolean,
   successStatement: string,
@@ -26,23 +25,15 @@ export function handleValidationgComplete(
   validationFeedback.innerHTML = successStatement;
   const loadingElement = getOrCreateElement(loadingstring) as HTMLElement;
   loadingElement.style.visibility = 'hidden';
+  updateBreadcrumbStatus(step, passedValidation);
   if (passedValidation) {
-    const breadcrumbItem = getOrCreateElement(`#tutorial-step${step}`) as BreadcrumbItem;
-    const description = Settings.trainTutorialSteps.find((item) => item.step === step);
-    if (description && breadcrumbItem) {
-      breadcrumbItem.innerHTML = `<a href="#step${step}">✅${description.description}</a>`;
-    }
     const actionButton = getOrCreateElement(actionButtonQuery) as HTMLButtonElement;
     actionButton.disabled = false;
   }
 }
 
 export function handleNavReset(step: number) {
-  const breadcrumbItem = getOrCreateElement(`#tutorial-step${step}`) as BreadcrumbItem;
-  const description = Settings.trainTutorialSteps.find((item) => item.step === step);
-  if (description && breadcrumbItem) {
-    breadcrumbItem.innerHTML = `<a href="#step${step}">${description.description}</a>`;
-  }
+  updateBreadcrumbStatus(step, null);
   clearValidationFeedback();
 }
 
@@ -62,4 +53,15 @@ const stepSuccessStatements = new Map([
 
 export function getSuccessStatement(name: string) {
   return stepSuccessStatements.get(name) ?? '';
+}
+
+/**
+ * Updates the corresponding breadcrumb item's status mark
+ * @param step The step to update the status for
+ * @param valid If the step is valid
+ */
+export function updateBreadcrumbStatus(step: number, valid: boolean | undefined | null) {
+  const breadcrumbItem = getOrCreateElement(`#tutorial-step${step}`) as BreadcrumbItem;
+  breadcrumbItem?.classList.toggle('valid', valid != null && valid);
+  breadcrumbItem?.classList.toggle('invalid', valid != null && !valid);
 }

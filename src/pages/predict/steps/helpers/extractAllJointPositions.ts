@@ -22,7 +22,9 @@ class HandPoseExtractor {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       this.#hands = new (Hands || (window as any)['Hands'])({
         locateFile: (file) => {
-          return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+          return import.meta.env.VITE_USE_CDN_RESOURCES !== 'false'
+            ? `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+            : `${import.meta.env.BASE_URL}node_modules/@mediapipe/hands/${file}`;
         },
       });
       this.#hands.setOptions({

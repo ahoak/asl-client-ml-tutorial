@@ -5,6 +5,9 @@ import jszipTypes from './codeEditorTypes/jszip.d.ts?raw';
 import mainTypes from './codeEditorTypes/main.d.ts?raw';
 import tensorFlowTypes from './codeEditorTypes/tensorflow.d.ts?raw';
 
+// eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+console.log('USE CDN: ' + import.meta.env.VITE_USE_CDN_RESOURCES);
+
 export type ITypescriptWorker = monacoEditor.languages.typescript.TypeScriptWorker;
 export type IStandaloneCodeEditor = monacoEditor.editor.IStandaloneCodeEditor;
 export type IModel = monacoEditor.editor.IModel;
@@ -38,7 +41,10 @@ const initMonaco = new Promise(async (resolve) => {
   loader.config({
     paths: {
       // vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs",
-      vs: 'node_modules/monaco-editor/min/vs',
+      vs:
+        import.meta.env.VITE_USE_CDN_RESOURCES !== 'false'
+          ? 'https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs'
+          : `${import.meta.env.BASE_URL}node_modules/monaco-editor/min/vs`,
     },
   });
   const monaco = await loader.init();

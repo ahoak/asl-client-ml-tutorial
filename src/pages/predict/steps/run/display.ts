@@ -55,7 +55,7 @@ export class RunStep extends BaseComponent implements StepDisplayElement {
    * The internal step state (DONT USE DIRECTLY)
    */
   #__stepState: StepState = {
-    valid: false,
+    valid: null,
   };
 
   /**

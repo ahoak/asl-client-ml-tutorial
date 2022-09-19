@@ -170,9 +170,9 @@ function updateBreadcrumbs(steps: StepDisplayElement[], pipelineState: PredictPi
     const ele = breadcrumbContainer?.querySelector(`[step="${i + 1}"]`) as HTMLElement;
     if (ele) {
       const breadcrumbStepName = steps[i].getAttribute('name');
-      const isValid = pipelineState.steps[breadcrumbStepName as PredictStepName]?.valid ?? false;
-      ele.classList.toggle('valid', isValid);
-      ele.classList.toggle('invalid', !isValid);
+      const isValid = pipelineState.steps[breadcrumbStepName as PredictStepName]?.valid;
+      ele.classList.toggle('valid', isValid ?? false);
+      ele.classList.toggle('invalid', !(isValid ?? true));
     }
   }
 }

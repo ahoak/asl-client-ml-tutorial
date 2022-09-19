@@ -2,7 +2,7 @@ import { code } from './code';
 import type { RunStepState } from './types';
 
 export const defaultState: RunStepState = {
-  valid: false,
+  valid: null,
   validationIssues: [],
   code: code,
 };

@@ -11,10 +11,10 @@ import{i as YE}from"./utils.fd1d5341.js";class rd extends HTMLElement{templateRo
 		color: yellow;\r
 	}\r
 	.issue.validation .issue-type {\r
-		color: darkcyan;\r
+		color: rgb(17, 88, 219);\r
 	}\r
 	.issue.info .issue-type {\r
-		color: lightblue;\r
+		color: rgb(17, 88, 219);\r
 	}\r
 	.issue.hint .issue-type {\r
 		color: grey;\r
@@ -26,7 +26,7 @@ import{i as YE}from"./utils.fd1d5341.js";class rd extends HTMLElement{templateRo
 		display: inline-block;\r
 	}\r
 </style>\r
-<div class="root" part="main">\r
+<div class="root" part="main" role="status" aria-live="polite">\r
 </div>\r
 `;class XE extends rd{static get observedAttributes(){return["style","issues"]}constructor(){super(QE)}#e=null;attributeChangedCallback(e,t,i){e==="style"?this.#i().style.cssText=i??"":e==="issues"&&this.#t()}connectedCallback(){this.#t()}#t(){const e=this.#i();e.innerHTML="";const t=this.getAttribute("issues");if(t){const i=JSON.parse(t);for(const n of i){const o=n.startLineNumber?`(${n.startLineNumber??""}:${n.startColumn??""})`:"",r=document.createElement("div");r.className="issue-container",r.innerHTML=`
           <div class="issue ${n.type}">
@@ -1012,18 +1012,6 @@ declare interface JSZip {
 declare const JSZip: JSZip;
 `,cL=AW,FW=[{declaration:RW,uri:"types/jszip.d.ts"},{declaration:OW,uri:"types/tensorflow.d.ts"},{declaration:PW,uri:"types/main.d.ts"}],BW=new Promise(async s=>{tv.config({paths:{vs:{BASE_URL:"/asl-client-ml-tutorial/",MODE:"production",DEV:!1,PROD:!0}.VITE_USE_CDN_RESOURCES!=="false"?"https://cdn.jsdelivr.net/npm/monaco-editor@0.33.0/min/vs":"/asl-client-ml-tutorial/node_modules/monaco-editor/min/vs"}});const e=await tv.init();for(const{declaration:i,uri:n}of FW)e.languages.typescript.typescriptDefaults.addExtraLib(i,n),e.languages.typescript.javascriptDefaults.addExtraLib(i,n);const t=e.languages.typescript.typescriptDefaults.getCompilerOptions();t.noImplicitAny=!1,t.strict=!1,t.noUncheckedIndexedAccess=!1,e.languages.typescript.typescriptDefaults.setCompilerOptions(t),s(e)});async function VW(s){const e=await BW;return Array.prototype.slice.call(document.getElementsByTagName("link"),0).filter(i=>(/vs\/(base|editor|platform)/.test(i.getAttribute("href")??""),!0)).forEach(i=>s.appendChild(i.cloneNode())),e}async function WW(s,e){return(await s.languages.typescript.getTypeScriptWorker())(e.uri)}class HW extends rd{static get observedAttributes(){return["style","placeholder","code","hide-issues","readonly","hints","allow-background-execution"]}constructor(){super(JE)}#e=null;#t=null;#n=null;#i=null;#c=null;#o=null;#h=null;#a=null;#l=null;#f=null;#d=!1;#s=null;#u=null;get#r(){return this.#u||(this.#u=this.templateRoot.querySelector(".root")),this.#u}get hideIssues(){return this.hasAttribute("hide-issues")}set hideIssues(e){this.toggleAttribute("hide-issues",e)}get hints(){return this.#s}set hints(e){this.setAttribute("hints",JSON.stringify(e||{}))}get readOnly(){return this.hasAttribute("readonly")}set readOnly(e){this.toggleAttribute("readonly",e)}#m=!0;get#g(){return this.#m}set#g(e){this.#m!==e&&(this.#m=e,this.#t?.updateOptions({readOnly:this.readOnly,domReadOnly:this.readOnly}),this.#i?.setValue(this.#e??""))}attributeChangedCallback(e,t,i){if(e==="style")this.#r.style.cssText=i??"";else if(e==="placeholder"||e==="code")this.#e=this.getAttribute("code")??this.getAttribute("placeholder")??`function placeholder() {
 }`,this.#i&&this.#f!==this.#e&&this.#i.setValue(this.#e);else if(e==="hide-issues")this.#o&&(this.#o.style.display="none");else if(e==="readonly")this.#t?.updateOptions({readOnly:this.readOnly,domReadOnly:this.readOnly});else if(e==="allow-background-execution")this.#d=i!==null;else if(e==="hints")try{this.#s=JSON.parse(i||"{}")}catch(n){console.error("Could not parse hints",n)}}async connectedCallback(){this.#c=this.#r.querySelector(".issue-display"),this.#o=this.#r.querySelector(".issue-container"),this.#h=this.#r.querySelector(".editor-container"),this.#n=await VW(this.#h),this.#t=this.#n.editor.create(this.#h,{value:this.#e??"",readOnly:this.readOnly,domReadOnly:this.readOnly,language:"typescript",minimap:{enabled:!1}}),this.#n.languages.registerCompletionItemProvider("typescript",{provideCompletionItems:(o,r)=>this.#b(o,r)}),this.#a=new ResizeObserver(()=>this.#p()),this.#a.observe(this.#r),this.#l=new IntersectionObserver(o=>{this.#g=o.some(r=>r.isIntersecting)}),this.#l.observe(this.#r),this.#i=this.#t.getModel();const e=await WW(this.#n,this.#i);let t=null,i=null,n=null;this.#i.onDidChangeContent(YE(async()=>{if(this.#d||this.#g){const o=this.#i.getValue()??"",r=`${this.#i.uri.toString()}`,a=(await e.getEmitOutput(r)).outputFiles[0].text,[l,c]=await Promise.all([await e.getSemanticDiagnostics(r),await e.getSyntacticDiagnostics(r)]),h=l.concat(c).map(u=>{const f=u.start!=null&&this.#i?.getPositionAt(u.start)||{lineNumber:-1,column:-1};return{type:u.category===1?"error":"hint",startLineNumber:f.lineNumber,startColumn:f.column,message:`${u.messageText}`}}),d=h.map(u=>`${u.type}:${u.startLineNumber}:${u.startColumn}`).join(",");(o!==t||a!==i||d!==n)&&(t=o,i=a,n=d,this.#f=o,this.setAttribute("code",o),this.setAttribute("transpiled-code",a),this.#_(o,a,h))}},500)),this.#i.setValue(this.#g||this.#d?this.#e??"function placeholder() {}":"")}disconnectedCallback(){this.#a&&(this.#a.disconnect(),this.#a=null),this.#l&&(this.#l.disconnect(),this.#l=null)}#_(e,t,i){if(this.dispatchEvent(new CustomEvent("change",{detail:{code:e,transpiledCode:t,issues:i}})),this.hideIssues)this.#o.style.display="none";else{const n=i.filter(a=>a.type==="error"||a.type==="warning");this.#c.setAttribute("issues",JSON.stringify(i));const o=this.#o.style.display,r=n.length>0?"block":"none";o!==r&&(this.#o.style.display=r,this.#p())}}#p(){this.#t&&this.#t.layout()}#b(e,t){if(e===this.#i&&this.#s){const i=e.getWordUntilPosition(t),n={startLineNumber:t.lineNumber,endLineNumber:t.lineNumber,startColumn:i.startColumn,endColumn:i.endColumn};return{suggestions:Object.keys(this.#s||{}).map(o=>({label:o,kind:cL.CompletionItemKind.Function,detail:this.#s[o].detail??"",documentation:this.#s[o].documentation??"",insertText:this.#s[o].code,insertTextRules:cL.CompletionItemInsertTextRule.InsertAsSnippet,range:n}))}}return{suggestions:[]}}}customElements.define("code-editor",HW);const zW=`<style>
-  /* Fonts */
-  @font-face {
-    font-family: HK Grotesk;
-    src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Regular.otf?v=1603136326027") format("opentype");
-  }
-
-  @font-face {
-    font-family: HK Grotesk;
-    font-weight: bold;
-    src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Bold.otf?v=1603136323437") format("opentype");
-  }
-
   .name {
     font-weight: 200;
   }
@@ -1121,7 +1109,7 @@ declare const JSZip: JSZip;
   <div class="issue-container">
     <code-issue-display class="issue-display"></code-issue-display>
   </div>
-  <div class="validate-container">
+  <div class="validate-container" role="status" aria-live="polite">
     <div class="validate-progress" name="progress" style="display: none;">
       <fluent-progress-ring></fluent-progress-ring>
       <span class="validate-label">...Validating</span>

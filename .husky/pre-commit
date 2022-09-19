@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# https://github.com/typicode/husky/issues/968#issuecomment-1176848345
+# Output was scrolling rather than updating in place
+exec >/dev/tty 2>&1
+
 npx lint-staged
 # npx pretty-quick --staged

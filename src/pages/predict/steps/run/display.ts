@@ -1,6 +1,10 @@
 import { classes } from '../../../../utils/constants';
 import { loadModelFromZip } from '../../../../utils/utils';
-import type { CodeEditorComponent, VideoStreamViewerComponent } from '../../components';
+import type {
+  CodeEditorComponent,
+  VideoStreamViewerComponent,
+  WebcamSelectorComponent,
+} from '../../components';
 import { BaseComponent } from '../../components';
 import { createImplForStepCode } from '../helpers/createImplForCode';
 import type { PredictPipelineState, StepDisplayElement, StepState } from '../types';
@@ -21,6 +25,7 @@ export class RunStep extends BaseComponent implements StepDisplayElement {
   #startButton: HTMLElement | null = null;
   #codeEditor: CodeEditorComponent | null = null;
   #predictionOutput: HTMLElement | null = null;
+  #webcamSelector: WebcamSelectorComponent | null = null;
   #stream: MediaStream | null = null;
   #signDisplayContainer: HTMLElement | null = null;
   #model: LayersModel | null = null;
@@ -50,7 +55,7 @@ export class RunStep extends BaseComponent implements StepDisplayElement {
    * The internal step state (DONT USE DIRECTLY)
    */
   #__stepState: StepState = {
-    valid: false,
+    valid: null,
   };
 
   /**
@@ -119,6 +124,10 @@ export class RunStep extends BaseComponent implements StepDisplayElement {
     this.#predictionOutput = this.#root.querySelector('.predictions-output');
     this.#codeEditor = this.#root.querySelector('.code-editor');
     this.#signDisplayContainer = this.#root.querySelector('.sign-display-container');
+    this.#webcamSelector = this.#root.querySelector('.webcam-selector');
+    if (this.#webcamSelector) {
+      this.#webcamSelector.addEventListener('change', () => this.#handleWebcamChanged());
+    }
 
     if (this.#signDisplayContainer) {
       let signHtml = '';
@@ -206,10 +215,12 @@ export class RunStep extends BaseComponent implements StepDisplayElement {
   async #startVideo() {
     await this.#stopVideo();
     if (this.#source === 'webcam') {
-      const constraints = {
-        video: true,
-        width: 200,
-        height: 200,
+      const constraints: MediaStreamConstraints = {
+        video: {
+          deviceId: this.#webcamSelector?.selectedDeviceId ?? undefined,
+          width: 200,
+          height: 200,
+        },
       };
       this.#stream = await navigator.mediaDevices.getUserMedia(constraints);
       this.#videoStreamViewer!.stream = this.#stream;
@@ -245,6 +256,17 @@ export class RunStep extends BaseComponent implements StepDisplayElement {
       if (transpiledCode) {
         this.#predictImpl = createImplForStepCode<PredictFn>(transpiledCode, this.pipelineState);
       }
+    }
+  }
+
+  /**
+   * Handler for when the user selects a different webcam
+   */
+  async #handleWebcamChanged() {
+    if (this.#started) {
+      await this.#stopVideo();
+      // eslint-disable-next-line @essex/adjacent-await
+      await this.#startVideo();
     }
   }
 }

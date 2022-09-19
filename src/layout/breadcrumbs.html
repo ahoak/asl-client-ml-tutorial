@@ -3,10 +3,7 @@
   {{#each breadcrumbs}}
   <fluent-breadcrumb-item step="{{this.step}}" id="tutorial-step{{this.step}}">
     <a href="#step{{this.step}}">{{this.description}}</a>
-    <span class="step-status">
-      <span class="valid">✅</span>
-      <span class="invalid">✏️</span>
-    </span>
+    <span class="step-status"></span>
   </fluent-breadcrumb-item>
   {{/each}}
 </fluent-breadcrumb>

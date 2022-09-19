@@ -3,7 +3,11 @@ import type { LayersModel } from '@tensorflow/tfjs';
 import type { TrainTutorialSteps, ValidationResult } from '../../types';
 import { getOrCreateElement, millisToMinutesAndSeconds } from '../../utils/utils';
 import { exportModel, trainModelSolution } from './train';
-import { getSuccessStatement, handleValidationgComplete } from './utils/dataLoader';
+import {
+  getSuccessStatement,
+  handleValidatingComplete,
+  updateBreadcrumbStatus,
+} from './utils/dataLoader';
 
 const DefaultEpoch = 5;
 interface ModelBuilderOptions {
@@ -156,9 +160,9 @@ export class BuildState {
     const model = this.#aslModel;
     if (model) {
       await exportModel(model);
-      handleValidationgComplete(this.step ?? 1, true, getSuccessStatement('exportModel'));
+      handleValidatingComplete(this.step ?? 1, true, getSuccessStatement('exportModel'));
     } else {
-      handleValidationgComplete(this.step ?? 1, false, 'no model loaded');
+      handleValidatingComplete(this.step ?? 1, false, 'no model loaded');
     }
   }
 
@@ -173,7 +177,7 @@ export class BuildState {
     this.#startBatchTime = Date.now();
     if (epoch === this.#epochs - 1) {
       //   this.#trainingComplete = true;
-      handleValidationgComplete(this.step ?? 1, true, getSuccessStatement('trainModel'));
+      handleValidatingComplete(this.step ?? 1, true, getSuccessStatement('trainModel'));
     }
   };
 
@@ -191,8 +195,10 @@ export class BuildState {
         this.disableTrainingButtons();
       }
 
-      if (name !== 'exportModel' && name !== 'trainModel') {
-        handleValidationgComplete(step, passedValidation, successStatement);
+      if (name === 'trainModel') {
+        updateBreadcrumbStatus(step, passedValidation);
+      } else if (name !== 'exportModel') {
+        handleValidatingComplete(step, passedValidation, successStatement);
       }
     }
   };
@@ -210,7 +216,7 @@ export class BuildState {
     this.#trainingEnabled = false;
     this.#startTrainingButton.disabled = false;
     // this.#trainingComplete = true;
-    handleValidationgComplete(this.step ?? 1, true, getSuccessStatement('trainModel'));
+    handleValidatingComplete(this.step ?? 1, true, getSuccessStatement('trainModel'));
   }
 
   getTrainingInputs(): [

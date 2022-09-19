@@ -77,8 +77,8 @@ export class ImportModelStep extends BaseComponent implements StepDisplayElement
     if (state !== this.#__stepState) {
       this.#__stepState = state;
 
-      this?.toggleAttribute('valid', state.valid);
-      this.#stepContainerEle?.toggleAttribute('valid', state.valid);
+      this?.toggleAttribute('valid', state.valid ?? false);
+      this.#stepContainerEle?.toggleAttribute('valid', state.valid ?? false);
       this.#stepContainerEle?.setAttribute(
         'step-issues',
         state.validationIssues

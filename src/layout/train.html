@@ -1,13 +1,6 @@
 <div class="training-container">
   {{#if settings.trainTutorialSteps}}
-  <fluent-breadcrumb>
-    {{#each settings.trainTutorialSteps}}
-    <fluent-breadcrumb-item id="tutorial-step{{this.step}}">
-      <a href="#step{{this.step}}">{{this.description}}</a>
-      <!-- {{this.description}} -->
-    </fluent-breadcrumb-item>
-    {{/each}}
-  </fluent-breadcrumb>
+    {{> breadcrumbs breadcrumbs=settings.trainTutorialSteps}}
   {{/if}}
   <div class="next-button-container">
     <fluent-button class="train-button" appearance="accent">

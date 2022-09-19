@@ -15,9 +15,11 @@ export type PredictStepName =
  */
 export interface StepState<DataType = unknown> {
   /**
-   * True, if the user inputted code has been validated, and it is valid
+   * True, if the user performed the step correctly
+   * False, if the user performend the step, but incorrectly
+   * null, if the user hasn't attempted the step
    */
-  valid: boolean;
+  valid: boolean | null;
 
   /**
    * The set of validation issues (if any)

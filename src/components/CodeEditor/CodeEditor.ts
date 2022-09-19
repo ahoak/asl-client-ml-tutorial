@@ -237,46 +237,6 @@ export class CodeEditorComponent extends BaseComponent {
       }, 500),
     );
 
-    // this.#model!.onDidChangeDecorations(async () => {
-    //   if (this.#allowBackgroundExecution || this.#isVisibleOnScreen) {
-    //     const markers = this.#monaco!.editor.getModelMarkers({
-    //       resource: this.#model!.uri,
-    //     });
-    //     const code = this.#model!.getValue() ?? '';
-    //     const newMarkerKey = markers
-    //       .map(
-    //         (n) => `${n.severity}:${n.resource.toString()}:${n.startLineNumber}:${n.startColumn}`,
-    //       )
-    //       .join(',');
-    //     const transpiledCode = (await tsWorker.getEmitOutput(`${this.#model!.uri.toString()}`))
-    //       .outputFiles[0].text;
-    //     if (
-    //       code !== lastCode ||
-    //       newMarkerKey !== lastMarkerKey ||
-    //       transpiledCode !== lastTranspiledCode
-    //     ) {
-    //       lastMarkerKey = newMarkerKey;
-    //       lastCode = code;
-    //       lastTranspiledCode = transpiledCode;
-
-    //       this.#currentCode = code;
-
-    //       // Update our code attributes to match the newest code in the editors
-    //       this.setAttribute('code', code);
-    //       this.setAttribute('transpiled-code', transpiledCode);
-
-    //       // Grab the issues from the editor
-    //       const issues = markers.map((n) => ({
-    //         type: this.#getIssueTypeFromSeverity(n.severity)!,
-    //         startLineNumber: n.startLineNumber,
-    //         startColumn: n.startColumn,
-    //         message: n.message,
-    //       }));
-    //       this.#emitChangeEvent(code, transpiledCode, issues);
-    //     }
-    //   }
-    // });
-
     // Update the model with the current code
     this.#model!.setValue(
       this.#isVisibleOnScreen || this.#allowBackgroundExecution
@@ -331,25 +291,6 @@ export class CodeEditorComponent extends BaseComponent {
       this.#issueContainerEle!.style.display = 'none';
     }
   }
-
-  // /**
-  //  * Gets an issue type for the given severity
-  //  * @param {number} severity The severity
-  //  */
-  // #getIssueTypeFromSeverity(severity: number): CodeIssueType | null {
-  //   if (severity != null) {
-  //     if (severity === MarkerSeverity.Error) {
-  //       return 'error';
-  //     } else if (severity === MarkerSeverity.Warning) {
-  //       return 'warning';
-  //     } else if (severity === MarkerSeverity.Info) {
-  //       return 'info';
-  //     } else {
-  //       return 'hint';
-  //     }
-  //   }
-  //   return null;
-  // }
 
   /**
    * Forces an editor layout

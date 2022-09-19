@@ -197,8 +197,8 @@ export abstract class CodeStepBaseComponent<
         this.#codeEditor?.setAttribute('code', state.code || this.defaultCode);
       }
 
-      this?.toggleAttribute('valid', state.valid);
-      this.#stepContainerEle?.toggleAttribute('valid', state.valid);
+      this?.toggleAttribute('valid', state.valid ?? false);
+      this.#stepContainerEle?.toggleAttribute('valid', state.valid ?? false);
 
       const issues: CodeIssue[] = state.syntaxIssues || [];
       if (issues.length === 0) {
@@ -214,7 +214,7 @@ export abstract class CodeStepBaseComponent<
         issues ? JSON.stringify(issues || []) : '',
       );
 
-      this?.toggleAttribute('valid', state.valid);
+      this?.toggleAttribute('valid', state.valid ?? false);
       this.dispatchEvent(
         new CustomEvent('stateChanged', {
           detail: state,
@@ -254,10 +254,13 @@ export abstract class CodeStepBaseComponent<
     }
     if (this.#instructionsElement) {
       this.#instructionsElement.style.display = this.instructionsMarkdown ? '' : 'none';
-      this.#instructionsElement.innerHTML = this.instructionsMarkdown ?? 'about:blank';
+      this.#instructionsElement.innerHTML = this.injectTemplate(
+        this.instructionsMarkdown ?? 'about:blank',
+      );
     }
     if (this.#instructionsTabEle) {
-      this.#instructionsTabEle.style.display = this.instructionsUrl ? '' : 'none';
+      this.#instructionsTabEle.style.display =
+        this.instructionsUrl || this.instructionsMarkdown ? '' : 'none';
     }
     if (this.#resetButton) {
       this.#resetButton.style.display = !this.readonly ? '' : 'none';

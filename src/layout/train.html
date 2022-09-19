@@ -18,7 +18,7 @@
 
   </div>
 
-  <p id="validation-status"></p>
+  <p id="validation-status" role="status" aria-live="polite"></p>
   <div class="training-feedback-container">
   </div>
 
@@ -38,7 +38,10 @@
 
       {{#each settings.trainTutorialSteps}}
       <code-step name="{{this.name}}" step="{{this.step}}" code="function step{{this.step}}() {}" style="display: none;"
-        allow-background-execution></code-step>
+        allow-background-execution>
+        <!-- hide success, we have our own -->
+        <div slot="success"></div>
+      </code-step>
       {{/each}}
       {{/if}}
 
@@ -47,7 +50,10 @@
       {{#if settings.trainTutorialSteps}}
       {{#each settings.trainTutorialSteps}}
       <code-step name="{{this.name}}-solution" step="{{this.step}}1" code="function step{{this.step}}1() {}"
-        style="display: none;" read-only="true"></code-step>
+        style="display: none;" read-only="true">
+        <!-- hide success, we have our own -->
+        <div slot="success"></div>
+      </code-step>
       {{/each}}
       {{/if}}
 
@@ -58,18 +64,19 @@
       {{#each settings.trainTutorialSteps}}
 
       <div class="instructions-image" id="{{this.name}}-image" style="display: none">
-        {{#ifEquals this.name "loadData"}}
-          {{> loadDataInstructions baseUrl }}
-        {{/ifEquals}}
-        {{#ifEquals this.name "createModel"}}
-          {{> createModelInstructions baseUrl  }}
-        {{/ifEquals}}
-        {{#ifEquals this.name "trainModel"}}
-          {{> trainModelInstructions baseUrl }}
-        {{/ifEquals}}
-        {{#ifEquals this.name "exportModel"}}
-        {{> exportModelInstructions baseUrl }}
-      {{/ifEquals}}
+<!-- This alignment is because of some pre-formatted text contained within-->
+{{#ifEquals this.name "loadData"}}
+{{> loadDataInstructions baseUrl }}
+{{/ifEquals}}
+{{#ifEquals this.name "createModel"}}
+{{> createModelInstructions baseUrl  }}
+{{/ifEquals}}
+{{#ifEquals this.name "trainModel"}}
+{{> trainModelInstructions baseUrl }}
+{{/ifEquals}}
+{{#ifEquals this.name "exportModel"}}
+{{> exportModelInstructions baseUrl }}
+{{/ifEquals}}
       </div>
       {{/each}}
       {{/if}}

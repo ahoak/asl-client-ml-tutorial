@@ -6,15 +6,15 @@ Dense layers means each neuron in the layer is fully connected to all inputs. Ac
 
 ```javascript
 const model = tf.sequential({
-    layers: [
-      // INPUT LAYER  
-      tf.layers.dense({ inputShape: [/*✨INSERT_HERE✨*/], units: /*✨INSERT_HERE✨*/, activation: 'relu' }),
-      // HIDDEN LAYER  
-      tf.layers.dense({ units: /*✨INSERT_HERE✨*/, activation: 'relu' }),
-      // OUTPUT LAYER  
-      tf.layers.dense({ units: /*✨INSERT_HERE✨*/, activation: 'softmax' }),
-    ],
-  });
+  layers: [
+    // INPUT LAYER  
+    tf.layers.dense({ inputShape: [/*✨INSERT_HERE✨*/], units: /*✨INSERT_HERE✨*/, activation: 'relu' }),
+    // HIDDEN LAYER  
+    tf.layers.dense({ units: /*✨INSERT_HERE✨*/, activation: 'relu' }),
+    // OUTPUT LAYER  
+    tf.layers.dense({ units: /*✨INSERT_HERE✨*/, activation: 'softmax' }),
+  ],
+});
 ```
 
 > **✨Input Layer** 
@@ -45,11 +45,11 @@ The optimizer defines how to tweak the parameters to get closer to minimum loss.
 
 ``` javascript
 model.compile({
-// optimizer options: 'sgd', 'adam', 'adamax', 'momentum'
-optimizer:  /*✨INSERT_HERE✨*/, 
-// loss options: 'categoricalCrossentropy' , 'binaryCrossentropy'
-loss:  /*✨INSERT_HERE✨*/, 
-metrics: ['accuracy'],
+  // optimizer options: 'sgd', 'adam', 'adamax', 'momentum'
+  optimizer:  /*✨INSERT_HERE✨*/, 
+  // loss options: 'categoricalCrossentropy' , 'binaryCrossentropy'
+  loss:  /*✨INSERT_HERE✨*/, 
+  metrics: ['accuracy'],
 })
 ```
 > **✨[Optimizer Function](https://js.tensorflow.org/api/latest/#class:train.Optimizer)**: Choose an optimizer (options include 'sgd', 'adam', 'momentum', 'adamax').

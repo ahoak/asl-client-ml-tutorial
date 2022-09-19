@@ -32,10 +32,10 @@
     
     </div>
     <link rel="stylesheet" type="text/css" href="/asl-client-ml-tutorial/styles/themes/glitch.css" />
-  <script type="module" crossorigin src="/asl-client-ml-tutorial/assets/train.94445029.js"></script>
+  <script type="module" crossorigin src="/asl-client-ml-tutorial/assets/train.b3945e45.js"></script>
   <link rel="modulepreload" crossorigin href="/asl-client-ml-tutorial/assets/utils.fd1d5341.js">
-  <link rel="modulepreload" crossorigin href="/asl-client-ml-tutorial/assets/VideoStreamViewer.3feff95f.js">
-  <link rel="stylesheet" href="/asl-client-ml-tutorial/assets/VideoStreamViewer.1bd16a3c.css">
+  <link rel="modulepreload" crossorigin href="/asl-client-ml-tutorial/assets/WebcamSelector.52eef2b8.js">
+  <link rel="stylesheet" href="/asl-client-ml-tutorial/assets/WebcamSelector.1bd16a3c.css">
 </head>
 
 <body>
@@ -43,24 +43,24 @@
         <div class="wrapper">
             <div class="content">
                 <div class="training-container">
-                  <fluent-breadcrumb>
-                    <fluent-breadcrumb-item id="tutorial-step1">
-                      <a href="#step1">Load Data</a>
-                      <!-- Load Data -->
-                    </fluent-breadcrumb-item>
-                    <fluent-breadcrumb-item id="tutorial-step2">
-                      <a href="#step2">Create and Configure Model</a>
-                      <!-- Create and Configure Model -->
-                    </fluent-breadcrumb-item>
-                    <fluent-breadcrumb-item id="tutorial-step3">
-                      <a href="#step3">Train Model</a>
-                      <!-- Train Model -->
-                    </fluent-breadcrumb-item>
-                    <fluent-breadcrumb-item id="tutorial-step4">
-                      <a href="#step4">Download Model Files</a>
-                      <!-- Download Model Files -->
-                    </fluent-breadcrumb-item>
-                  </fluent-breadcrumb>
+                    <fluent-breadcrumb slot="header" class="breadcrumbs">
+                      <fluent-breadcrumb-item step="1" id="tutorial-step1">
+                        <a href="#step1">Load Data</a>
+                        <span class="step-status"></span>
+                      </fluent-breadcrumb-item>
+                      <fluent-breadcrumb-item step="2" id="tutorial-step2">
+                        <a href="#step2">Create and Configure Model</a>
+                        <span class="step-status"></span>
+                      </fluent-breadcrumb-item>
+                      <fluent-breadcrumb-item step="3" id="tutorial-step3">
+                        <a href="#step3">Train Model</a>
+                        <span class="step-status"></span>
+                      </fluent-breadcrumb-item>
+                      <fluent-breadcrumb-item step="4" id="tutorial-step4">
+                        <a href="#step4">Download Model Files</a>
+                        <span class="step-status"></span>
+                      </fluent-breadcrumb-item>
+                    </fluent-breadcrumb>
                   <div class="next-button-container">
                     <fluent-button class="train-button" appearance="accent">
                       Next

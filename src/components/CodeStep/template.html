@@ -1,16 +1,4 @@
 <style>
-  /* Fonts */
-  @font-face {
-    font-family: HK Grotesk;
-    src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Regular.otf?v=1603136326027") format("opentype");
-  }
-
-  @font-face {
-    font-family: HK Grotesk;
-    font-weight: bold;
-    src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Bold.otf?v=1603136323437") format("opentype");
-  }
-
   .name {
     font-weight: 200;
   }
@@ -108,7 +96,7 @@
   <div class="issue-container">
     <code-issue-display class="issue-display"></code-issue-display>
   </div>
-  <div class="validate-container">
+  <div class="validate-container" role="status" aria-live="polite">
     <div class="validate-progress" name="progress" style="display: none;">
       <fluent-progress-ring></fluent-progress-ring>
       <span class="validate-label">...Validating</span>

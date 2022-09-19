@@ -278,15 +278,19 @@ export abstract class CodeStepBaseComponent<
       }
     }
 
+    let solutionVisible = false;
     if (this.#solutionEditorEle) {
-      this.#solutionEditorEle.style.display =
-        !this.readonly && this.fullyCommentedSolutionCode ? '' : 'none';
+      solutionVisible = !this.readonly && !!this.fullyCommentedSolutionCode;
+      this.#solutionEditorEle.style.display = solutionVisible ? '' : 'none';
       if (this.fullyCommentedSolutionCode) {
         this.#solutionEditorEle?.setAttribute('code', this.fullyCommentedSolutionCode);
       }
     }
 
     if (this.#solutionTabEle) {
+      // This additional step is needed, because the tab is still keyboard navigable
+      // if it is "display:none", but not disabled
+      this.#solutionTabEle.toggleAttribute('disabled', !solutionVisible);
       this.#solutionTabEle.style.display = this.#solutionEditorEle?.style.display ?? 'none';
     }
 

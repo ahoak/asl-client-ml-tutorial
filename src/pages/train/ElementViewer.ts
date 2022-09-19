@@ -42,13 +42,13 @@ export class ElementViewer {
   hideCodeButtons() {
     this.#resetButton.style.display = 'none';
     this.#solveButton.style.display = 'none';
-    this.#solutionTabPanel.style.display = 'none';
+    this.#setTabVisibility(this.#solutionTabPanel, false);
   }
 
   showCodeButtons() {
     this.#resetButton.style.display = 'inline-flex';
     this.#solveButton.style.display = 'inline-flex';
-    this.#solutionTabPanel.style.display = 'inline-flex';
+    this.#setTabVisibility(this.#solutionTabPanel, true);
   }
   hideNextButton() {
     this.#actionButton.style.display = 'none';
@@ -66,6 +66,11 @@ export class ElementViewer {
   hideInstructions(name: string) {
     const instructionsContainer = getOrCreateElement(`#${name}-image`) as HTMLElement;
     instructionsContainer.style.display = 'none';
+  }
+
+  #setTabVisibility(tab: Tab, visible: boolean) {
+    tab.style.display = visible ? 'inline-flex' : 'none';
+    tab.toggleAttribute('disabled', !visible);
   }
 }
 

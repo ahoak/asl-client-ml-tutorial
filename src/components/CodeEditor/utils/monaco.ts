@@ -5,9 +5,6 @@ import jszipTypes from './codeEditorTypes/jszip.d.ts?raw';
 import mainTypes from './codeEditorTypes/main.d.ts?raw';
 import tensorFlowTypes from './codeEditorTypes/tensorflow.d.ts?raw';
 
-// eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-console.log('USE CDN: ' + import.meta.env.VITE_USE_CDN_RESOURCES);
-
 export type ITypescriptWorker = monacoEditor.languages.typescript.TypeScriptWorker;
 export type IStandaloneCodeEditor = monacoEditor.editor.IStandaloneCodeEditor;
 export type IModel = monacoEditor.editor.IModel;

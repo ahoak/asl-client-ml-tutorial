@@ -1,4 +1,4 @@
-import{c as Wt,t as un,a as ht,b as pt,d as fn,e as R,f as Tr,j as Or,l as Pr,g as Ir,J as Mr,A as Fr,h as Rr,s as kr}from"./utils.fd1d5341.js";import{B as K}from"./WebcamSelector.578410c3.js";const Nr=`<style>\r
+import{c as Wt,t as un,a as ht,b as pt,d as fn,e as R,f as Tr,j as Or,l as Pr,g as Ir,J as Mr,A as Fr,h as Rr,s as kr}from"./utils.42908397.js";import{B as K}from"./WebcamSelector.e687d297.js";const Nr=`<style>\r
   .root {\r
     position: relative;\r
 	display: grid;\r
@@ -107,7 +107,7 @@ import{c as Wt,t as un,a as ht,b as pt,d as fn,e as R,f as Tr,j as Or,l as Pr,g 
   <div class="buttons buttons-top" part="buttons-top">\r
     <slot name="buttons-top"></slot>\r
   </div>\r
-  <div class="validate-container" part="validate-container" role="status">\r
+  <div class="validate-container" part="validate-container" aria-live="polite" role="status">\r
     <div class="validate-progress" name="progress" style="display: none">\r
       <fluent-progress-ring></fluent-progress-ring>\r
       <span class="validate-label">...Validating</span>\r

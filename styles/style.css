@@ -224,14 +224,22 @@ Select your chosen CSS by adding the theme name (e.g. glitch) in settings.json
   border: 1px solid rgba(255,255,255,0.3);
 }
 
-
-.agenda-table td{
+.agenda-table td, .agenda-table th {
+  border-bottom: solid 1px rgba(255,255,255,0.1);
   padding: 8px;
   text-align: left;
   vertical-align:middle;
+}
+
+.agenda-table th {
+  font-weight: bold;
+}
+
+.agenda-table td {
+  padding: 8px;
+  vertical-align:middle;
   font-weight: 300;
   font-size: 12px;
-  border-bottom: solid 1px rgba(255,255,255,0.1);
 }
 .home-content-p {
   text-align: left !important;
@@ -298,7 +306,6 @@ ul.link-list li a span {
 }
 .social-profile-icon {
   width: 1.75rem;
-  margin-bottom: 1rem;
   display: inline-flex;
 }
 /* Image paths specified in layout/social.html */

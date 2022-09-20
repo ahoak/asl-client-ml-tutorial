@@ -640,6 +640,11 @@ Promise<{
   step-container::part(validate-container) {\r
     display: none;\r
   }\r
+\r
+  .webcam-selector {\r
+    margin-top: 5px;\r
+    margin-bottom: 5px;\r
+  }\r
 </style>\r
 <div class="root">\r
   <step-container class="step-container">\r
@@ -649,12 +654,10 @@ Promise<{
       <div class="display-contents">\r
         <div class="video-display">\r
           <video-stream-viewer class="video-stream-viewer"></video-stream-viewer>\r
-          <div class="options">\r
-            <webcam-selector class="webcam-selector" />\r
-          </div>\r
         </div>\r
         <div class="sign-display-container"></div>\r
       </div>\r
+      <webcam-selector class="webcam-selector"></webcam-selector>\r
       <fluent-button class="start-button" appearance="accent">Start</fluent-button>\r
       <fluent-divider></fluent-divider>\r
     </div>\r

@@ -10,11 +10,13 @@ function createModel(classes: string[]):LayersModel {
  
   const model = tf.sequential({
     layers: [
- 
+      // Fill in the inputShape and units (hint this is equal to mediapipe hands output per image = 63)
       tf.layers.dense({ inputShape: [/*\u2728INSERT_HERE\u2728*/], units: /*\u2728INSERT_HERE\u2728*/, activation: 'relu' }),
-
+      
+      // Fill in units (neurons) in range 100-300
       tf.layers.dense({ units: /*\u2728INSERT_HERE\u2728*/, activation: 'relu' }),
-
+      
+      // Add a final dense layer with number of neurons equal to classes (i.e classes.length )
       tf.layers.dense({ units: /*\u2728INSERT_HERE\u2728*/, activation: 'softmax' }),
     ],
   });
@@ -40,7 +42,7 @@ function createModelSolution(classes: string[]):LayersModel {
       tf.layers.dense({ inputShape: [63], units: 63, activation: 'relu' }),
       // Fill in units (neurons) in range 100-300
       tf.layers.dense({ units: 256, activation: 'relu' }),
-      // Add a final dense layer wtih number of neurons equal to classes (i.e classes.length )
+      // Add a final dense layer with number of neurons equal to classes (i.e classes.length )
       tf.layers.dense({ units: classes.length, activation: 'softmax' }),
     ],
   });
@@ -338,7 +340,7 @@ async function trainModel(
       Missing model. Please make sure model was created in previous step. 
       `);if(!e||!n)return p(`
       Missing data. Please make sure data is loaded in step 1.'
-      `);const l={};if(l.fit=(h,N,O)=>new Promise(F=>F({epoch:[0],history:{},params:O,validationData:null,input:h,output:N})),a=await o(l,e,n,i,r),a)if(a.params){if(!a.input||!a.output)return p(`
+      `);const l={};if(l.fit=(h,F,N)=>new Promise(O=>O({epoch:[0],history:{},params:N,validationData:null,input:h,output:F})),a=await o(l,e,n,i,r),a)if(a.params){if(!a.input||!a.output)return p(`
       Model.fit() requires input and output to defined parameters.'
       `)}else return p(`
       Looks like you didn't put any parameters in your fit function'

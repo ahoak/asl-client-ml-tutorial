@@ -113,6 +113,11 @@
   step-container::part(validate-container) {
     display: none;
   }
+
+  .webcam-selector {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
 </style>
 <div class="root">
   <step-container class="step-container">
@@ -122,12 +127,10 @@
       <div class="display-contents">
         <div class="video-display">
           <video-stream-viewer class="video-stream-viewer"></video-stream-viewer>
-          <div class="options">
-            <webcam-selector class="webcam-selector" />
-          </div>
         </div>
         <div class="sign-display-container"></div>
       </div>
+      <webcam-selector class="webcam-selector"></webcam-selector>
       <fluent-button class="start-button" appearance="accent">Start</fluent-button>
       <fluent-divider></fluent-divider>
     </div>

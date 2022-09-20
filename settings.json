@@ -4,6 +4,7 @@
   "name": "ASL Fingerspelling Tutorial 👋",
   "theme": "",
   "avatarImage": "images/ghc_logo_v4.svg",
+  "avatarImageAlt": "Grace Hopper Celebration",
   "social": {
     "github": "https://github.com/ahoak/asl-client-ml-tutorial",
     "twitter": "https://twitter.com/amber_hoak"

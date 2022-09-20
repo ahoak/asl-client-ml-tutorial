@@ -1,3 +1,22 @@
+/**
+ * @license
+ * Copyright 2018 Google LLC. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =============================================================================
+ *
+ * Adapted from https://github.com/tensorflow/tfjs/blob/96d03123d7de379728007c496bb3ef22f500e9a0/tfjs-core/src/io/browser_files.ts
+ */
+
 import * as tf from '@tensorflow/tfjs';
 import { getModelJSONForModelArtifacts } from '@tensorflow/tfjs-core/dist/io/io_utils';
 import type {
@@ -32,7 +51,6 @@ export type RawFiles = Record<
 /**
  * A model loader for tensorflow.js
  */
-// Adapted from https://github.com/tensorflow/tfjs/blob/master/tfjs-core/src/io/browser_files.ts
 export class ArrayBufferModelLoader implements IOHandler {
   #modelJsonFileName: string;
   #initPromise: Promise<any>;
@@ -74,21 +92,14 @@ export class ArrayBufferModelLoader implements IOHandler {
   async load(): Promise<ModelArtifacts> {
     await this.#initPromise;
     return new Promise((resolve, reject) => {
-      // const modelJSON = JSON.parse(
-      //   new TextDecoder().decode(this.jsonFile)
-      // ); /* as ModelJSON */
       const modelJSON = this.jsonFile;
       const modelTopology = modelJSON.modelTopology;
       if (modelTopology == null) {
-        //   reject(new Error(`modelTopology field is missing from file ${
-        //       this.jsonFile.name}`));
         reject(new Error(`modelTopology field is missing from file model.json`));
         return;
       }
       const weightsManifest = modelJSON.weightsManifest;
       if (weightsManifest == null) {
-        //   reject(new Error(`weightManifest field is missing from file ${
-        //       this.jsonFile.name}`));
         reject(new Error(`weightManifest field is missing from file model.json`));
         return;
       }

@@ -2,11 +2,11 @@ import * as tf from '@tensorflow/tfjs';
 import type { ModelJSON } from '@tensorflow/tfjs-core/dist/io/types.js';
 import type JSZip from 'jszip';
 import { loadAsync } from 'jszip';
+import npyjs from 'npyjs';
 
 import type { TensorData, ValidationResult } from '../types';
 import { ValidationErrorType } from '../types';
 import { assetURL, classes } from './constants.js';
-import { npyJsParser } from './NpyJsParser.js';
 import type { RawFiles } from './tfArrayBufferLoaderSaver.js';
 import { ArrayBufferModelLoader } from './tfArrayBufferLoaderSaver.js';
 
@@ -33,11 +33,12 @@ export async function loadTensorData(
 }
 
 export async function loadTensors(zipFolder: JSZip) {
-  const np = new npyJsParser();
+  const np = new npyjs();
   const output: TensorData = {};
   const numJoints = 21;
   // x, y, z
   const numComponents = numJoints * 3;
+
   if (zipFolder) {
     await Promise.all(
       classes.map(async (n) => {

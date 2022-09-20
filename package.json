@@ -49,7 +49,8 @@
     "file-saver": "^2.0.5",
     "jszip": "^3.10.0",
     "monaco-editor": "^0.34.0",
-    "nanoevents": "^7.0.1"
+    "nanoevents": "^7.0.1",
+    "npyjs": "^0.4.0"
   },
   "husky": {
     "hooks": {

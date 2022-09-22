@@ -55,6 +55,7 @@ function toArrayBuffer(base64: string) {
   return bytes.buffer;
 }
 
+// https://stackoverflow.com/a/9458996
 function arrayBufferToBase64(buffer: ArrayBuffer) {
   let binary = '';
   const bytes = new Uint8Array(buffer);

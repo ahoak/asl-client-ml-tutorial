@@ -1,6 +1,7 @@
 import type { LayersModel } from '@tensorflow/tfjs';
 
 import type { TrainTutorialSteps, ValidationResult } from '../../types';
+import { defaultTrainEpochs } from '../../utils/constants';
 import { getOrCreateElement, millisToMinutesAndSeconds } from '../../utils/utils';
 import { exportModel, trainModelSolution } from './train';
 import {
@@ -9,7 +10,6 @@ import {
   updateBreadcrumbStatus,
 } from './utils/dataLoader';
 
-const DefaultEpoch = 5;
 interface ModelBuilderOptions {
   epochs?: number;
 }
@@ -20,7 +20,7 @@ interface TrainingCallbacks {
 }
 
 export class BuildState {
-  #epochs = DefaultEpoch;
+  #epochs = defaultTrainEpochs;
   #batchSize = 128;
   #currentEpochCount = 1;
   #startBatchTime = 0;
@@ -42,7 +42,7 @@ export class BuildState {
   #aslModel: LayersModel | undefined;
 
   constructor(options?: ModelBuilderOptions) {
-    this.#epochs = options?.epochs ?? DefaultEpoch;
+    this.#epochs = options?.epochs ?? defaultTrainEpochs;
   }
 
   set aslModel(model: LayersModel | undefined) {

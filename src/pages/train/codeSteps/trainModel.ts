@@ -2,6 +2,7 @@ import * as tf from '@tensorflow/tfjs';
 
 import type { ValidationResult } from '../../../types';
 import { ValidationErrorType } from '../../../types';
+import { defaultTrainEpochs } from '../../../utils/constants';
 import { createIncompleteImplValidationError } from '../../../utils/utils';
 
 export const template = `
@@ -14,7 +15,7 @@ async function trainModel(
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
   },
-  numEpochs = 5
+  numEpochs = ${defaultTrainEpochs}
 ): Promise<History> {
 
   const inputs = tf.tensor(trainingData.inputs);
@@ -49,7 +50,7 @@ export const solution = `
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
   },
-  numEpochs = 3,
+  numEpochs = ${defaultTrainEpochs},
 ): Promise<History> {
 
   const inputs = tf.tensor(trainingData.inputs);
@@ -101,7 +102,7 @@ async function trainModel(
     onBatchEnd: (batch: number, logs?: Logs) => void;
     onEpochEnd: (epoch: number) => void;
   },
-  numEpochs = 5
+  numEpochs = ${defaultTrainEpochs}
 ): Promise<History> {
 
   const inputs = tf.tensor(trainingData.inputs);

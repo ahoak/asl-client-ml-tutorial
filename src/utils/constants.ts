@@ -1,5 +1,4 @@
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-export const assetURL = `${import.meta.env.BASE_URL}data/alphabet_tensors.zip`;
 export const classes: string[] = [
   'A',
   'B',
@@ -38,4 +37,10 @@ export enum BackendOptions {
   'wasm',
 }
 
+export const useFullDataset =
+  (window.location.search || '').toLocaleLowerCase().indexOf('full=true') >= 0;
+export const defaultTrainEpochs = useFullDataset ? 5 : 50;
 export const localStorageModelPath = 'localstorage://model';
+const slimAssetURL = `${import.meta.env.BASE_URL}data/alphabet_tensors.zip`;
+const fullAssetURL = `${import.meta.env.BASE_URL}data/alphabet_tensors_full.zip`;
+export const assetURL = useFullDataset ? fullAssetURL : slimAssetURL;

@@ -70,14 +70,29 @@ export class WebcamSelectorComponent extends BaseComponent {
   async #loadSelectElement() {
     if (this.#selectElement) {
       let options = '';
+      try {
+        // This allows us to get the name of the webcams
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+        if (stream) {
+          stream.getVideoTracks().forEach((n) => n.stop());
+        }
+      } catch (e) {
+        console.error('Could not load video', e);
+      }
       const devices = await navigator.mediaDevices.enumerateDevices();
       let foundDevice = false;
       let selectedDevice: string | null = null;
+      let cameraIdx = 0;
       for (const device of devices) {
         if (device.kind === 'videoinput') {
+          cameraIdx++;
           foundDevice = true;
           selectedDevice = device.deviceId;
-          options += `<option value="${device.deviceId}">${device.label}</option>`;
+          options += `<option value="${device.deviceId}">${
+            device.label || `Camera ${cameraIdx}`
+          }</option>`;
         }
       }
 

@@ -1,4 +1,4 @@
-import{c as Wt,t as un,a as ht,b as pt,d as fn,e as R,f as Tr,j as Or,l as Pr,g as Ir,J as Mr,A as Fr,h as Rr,s as kr}from"./utils.9dae1f18.js";import{B as K}from"./WebcamSelector.e2f59618.js";const Nr=`<style>\r
+import{c as Wt,t as un,a as ht,b as pt,d as fn,e as R,f as Tr,j as Or,l as Pr,g as Ir,J as Mr,A as Fr,h as Rr,s as kr}from"./utils.9dae1f18.js";import{B as K}from"./WebcamSelector.656f3587.js";const Nr=`<style>\r
   .root {\r
     position: relative;\r
 	display: grid;\r
